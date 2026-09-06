@@ -4,6 +4,7 @@ import { useState } from 'react'
 import {
   ChevronDown,
   ChevronRight,
+  CircleDollarSign,
   FolderTree,
   GripVertical,
   MoreHorizontal,
@@ -110,6 +111,7 @@ export default function TreeNode({
   onAddTicker,
   onEdit,
   onDelete,
+  onClosePosition,
   onMove,
   draggedId,
   onDragStart,
@@ -124,6 +126,9 @@ export default function TreeNode({
 
   const isCategory = node.node_type === 'category'
   const hasChildren = node.children.length > 0
+  // Only a leaf ticker that holds its own nominal represents a real position
+  // that can be sold — categories, parents, and autosum tickers cannot.
+  const canClose = !isCategory && !hasChildren && node.nominal != null
   const isBeingDragged = draggedId === node.id
   const highlightColor = highlights[node.id] ?? null
 
@@ -253,6 +258,13 @@ export default function TreeNode({
             <DropdownMenuItem icon={Plus} label="Add Node" onSelect={() => onAddTicker(node.id)} />
             <DropdownMenuSeparator />
             <DropdownMenuItem icon={Pencil} label="Edit" onSelect={() => onEdit(node)} />
+            {canClose && onClosePosition && (
+              <DropdownMenuItem
+                icon={CircleDollarSign}
+                label="Close Position"
+                onSelect={() => onClosePosition(node)}
+              />
+            )}
             {otherCategoryOptions.length > 0 && (
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger icon={Move} label="Move to..." />
@@ -285,6 +297,7 @@ export default function TreeNode({
               onAddTicker={onAddTicker}
               onEdit={onEdit}
               onDelete={onDelete}
+              onClosePosition={onClosePosition}
               onMove={onMove}
               draggedId={draggedId}
               onDragStart={onDragStart}

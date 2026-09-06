@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getTemperatureEfficiency } from '@/lib/services/running/analytics/getTemperatureEfficiency'
+import { getCachedTemperatureEfficiency } from '@/lib/services/running/analyticsCache'
 
 export async function GET() {
   try {
@@ -17,7 +17,7 @@ export async function GET() {
       )
     }
 
-    const result = await getTemperatureEfficiency(supabase, user.id)
+    const result = await getCachedTemperatureEfficiency(user.id)
 
     return NextResponse.json({ success: true, ...result }, { status: 200 })
   } catch (err) {

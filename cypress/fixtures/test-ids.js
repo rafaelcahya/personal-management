@@ -14,6 +14,26 @@ export const TEST_IDS = {
     running_dashboard_nav: 'runningDashboardNav_sidebar',
   },
 
+  navbar: {
+    command_palette_trigger: 'commandPaletteTrigger_navbar',
+    command_palette_input: 'commandPaletteInput_navbar',
+    command_palette_list: 'commandPaletteList_navbar',
+    command_palette_empty: 'commandPaletteEmpty_navbar',
+    settings_link: 'settingsLink_navbar',
+  },
+
+  settings: {
+    page: 'settingsPage',
+    profile_section: 'profileSection_settingsPage',
+    avatar_section: 'avatarSection_settingsPage',
+    username_field: 'usernameField_settingsPage',
+    nickname_field: 'nicknameField_settingsPage',
+    save_profile_btn: 'saveProfileBtn_settingsPage',
+    avatar_upload_input: 'avatarUploadInput_settingsPage',
+    avatar_upload_btn: 'avatarUploadBtn_settingsPage',
+    avatar_error: 'avatarError_settingsPage',
+  },
+
   shared: {
     submit_btn: 'submit-btn',
     cancel_btn: 'cancel-btn',

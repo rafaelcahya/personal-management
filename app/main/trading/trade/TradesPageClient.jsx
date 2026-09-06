@@ -3,6 +3,7 @@
 import Button from '@/components/base/Button/Button'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { fetchTradeList, fetchTradeSummary } from '@/lib/api/trade'
+import { useSearchParams } from 'next/navigation'
 import PageHeader from '../../components/PageHeader'
 import TradeTableHeader from './list/component/TradeTableHeader'
 import TradeMetricStrip from './list/component/TradeMetricStrip'
@@ -18,7 +19,7 @@ import Card, { CardContent, CardFooter } from '@/components/base/Card/Card'
 
 const DEFAULT_SORT_KEY = 'sell_date'
 const DEFAULT_SORT_DIR = 'desc'
-const DEBOUNCE_MS = 300
+const DEBOUNCE_MS = 400
 
 function sortTrades(trades, key, dir) {
   return [...trades].sort((a, b) => {
@@ -45,6 +46,8 @@ export default function TradesPageClient({
   initialPage,
   initialLimit,
 }) {
+  const searchParams = useSearchParams()
+  const initialSearch = searchParams.get('search') ?? ''
   const [trades, setTrades] = useState(initialTrades ?? [])
   const [total, setTotal] = useState(initialTotal ?? 0)
   const [page, setPage] = useState(initialPage ?? 1)
@@ -54,8 +57,16 @@ export default function TradesPageClient({
   const [error, setError] = useState(null)
   const [summary, setSummary] = useState({ totalTrades: 0, totalWins: 0, netPnL: 0 })
 
-  const [search, setSearch] = useState('')
-  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [search, setSearch] = useState(initialSearch)
+  const [debouncedSearch, setDebouncedSearch] = useState(initialSearch)
+
+  // Keep search in sync when arriving via a deep-link (?search=…). A same-pathname
+  // navigation reuses this component, so the initial useState value won't re-run.
+  const urlSearch = searchParams.get('search') ?? ''
+  useEffect(() => {
+    setSearch(urlSearch)
+    setDebouncedSearch(urlSearch)
+  }, [urlSearch])
   const [sortKey, setSortKey] = useState(DEFAULT_SORT_KEY)
   const [sortDir, setSortDir] = useState(DEFAULT_SORT_DIR)
 

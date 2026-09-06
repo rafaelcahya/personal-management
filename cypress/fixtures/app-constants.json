@@ -230,6 +230,12 @@
       "uninvested_cash": "/api/investment-flow/v1/uninvested-cash",
       "uninvested_cash_categories": "/api/investment-flow/v1/uninvested-cash/categories",
       "highlights": "/api/investment-flow/v1/highlights"
+    },
+    "notifications": {
+      "list": "/api/notifications/v1",
+      "unread_count": "/api/notifications/v1/unread-count",
+      "read": "/api/notifications/v1/read",
+      "read_all": "/api/notifications/v1/read-all"
     }
   },
   "test_ids": {
@@ -248,6 +254,24 @@
       "running_dashboard_nav": "runningDashboardNav_sidebar",
       "pace_calc_nav": "paceCalcNav_sidebar",
       "currency_nav": "currencyNav_sidebar"
+    },
+    "navbar": {
+      "command_palette_trigger": "commandPaletteTrigger_navbar",
+      "command_palette_input": "commandPaletteInput_navbar",
+      "command_palette_list": "commandPaletteList_navbar",
+      "command_palette_empty": "commandPaletteEmpty_navbar",
+      "settings_link": "settingsLink_navbar"
+    },
+    "settings": {
+      "page": "settingsPage",
+      "profile_section": "profileSection_settingsPage",
+      "avatar_section": "avatarSection_settingsPage",
+      "username_field": "usernameField_settingsPage",
+      "nickname_field": "nicknameField_settingsPage",
+      "save_profile_btn": "saveProfileBtn_settingsPage",
+      "avatar_upload_input": "avatarUploadInput_settingsPage",
+      "avatar_upload_btn": "avatarUploadBtn_settingsPage",
+      "avatar_error": "avatarError_settingsPage"
     },
     "shared": {
       "submit_btn": "submit-btn",
@@ -809,7 +833,7 @@
       "personal_bests_accordion_trigger": "personalBestsAccordionTrigger_{distance}_analyticsPage",
       "personal_bests_accordion_content": "personalBestsAccordionContent_{distance}_analyticsPage",
       "personal_bests_1k_row": "personalBestsRow_1k_{rank}_analyticsPage",
-      "personal_bests_5mile_row": "personalBestsRow_5mile_{rank}_analyticsPage",
+      "personal_bests_5k_row": "personalBestsRow_5k_{rank}_analyticsPage",
       "calorie_trend_chart": "calorieTrendChart_analyticsPage",
       "fitness_age_trend_section": "fitnessAgeTrendSection_analyticsPage",
       "fitness_age_trend_loading": "fitnessAgeTrendLoading_analyticsPage",

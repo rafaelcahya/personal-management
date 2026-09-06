@@ -84,6 +84,14 @@ export const deleteNodeQuerySchema = z.object({
   id: z.string().uuid('Invalid node ID'),
 })
 
+export const closePositionSchema = z.object({
+  id: z.string().uuid('Invalid node ID'),
+  proceeds: z
+    .number({ invalid_type_error: 'Proceeds must be a number' })
+    .nonnegative('Proceeds cannot be negative'),
+  cash_category_id: z.string().uuid('Invalid category ID'),
+})
+
 export const moveNodeSchema = z.object({
   id: z.string().uuid('Invalid node ID'),
   new_parent_id: z.string().uuid('Invalid parent node ID').nullable(),

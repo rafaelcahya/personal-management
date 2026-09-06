@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { History, Search, X, AlertCircle } from 'lucide-react'
 import Input from '@/components/base/Input/Input'
 import Button from '@/components/base/Button/Button'
@@ -11,6 +12,7 @@ import ProductHistoryFilterDropdown from './component/ProductHistoryFilterDropdo
 import PageHeader from '../../components/PageHeader'
 import { fetchProductHistory } from '@/lib/api/productHistory'
 import Card, { CardContent } from '@/components/base/Card/Card'
+import { useDebounce } from '@/hooks/useDebounce'
 
 const LIMIT = 15
 
@@ -43,6 +45,7 @@ function HistorySearchInput({ searchQuery, setSearchQuery }) {
 }
 
 export default function ProductHistoryPageClient() {
+  const searchParams = useSearchParams()
   const [data, setData] = useState([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -51,12 +54,20 @@ export default function ProductHistoryPageClient() {
 
   const [filterStatus, setFilterStatus] = useState('')
   const [sortOption, setSortOption] = useState('date_desc')
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('search') ?? '')
+  const debouncedSearch = useDebounce(searchQuery, 400)
+
+  // Keep search in sync when arriving via a deep-link (?search=…). A same-pathname
+  // navigation reuses this component, so the initial useState value won't re-run.
+  const urlSearch = searchParams.get('search') ?? ''
+  useEffect(() => {
+    setSearchQuery(urlSearch)
+  }, [urlSearch])
 
   // Reset to page 1 whenever filters change
   useEffect(() => {
     setPage(1)
-  }, [searchQuery, filterStatus, sortOption])
+  }, [debouncedSearch, filterStatus, sortOption])
 
   useEffect(() => {
     let cancelled = false
@@ -66,7 +77,7 @@ export default function ProductHistoryPageClient() {
     fetchProductHistory({
       page,
       limit: LIMIT,
-      search: searchQuery || undefined,
+      search: debouncedSearch || undefined,
       status: filterStatus || undefined,
       sort: sortOption,
     })
@@ -86,7 +97,7 @@ export default function ProductHistoryPageClient() {
     return () => {
       cancelled = true
     }
-  }, [page, searchQuery, filterStatus, sortOption])
+  }, [page, debouncedSearch, filterStatus, sortOption])
 
   const totalPages = Math.ceil(total / LIMIT)
   const hasActiveFilters = !!(filterStatus || searchQuery)

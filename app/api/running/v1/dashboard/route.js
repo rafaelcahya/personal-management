@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getDashboardData } from '@/lib/services/running/dashboard/getDashboardData'
+import { getCachedDashboardData } from '@/lib/services/running/analyticsCache'
 import { getYtdStats } from '@/lib/services/running/strava/getYtdStats'
 
 export async function GET(request) {
@@ -27,7 +27,7 @@ export async function GET(request) {
 
     const admin = createAdminClient()
     const [data, credResult, ytd_stats] = await Promise.all([
-      getDashboardData(user.id, activityType, tzOffsetMs),
+      getCachedDashboardData(user.id, activityType, tzOffsetMs),
       admin
         .from('rt_strava_credentials')
         .select('last_sync_at')

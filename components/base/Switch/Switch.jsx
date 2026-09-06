@@ -52,7 +52,7 @@ const Switch = ({
         'relative shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30',
         theme === 'pill' && [
           'h-5 w-9 rounded-full border-2 border-transparent transition-colors duration-200',
-          checked ? 'bg-primary' : 'bg-muted-foreground/25',
+          checked ? 'bg-primary' : 'bg-slate-400 dark:bg-slate-500',
         ],
         theme === 'track' && ['h-6 w-9 flex items-center'],
         disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
@@ -62,7 +62,7 @@ const Switch = ({
       {theme === 'pill' && (
         <span
           className={cn(
-            'block size-4 rounded-full bg-background shadow-sm transition-transform duration-200',
+            'block size-4 rounded-full bg-background shadow-sm ring-1 ring-black/10 transition-transform duration-200',
             checked ? 'translate-x-4' : 'translate-x-0'
           )}
         />

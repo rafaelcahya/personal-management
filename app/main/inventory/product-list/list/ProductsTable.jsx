@@ -33,7 +33,11 @@ function QuantityBadge({ quantity }) {
     return <Badge className="bg-red-100 text-red-700">Out of Stock</Badge>
   }
   if (quantity > 0 && quantity < LOW_STOCK_THRESHOLD) {
-    return <Badge className="bg-yellow-100 text-yellow-700">Low Stock</Badge>
+    return (
+      <Badge className="bg-yellow-100 text-yellow-700">
+        Low Stock · <span className="font-mono tabular-nums">{quantity}</span>
+      </Badge>
+    )
   }
   return <span className="font-mono font-medium tabular-nums">{quantity}</span>
 }

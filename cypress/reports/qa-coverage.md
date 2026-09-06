@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-08-13 (issue #783 — investment flow highlights)
-**Branch:** release/v1.30
+**Last Updated:** 2026-09-06 (user profile settings — API test coverage)
+**Branch:** release/v1.31
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,598  | 51%  |
+| API       | 1,645  | 51%  |
 | UI        | 1,551  | 49%  |
-| **Total** | **3,149** | 100% |
+| **Total** | **3,196** | 100% |
 
 ---
 
@@ -19,19 +19,20 @@
 
 | Module               | API   | UI    | Total |
 | -------------------- | ----- | ----- | ----- |
-| Auth                 | 22    | 107   | 129   |
+| Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
 | Running Tracker      | 474   | 695   | 1,169 |
+| Notifications        | 34    | 0     | 34    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,598** | **1,551** | **3,149** |
+| **Total**            | **1,645** | **1,551** | **3,196** |
 
 ---
 
 ## Detailed Breakdown
 
-### Auth
+### Auth + User Settings
 
 | Feature       | API | UI | Total |
 | ------------- | --- | -- | ----- |
@@ -39,7 +40,11 @@
 | Login         | 9   | 58 | 67    |
 | Logout        | 3   | 32 | 35    |
 | Session       | 4   | 17 | 21    |
-| **Subtotal**  | **22** | **107** | **129** |
+| User Settings | 13  | 0  | 13    |
+| **Subtotal**  | **35** | **107** | **142** |
+
+> **User Settings** — `cypress/e2e/settings/settings-api.cy.js` (13 API tests, all passing)
+> Covers `GET /api/user` (4), `PUT /api/user` (7), `POST /api/user/avatar` (2): auth guards, response shape, username/nickname persistence, avatar→`avatar_url` roundtrip, partial update, and no-file validation.
 
 ---
 
@@ -333,6 +338,20 @@
 
 ---
 
+### Notifications
+
+| Feature                 | API | UI | Total |
+| ----------------------- | --- | -- | ----- |
+| List + Pagination/Filter | 15  | 0  | 15    |
+| Unread Count            | 4   | 0  | 4     |
+| Mark Read (+ IDOR/validation) | 10 | 0 | 10   |
+| Mark All Read           | 5   | 0  | 5     |
+| **Subtotal**            | **34** | **0** | **34** |
+
+**Notifications Total — API: 34 | UI: 0 | Total: 34**
+
+---
+
 ### Landing Page
 
 | Feature        | API | UI | Total |
@@ -355,10 +374,11 @@
 
 | Module               | API   | UI    | Total |
 | -------------------- | ----- | ----- | ----- |
-| Auth                 | 22    | 107   | 129   |
+| Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
 | Running Tracker      | 474   | 695   | 1,169 |
+| Notifications        | 34    | 0     | 34    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,598** | **1,551** | **3,149** |
+| **Total**            | **1,645** | **1,551** | **3,196** |

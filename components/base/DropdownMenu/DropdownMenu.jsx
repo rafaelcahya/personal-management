@@ -120,6 +120,12 @@ function DropdownMenu({ children, trigger = 'click' }) {
   )
 }
 
+// ─── useDropdownMenu (access open/close from within the menu subtree) ─────────────
+
+function useDropdownMenu() {
+  return useContext(MenuCtx)
+}
+
 // ─── DropdownMenuTrigger ────────────────────────────────────────────────────────
 
 function DropdownMenuTrigger({ children, asChild = false }) {
@@ -600,6 +606,7 @@ function DropdownMenuSubContent({ children, className }) {
 
 export {
   DropdownMenu,
+  useDropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
