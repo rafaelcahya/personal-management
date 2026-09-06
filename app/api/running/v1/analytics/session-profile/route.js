@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getSessionProfile } from '@/lib/services/running/analytics/getSessionProfile'
+import { getCachedSessionProfile } from '@/lib/services/running/analyticsCache'
 
 export async function GET() {
   try {
@@ -17,7 +17,7 @@ export async function GET() {
       )
     }
 
-    const result = await getSessionProfile(supabase, user.id)
+    const result = await getCachedSessionProfile(user.id)
 
     return NextResponse.json({ success: true, ...result }, { status: 200 })
   } catch (err) {

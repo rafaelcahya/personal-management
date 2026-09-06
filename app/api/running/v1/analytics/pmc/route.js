@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getPmcSeries } from '@/lib/services/running/analytics/getPmcSeries'
+import { getCachedPmcSeries } from '@/lib/services/running/analyticsCache'
 
 const ALLOWED_DAYS = [30, 60, 90]
 
@@ -24,7 +24,7 @@ export async function GET(request) {
     const requestedDays = parseInt(searchParams.get('days'), 10)
     const days = ALLOWED_DAYS.includes(requestedDays) ? requestedDays : 90
 
-    const result = await getPmcSeries(supabase, user.id, days)
+    const result = await getCachedPmcSeries(user.id, days)
 
     return NextResponse.json({ data: result }, { status: 200 })
   } catch (err) {
