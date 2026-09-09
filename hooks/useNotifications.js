@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
   fetchLatestNotifications,
@@ -8,12 +9,20 @@ import {
   markNotificationRead as apiMarkRead,
 } from '@/lib/api/notifications'
 import { onNotificationsChanged, emitNotificationsChanged } from '@/lib/notificationsBus'
+import { useRealtimeNotifications } from './useRealtimeNotifications'
+
+const LATEST_LIMIT = 5
+
+// Only follow internal, relative paths — never an attacker-supplied absolute/external URL.
+const isInternalUrl = (url) =>
+  typeof url === 'string' && url.startsWith('/') && !url.startsWith('//')
 
 /**
  * Powers the navbar bell: unread count (loaded on mount) and the latest 5
  * notifications (loaded on demand when the dropdown opens).
  */
 export function useNotifications() {
+  const router = useRouter()
   const [items, setItems] = useState([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -31,7 +40,7 @@ export function useNotifications() {
     setLoading(true)
     setError(null)
     try {
-      const data = await fetchLatestNotifications(5)
+      const data = await fetchLatestNotifications(LATEST_LIMIT)
       setItems(data.items ?? [])
     } catch (err) {
       setError(err.message || 'Failed to load notifications')
@@ -66,6 +75,35 @@ export function useNotifications() {
     },
     [loadCount]
   )
+
+  useRealtimeNotifications({
+    onInsert: useCallback(
+      (row) => {
+        // New rows arrive unread — reflect them live in the badge and dropdown.
+        setItems((prev) =>
+          prev.some((n) => n.id === row.id) ? prev : [row, ...prev].slice(0, LATEST_LIMIT)
+        )
+        setUnreadCount((c) => c + 1)
+        const url = row.data?.url
+        toast(row.title, {
+          description: row.message,
+          action: isInternalUrl(url)
+            ? { label: 'View', onClick: () => router.push(url) }
+            : undefined,
+        })
+        // Reconcile against the server in case events were missed while offline.
+        loadCount()
+      },
+      [loadCount, router]
+    ),
+    onUpdate: useCallback(
+      (row) => {
+        setItems((prev) => prev.map((n) => (n.id === row.id ? { ...n, ...row } : n)))
+        loadCount()
+      },
+      [loadCount]
+    ),
+  })
 
   return { items, unreadCount, loading, error, reload, markRead }
 }

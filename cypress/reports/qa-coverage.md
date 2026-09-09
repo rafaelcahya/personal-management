@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-09-06 (user profile settings — API test coverage)
-**Branch:** release/v1.31
+**Last Updated:** 2026-09-09 (realtime notification bell #818 — API test coverage)
+**Branch:** feat/issue-818-realtime-notification-bell
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,645  | 51%  |
+| API       | 1,649  | 51%  |
 | UI        | 1,551  | 49%  |
-| **Total** | **3,196** | 100% |
+| **Total** | **3,200** | 100% |
 
 ---
 
@@ -23,10 +23,10 @@
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
 | Running Tracker      | 474   | 695   | 1,169 |
-| Notifications        | 34    | 0     | 34    |
+| Notifications        | 38    | 0     | 38    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,645** | **1,551** | **3,196** |
+| **Total**            | **1,649** | **1,551** | **3,200** |
 
 ---
 
@@ -346,9 +346,13 @@
 | Unread Count            | 4   | 0  | 4     |
 | Mark Read (+ IDOR/validation) | 10 | 0 | 10   |
 | Mark All Read           | 5   | 0  | 5     |
-| **Subtotal**            | **34** | **0** | **34** |
+| Realtime Bell (contract + live-update) | 4 | 0 | 4 |
+| **Subtotal**            | **38** | **0** | **38** |
 
-**Notifications Total — API: 34 | UI: 0 | Total: 34**
+**Notifications Total — API: 38 | UI: 0 | Total: 38**
+
+> **Realtime Bell (#818)** — `cypress/e2e/notifications/notifications-api.cy.js` (4 API tests, all passing).
+> Realtime is websocket-based, so these cover the data contract the bell relies on: list row shape + `data`/`read_at` invariants (2), and a seeded unread notification raising unread-count / sorting newest-first then returning to baseline on mark-read (2). Seeds via `seedNotification`/`deleteNotification` cy.tasks.
 
 ---
 
@@ -378,7 +382,7 @@
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
 | Running Tracker      | 474   | 695   | 1,169 |
-| Notifications        | 34    | 0     | 34    |
+| Notifications        | 38    | 0     | 38    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,645** | **1,551** | **3,196** |
+| **Total**            | **1,649** | **1,551** | **3,200** |
