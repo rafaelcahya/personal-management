@@ -5,9 +5,7 @@ import { Modal, ModalContent, ModalBody } from '@/components/base/Modal/Modal.js
 import { Badge } from '@/components/base/Badge/Badge'
 import { ArrowDown, ArrowUp, ArrowUpDown, StarIcon } from 'lucide-react'
 import Pagination from '@/components/base/Pagination/Pagination'
-import { toast } from 'sonner'
 import { format } from 'date-fns'
-import { favoriteProduct } from '@/lib/api/product'
 import {
   Table,
   TableHeader,
@@ -55,7 +53,7 @@ export default function ProductsTable({
   products,
   sort,
   onSortChange,
-  onRefresh,
+  onToggleFavorite,
   restockPredictions = {},
   page,
   total,
@@ -63,7 +61,6 @@ export default function ProductsTable({
   onPrev,
   onNext,
 }) {
-  const [loadingFavorite, setLoadingFavorite] = useState(null)
   const [previewImg, setPreviewImg] = useState(null)
 
   const handleSort = (column) => {
@@ -74,24 +71,10 @@ export default function ProductsTable({
     onSortChange(newSort)
   }
 
-  const handleToggleFavorite = async (e, product) => {
+  const handleToggleFavorite = (e, product) => {
     e.preventDefault()
     e.stopPropagation()
-    const newFavoriteStatus = !product.is_favorite
-    setLoadingFavorite(product.id)
-    try {
-      await favoriteProduct(product.id, newFavoriteStatus)
-      toast.success(
-        newFavoriteStatus
-          ? `${product.brand} added to favorites`
-          : `${product.brand} removed from favorites`
-      )
-      await onRefresh()
-    } catch (error) {
-      toast.error(error.message || 'Failed to update favorite status')
-    } finally {
-      setLoadingFavorite(null)
-    }
+    onToggleFavorite(product)
   }
 
   return (
@@ -111,9 +94,8 @@ export default function ProductsTable({
                 <button
                   type="button"
                   onClick={(e) => handleToggleFavorite(e, product)}
-                  disabled={loadingFavorite === product.id}
                   aria-label={product.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
-                  className="shrink-0 p-0.5 rounded transition-opacity disabled:opacity-50"
+                  className="shrink-0 p-0.5 rounded transition-opacity"
                   id={`starBtn_${product.id}_productListPage`}
                 >
                   <StarIcon
@@ -253,11 +235,10 @@ export default function ProductsTable({
                     <button
                       type="button"
                       onClick={(e) => handleToggleFavorite(e, product)}
-                      disabled={loadingFavorite === product.id}
                       aria-label={
                         product.is_favorite ? 'Remove from favorites' : 'Add to favorites'
                       }
-                      className="shrink-0 p-0.5 rounded transition-opacity disabled:opacity-50"
+                      className="shrink-0 p-0.5 rounded transition-opacity"
                       id={`starBtn_${product.id}_productListPage`}
                     >
                       <StarIcon
