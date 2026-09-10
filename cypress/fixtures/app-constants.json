@@ -607,7 +607,11 @@
       "sync_btn": "syncBtn_dashboard",
       "sync_result_msg": "syncResultMsg",
       "fitness_age_tile": "fitnessAgeTile_dashboardPage",
-      "endurance_score_tile": "enduranceScoreTile_dashboardPage"
+      "endurance_score_tile": "enduranceScoreTile_dashboardPage",
+      "streak_card": "streakCard_dashboardPage",
+      "streak_current": "streakCurrent_dashboardPage",
+      "streak_best": "streakBest_dashboardPage",
+      "streak_at_risk": "streakAtRisk_dashboardPage"
     },
     "running_ai_coach": {
       "page": "aiCoachPage",

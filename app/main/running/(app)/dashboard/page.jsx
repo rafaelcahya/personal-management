@@ -31,6 +31,7 @@ import NextRace from './components/NextRace'
 import PageHeader from '@/app/main/components/PageHeader'
 import FitnessAgeTile from './components/FitnessAgeTile'
 import EnduranceScoreTile from './components/EnduranceScoreTile'
+import StreakCard from './components/StreakCard'
 
 const ACTIVITY_CONFIG = {
   Run: { icon: Footprints, color: 'text-violet-600', bg: 'bg-violet-50', label: 'Run' },
@@ -269,6 +270,7 @@ export default function RunningDashboardPage() {
             </div>
           </div>
 
+          {dashboardData.streak && <StreakCard streak={dashboardData.streak} />}
           {dashboardData.weekly_stats && (
             <WeeklyStats data={dashboardData.weekly_stats} activityType={activeType} />
           )}
