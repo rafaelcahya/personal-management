@@ -1,14 +1,61 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getCachedResearch } from '@/lib/services/trading/research/getResearchCache'
 
 const FINNHUB_BASE = 'https://finnhub.io/api/v1'
 
 async function finnhubGet(endpoint) {
   const key = process.env.FINNHUB_API_KEY
   const sep = endpoint.includes('?') ? '&' : '?'
-  const res = await fetch(`${FINNHUB_BASE}${endpoint}${sep}token=${key}`, { cache: 'no-store' })
+  const res = await fetch(`${FINNHUB_BASE}${endpoint}${sep}token=${key}`)
   if (!res.ok) throw new Error(`Finnhub ${res.status}`)
   return res.json()
+}
+
+async function computeOverview(ticker) {
+  const [recResult, ptResult] = await Promise.allSettled([
+    finnhubGet(`/stock/recommendation?symbol=${encodeURIComponent(ticker)}`),
+    finnhubGet(`/stock/price-target?symbol=${encodeURIComponent(ticker)}`),
+  ])
+
+  const recData = recResult.status === 'fulfilled' ? recResult.value : null
+  const ptData = ptResult.status === 'fulfilled' ? ptResult.value : null
+
+  // Most recent recommendation period
+  const latestRec =
+    Array.isArray(recData) && recData.length > 0
+      ? recData.sort((a, b) => b.period.localeCompare(a.period))[0]
+      : null
+
+  const recommendation = latestRec
+    ? {
+        period: latestRec.period,
+        strongBuy: latestRec.strongBuy ?? 0,
+        buy: latestRec.buy ?? 0,
+        hold: latestRec.hold ?? 0,
+        sell: latestRec.sell ?? 0,
+        strongSell: latestRec.strongSell ?? 0,
+        total:
+          (latestRec.strongBuy ?? 0) +
+          (latestRec.buy ?? 0) +
+          (latestRec.hold ?? 0) +
+          (latestRec.sell ?? 0) +
+          (latestRec.strongSell ?? 0),
+      }
+    : null
+
+  const priceTarget =
+    ptData && ptData.targetMean
+      ? {
+          low: ptData.targetLow ?? null,
+          mean: ptData.targetMean ?? null,
+          high: ptData.targetHigh ?? null,
+          median: ptData.targetMedian ?? null,
+          lastUpdated: ptData.lastUpdated ?? null,
+        }
+      : null
+
+  return { ticker, recommendation, priceTarget }
 }
 
 export async function GET(request) {
@@ -32,49 +79,9 @@ export async function GET(request) {
       return NextResponse.json({ error: 'ticker is required' }, { status: 400 })
     }
 
-    const [recResult, ptResult] = await Promise.allSettled([
-      finnhubGet(`/stock/recommendation?symbol=${encodeURIComponent(ticker)}`),
-      finnhubGet(`/stock/price-target?symbol=${encodeURIComponent(ticker)}`),
-    ])
+    const data = await getCachedResearch(ticker, 'overview', () => computeOverview(ticker))
 
-    const recData = recResult.status === 'fulfilled' ? recResult.value : null
-    const ptData = ptResult.status === 'fulfilled' ? ptResult.value : null
-
-    // Most recent recommendation period
-    const latestRec =
-      Array.isArray(recData) && recData.length > 0
-        ? recData.sort((a, b) => b.period.localeCompare(a.period))[0]
-        : null
-
-    const recommendation = latestRec
-      ? {
-          period: latestRec.period,
-          strongBuy: latestRec.strongBuy ?? 0,
-          buy: latestRec.buy ?? 0,
-          hold: latestRec.hold ?? 0,
-          sell: latestRec.sell ?? 0,
-          strongSell: latestRec.strongSell ?? 0,
-          total:
-            (latestRec.strongBuy ?? 0) +
-            (latestRec.buy ?? 0) +
-            (latestRec.hold ?? 0) +
-            (latestRec.sell ?? 0) +
-            (latestRec.strongSell ?? 0),
-        }
-      : null
-
-    const priceTarget =
-      ptData && ptData.targetMean
-        ? {
-            low: ptData.targetLow ?? null,
-            mean: ptData.targetMean ?? null,
-            high: ptData.targetHigh ?? null,
-            median: ptData.targetMedian ?? null,
-            lastUpdated: ptData.lastUpdated ?? null,
-          }
-        : null
-
-    return NextResponse.json({ success: true, data: { ticker, recommendation, priceTarget } })
+    return NextResponse.json({ success: true, data })
   } catch (err) {
     console.error('[research/overview]', err)
     return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 })
