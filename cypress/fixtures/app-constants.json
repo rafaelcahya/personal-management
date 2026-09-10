@@ -37,6 +37,11 @@
       "logout_v1": "/api/auth/v1/logout",
       "session": "/api/auth/v1/session"
     },
+    "home": {
+      "inventory": "/api/home/v1/inventory",
+      "trading": "/api/home/v1/trading",
+      "running": "/api/home/v1/running"
+    },
     "inventory": {
       "list": "/api/inventory/v1/list",
       "create": "/api/inventory/v1/create",
@@ -245,6 +250,18 @@
       "inventory_card": "inventoryManagementCard_landingPage",
       "trade_btn": "tradeBtn_landingPage",
       "inventory_btn": "inventoryBtn_landingPage"
+    },
+    "home": {
+      "page": "homePage",
+      "inventory_section": "inventoryHighlight_homePage",
+      "inventory_link": "viewLink_inventoryHighlight_homePage",
+      "inventory_retry": "retryBtn_inventoryHighlight_homePage",
+      "trading_section": "tradingHighlight_homePage",
+      "trading_link": "viewLink_tradingHighlight_homePage",
+      "trading_retry": "retryBtn_tradingHighlight_homePage",
+      "running_section": "runningHighlight_homePage",
+      "running_link": "viewLink_runningHighlight_homePage",
+      "running_retry": "retryBtn_runningHighlight_homePage"
     },
     "sidebar": {
       "collapse_btn": "sidebarCollapseBtn_sidebar",
