@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-09-10 (running streak counter #820 — API test coverage)
-**Branch:** feat/issue-820-running-streak
+**Last Updated:** 2026-09-10 (unified home dashboard #821 — API test coverage)
+**Branch:** feat/issue-821-unified-home-dashboard
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,660  | 52%  |
+| API       | 1,682  | 52%  |
 | UI        | 1,551  | 48%  |
-| **Total** | **3,211** | 100% |
+| **Total** | **3,233** | 100% |
 
 ---
 
@@ -24,9 +24,10 @@
 | Trading Management   | 374   | 254   | 628   |
 | Running Tracker      | 485   | 695   | 1,180 |
 | Notifications        | 38    | 0     | 38    |
+| Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,660** | **1,551** | **3,211** |
+| **Total**            | **1,682** | **1,551** | **3,233** |
 
 ---
 
@@ -360,6 +361,22 @@
 
 ---
 
+### Home (cross-domain)
+
+| Feature              | API | UI | Total |
+| -------------------- | --- | -- | ----- |
+| Inventory highlights | 6   | 0  | 6     |
+| Trading highlights   | 5   | 0  | 5     |
+| Running highlights   | 11  | 0  | 11    |
+| **Subtotal**         | **22** | **0** | **22** |
+
+**Home Total — API: 22 | UI: 0 | Total: 22**
+
+> **Unified Home Dashboard (#821)** — `cypress/e2e/home/home-api.cy.js` (22 API tests, all passing).
+> Three independent authenticated highlight endpoints (`/api/home/v1/{inventory,trading,running}`), response shape `{ data }`. Covers per-endpoint auth guard (401), field shape/types, and invariants: inventory active/favorite ≤ total and `lowStockItems` ≤ 3 & ≤ `lowStockCount`; trading `winRate` 0–100 and `tradesLastMonth` ≤ `totalTrades`; running `best_weeks` ≥ `current_weeks`, `unit==='week'`, `nextRace.days_until` ≥ 0, and `tz_offset` clamp/invalid fallback. Data-independent — no seeding required.
+
+---
+
 ### Landing Page
 
 | Feature        | API | UI | Total |
@@ -387,6 +404,7 @@
 | Trading Management   | 374   | 254   | 628   |
 | Running Tracker      | 485   | 695   | 1,180 |
 | Notifications        | 38    | 0     | 38    |
+| Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,660** | **1,551** | **3,211** |
+| **Total**            | **1,682** | **1,551** | **3,233** |
