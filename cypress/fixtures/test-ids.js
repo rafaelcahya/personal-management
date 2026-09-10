@@ -308,6 +308,10 @@ export const TEST_IDS = {
     sync_status_bar: 'syncStatusBar',
     sync_btn: 'syncBtn_dashboard',
     sync_result_msg: 'syncResultMsg',
+    streak_card: 'streakCard_dashboardPage',
+    streak_current: 'streakCurrent_dashboardPage',
+    streak_best: 'streakBest_dashboardPage',
+    streak_at_risk: 'streakAtRisk_dashboardPage',
   },
 
   running_onboarding: {

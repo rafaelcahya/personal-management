@@ -14,6 +14,9 @@ export default function DashboardSkeleton() {
       {/* Filter bar + sync bar */}
       <Skeleton className="h-10 rounded-lg" />
 
+      {/* StreakCard — flame + counter */}
+      <Skeleton className="h-20 rounded-xl" />
+
       {/* WeeklyStats — 5 stat columns */}
       <div className="flex flex-col gap-3">
         <Skeleton className="h-4 w-24 rounded" />
