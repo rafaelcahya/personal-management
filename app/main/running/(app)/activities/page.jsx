@@ -253,6 +253,14 @@ function ActivitiesInner() {
   const sort = searchParams.get('sort') || 'newest'
   const page = parseInt(searchParams.get('page') ?? '1', 10) || 1
 
+  // Trigger a Strava sync when routed in from the command palette's "Log Run" action. Capture
+  // the intent once on mount — the child syncs only after its async connection check resolves,
+  // so we must not lose it when the param is stripped below.
+  const [autoSync] = useState(() => searchParams.get('action') === 'sync')
+  useEffect(() => {
+    if (autoSync) router.replace('/main/running/activities', { scroll: false })
+  }, [autoSync, router])
+
   const [activities, setActivities] = useState([])
   const [total, setTotal] = useState(0)
   const [knownTypes, setKnownTypes] = useState([])
@@ -345,7 +353,7 @@ function ActivitiesInner() {
           { label: 'Activities' },
         ]}
       />
-      <SyncStravaButton id="syncStravaBtn_activities" />
+      <SyncStravaButton id="syncStravaBtn_activities" autoSync={autoSync} />
 
       <Card>
         <CardHeader>
