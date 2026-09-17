@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
   fetchProductList,
   getProductSummary,
@@ -56,7 +56,12 @@ function getSavedSort() {
 }
 
 export default function ProductsPageClient() {
+  const router = useRouter()
   const searchParams = useSearchParams()
+
+  // Auto-open the create modal when routed in from the command palette (?action=add). Read
+  // synchronously so AddProductForm opens on first render, then strip the param below.
+  const autoOpenAdd = searchParams.get('action') === 'add'
 
   // pagination + server data
   const [products, setProducts] = useState([])
@@ -94,6 +99,11 @@ export default function ProductsPageClient() {
       setSearch(decodeURIComponent(nameParam))
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Drop the ?action=add param once consumed so a refresh or back-nav doesn't reopen the modal.
+  useEffect(() => {
+    if (autoOpenAdd) router.replace('/main/inventory/product-list', { scroll: false })
+  }, [autoOpenAdd, router])
 
   const fetchProducts = useCallback(
     async (overridePage) => {
@@ -231,7 +241,7 @@ export default function ProductsPageClient() {
             <SearchInput search={search} onSearchChange={handleSearchChange} />
             <div className="flex items-center justify-between gap-2 shrink-0">
               <ProductSortDropdown sort={sort} onSortChange={handleSortChange} />
-              <AddProductForm onAdded={handleRefresh} />
+              <AddProductForm onAdded={handleRefresh} autoOpen={autoOpenAdd} />
             </div>
           </div>
         </CardAction>

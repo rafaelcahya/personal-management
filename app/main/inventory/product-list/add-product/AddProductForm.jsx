@@ -42,8 +42,8 @@ import { createProduct } from '@/lib/api/product'
 import { fetchProductBrand } from '@/lib/api/productBrand'
 import { fetchProductName } from '@/lib/api/productName'
 
-export default function AddProductForm({ onAdded }) {
-  const [open, setOpen] = useState(false)
+export default function AddProductForm({ onAdded, autoOpen = false }) {
+  const [open, setOpen] = useState(autoOpen)
   const [productBrands, setProductBrands] = useState([])
   const [productNames, setProductNames] = useState([])
   const [loading, setLoading] = useState(false)

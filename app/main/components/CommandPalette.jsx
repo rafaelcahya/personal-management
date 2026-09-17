@@ -6,6 +6,7 @@ import { Search, Loader2, CornerDownLeft } from 'lucide-react'
 import { Modal, ModalContent } from '@/components/base/Modal/Modal'
 import { cn } from '@/lib/utils'
 import { COMMAND_GROUPS } from '../lib/navItems'
+import { PALETTE_ACTIONS } from '../lib/paletteActions'
 import { fuzzyScore } from '../lib/fuzzyMatch'
 import { searchEntities } from '../lib/entitySearch'
 
@@ -37,6 +38,28 @@ function filterPageGroups(query) {
   }).filter((group) => group.items.length > 0)
 }
 
+// Quick actions render as their own group above navigation, scored against label + keywords
+// so "trade", "run", or "stock" surface the right action.
+const ACTION_ITEMS = PALETTE_ACTIONS.map((action) => ({
+  id: action.id,
+  label: action.label,
+  href: action.href,
+  icon: action.icon,
+  keywords: action.keywords,
+}))
+
+function filterActionGroup(query) {
+  if (!query.trim()) return [{ module: 'Actions', items: ACTION_ITEMS }]
+  const scored = ACTION_ITEMS.map((item) => ({
+    item,
+    score: fuzzyScore(query, `${item.label} ${item.keywords}`),
+  }))
+    .filter(({ score }) => score !== -Infinity)
+    .sort((a, b) => b.score - a.score)
+    .map(({ item }) => item)
+  return scored.length ? [{ module: 'Actions', items: scored }] : []
+}
+
 export default function CommandPalette({ open, onOpenChange }) {
   const router = useRouter()
   const [query, setQuery] = useState('')
@@ -47,8 +70,12 @@ export default function CommandPalette({ open, onOpenChange }) {
   const listRef = useRef(null)
   const restoreFocusRef = useRef(null)
 
+  const actionGroups = useMemo(() => filterActionGroup(query), [query])
   const pageGroups = useMemo(() => filterPageGroups(query), [query])
-  const visibleGroups = useMemo(() => [...pageGroups, ...entityGroups], [pageGroups, entityGroups])
+  const visibleGroups = useMemo(
+    () => [...actionGroups, ...pageGroups, ...entityGroups],
+    [actionGroups, pageGroups, entityGroups]
+  )
   const flatItems = useMemo(() => visibleGroups.flatMap((g) => g.items), [visibleGroups])
 
   // Reset transient state on open and remember what to refocus on close.
