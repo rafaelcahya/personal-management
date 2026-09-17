@@ -7,6 +7,19 @@ export const TEST_IDS = {
     inventory_btn: 'inventoryBtn_landingPage',
   },
 
+  home: {
+    page: 'homePage',
+    inventory_section: 'inventoryHighlight_homePage',
+    inventory_link: 'viewLink_inventoryHighlight_homePage',
+    inventory_retry: 'retryBtn_inventoryHighlight_homePage',
+    trading_section: 'tradingHighlight_homePage',
+    trading_link: 'viewLink_tradingHighlight_homePage',
+    trading_retry: 'retryBtn_tradingHighlight_homePage',
+    running_section: 'runningHighlight_homePage',
+    running_link: 'viewLink_runningHighlight_homePage',
+    running_retry: 'retryBtn_runningHighlight_homePage',
+  },
+
   sidebar: {
     collapse_btn: 'sidebarCollapseBtn_sidebar',
     inventory_dashboard_nav: 'inventoryDashboardNav_sidebar',
@@ -308,6 +321,10 @@ export const TEST_IDS = {
     sync_status_bar: 'syncStatusBar',
     sync_btn: 'syncBtn_dashboard',
     sync_result_msg: 'syncResultMsg',
+    streak_card: 'streakCard_dashboardPage',
+    streak_current: 'streakCurrent_dashboardPage',
+    streak_best: 'streakBest_dashboardPage',
+    streak_at_risk: 'streakAtRisk_dashboardPage',
   },
 
   running_onboarding: {

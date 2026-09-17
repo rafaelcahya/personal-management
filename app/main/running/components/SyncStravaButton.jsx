@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Button from '@/components/base/Button/Button'
 import { RefreshCw, CheckCircle2 } from 'lucide-react'
 import { syncStrava, fetchSyncStatus } from '@/lib/api/running'
@@ -16,11 +16,12 @@ function formatRelativeTime(isoString) {
   return `${Math.floor(diffHour / 24)}d ago`
 }
 
-export default function SyncStravaButton({ id = 'syncStravaBtn', actions }) {
+export default function SyncStravaButton({ id = 'syncStravaBtn', actions, autoSync = false }) {
   const [connected, setConnected] = useState(false)
   const [lastSyncAt, setLastSyncAt] = useState(null)
   const [syncing, setSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState(null)
+  const autoSyncedRef = useRef(false)
 
   useEffect(() => {
     fetchSyncStatus()
@@ -30,8 +31,6 @@ export default function SyncStravaButton({ id = 'syncStravaBtn', actions }) {
       })
       .catch(() => {})
   }, [])
-
-  if (!connected) return null
 
   async function handleSync() {
     setSyncing(true)
@@ -46,6 +45,17 @@ export default function SyncStravaButton({ id = 'syncStravaBtn', actions }) {
       setSyncing(false)
     }
   }
+
+  // Kick off a sync once when routed in from the command palette's "Log Run" action, but only
+  // after we know the account is connected (otherwise this component renders nothing).
+  useEffect(() => {
+    if (autoSync && connected && !autoSyncedRef.current) {
+      autoSyncedRef.current = true
+      handleSync()
+    }
+  }, [autoSync, connected])
+
+  if (!connected) return null
 
   return (
     <div

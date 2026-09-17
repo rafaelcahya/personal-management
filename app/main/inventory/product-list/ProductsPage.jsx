@@ -1,8 +1,13 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { fetchProductList, getProductSummary, getRestockPredictions } from '@/lib/api/product'
+import { useRouter, useSearchParams } from 'next/navigation'
+import {
+  fetchProductList,
+  getProductSummary,
+  getRestockPredictions,
+  favoriteProduct,
+} from '@/lib/api/product'
 import { toast } from 'sonner'
 import ProductListSummary from './list/component/ProductListSummary'
 import ProductTableHeader from './list/component/ProductTableHeader'
@@ -51,7 +56,12 @@ function getSavedSort() {
 }
 
 export default function ProductsPageClient() {
+  const router = useRouter()
   const searchParams = useSearchParams()
+
+  // Auto-open the create modal when routed in from the command palette (?action=add). Read
+  // synchronously so AddProductForm opens on first render, then strip the param below.
+  const autoOpenAdd = searchParams.get('action') === 'add'
 
   // pagination + server data
   const [products, setProducts] = useState([])
@@ -89,6 +99,11 @@ export default function ProductsPageClient() {
       setSearch(decodeURIComponent(nameParam))
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Drop the ?action=add param once consumed so a refresh or back-nav doesn't reopen the modal.
+  useEffect(() => {
+    if (autoOpenAdd) router.replace('/main/inventory/product-list', { scroll: false })
+  }, [autoOpenAdd, router])
 
   const fetchProducts = useCallback(
     async (overridePage) => {
@@ -157,6 +172,25 @@ export default function ProductsPageClient() {
     setPage(1)
   }, [fetchProducts, fetchSummary, fetchRestockPredictions])
 
+  const handleToggleFavorite = useCallback(async (product) => {
+    const previous = product.is_favorite
+    const next = !previous
+
+    setProducts((prev) => prev.map((p) => (p.id === product.id ? { ...p, is_favorite: next } : p)))
+
+    try {
+      await favoriteProduct(product.id, next)
+      toast.success(
+        next ? `${product.brand} added to favorites` : `${product.brand} removed from favorites`
+      )
+    } catch (error) {
+      setProducts((prev) =>
+        prev.map((p) => (p.id === product.id ? { ...p, is_favorite: previous } : p))
+      )
+      toast.error(error.message || 'Failed to update favorite status')
+    }
+  }, [])
+
   const handleSortChange = (newSort) => {
     setSort(newSort)
     setPage(1)
@@ -207,7 +241,7 @@ export default function ProductsPageClient() {
             <SearchInput search={search} onSearchChange={handleSearchChange} />
             <div className="flex items-center justify-between gap-2 shrink-0">
               <ProductSortDropdown sort={sort} onSortChange={handleSortChange} />
-              <AddProductForm onAdded={handleRefresh} />
+              <AddProductForm onAdded={handleRefresh} autoOpen={autoOpenAdd} />
             </div>
           </div>
         </CardAction>
@@ -273,7 +307,7 @@ export default function ProductsPageClient() {
               products={products}
               sort={sort}
               onSortChange={handleSortChange}
-              onRefresh={handleRefresh}
+              onToggleFavorite={handleToggleFavorite}
               restockPredictions={restockPredictions}
               page={page}
               total={total}

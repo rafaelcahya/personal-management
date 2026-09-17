@@ -1,9 +1,19 @@
 // API-only spec: cy.request only (via custom commands) — no cy.visit, no DOM assertions.
-// Covers global navbar notification center (#801):
+// Covers global navbar notification center (#801) and the realtime bell (#818):
 //   GET /api/notifications/v1              — list, paginated, filterable by status
 //   GET /api/notifications/v1/unread-count — unread count
 //   PUT /api/notifications/v1/read         — mark one notification read
 //   PUT /api/notifications/v1/read-all     — mark all notifications read
+//
+// Realtime bell (#818): the feature streams notification row changes over
+// Supabase Realtime to the navbar bell. Websocket delivery can't be asserted
+// with cy.request, so these tests cover the DATA CONTRACT the bell relies on:
+//   - the row shape the realtime INSERT handler prepends + NotificationRow renders
+//   - a freshly inserted unread row raises unread-count and sorts newest-first
+//     (the onInsert "badge +1 / prepend" contract)
+//   - marking it read lowers the count back (the onUpdate "reconcile" contract)
+// Seeding uses the seedNotification/deleteNotification cy.tasks (admin client),
+// since notifications have no create API.
 //
 // IDOR test setup: the "PUT /read IDOR protection" suite needs a notification
 // row owned by a user other than CYPRESS_TEST_EMAIL. Seed one via Supabase
@@ -414,6 +424,109 @@ describe('Notifications API — PUT /read-all (authenticated)', () => {
         expect(res.body.data.items).to.have.length(0)
         expect(res.body.data.total).to.eq(0)
       })
+    })
+  })
+})
+
+// ─── realtime bell — data contract (#818) ────────────────────────────────────────
+
+describe('Notifications API — realtime bell data contract (authenticated)', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('list rows expose data as an object or null → NotificationRow reads data?.url safely', () => {
+    cy.getNotifications({ limit: 50 }).then((res) => {
+      const { items } = res.body.data
+      if (items.length === 0) return cy.log('No items — data-field contract skipped')
+      items.forEach((item) => {
+        expect(item).to.have.property('data')
+        if (item.data !== null) expect(item.data).to.be.an('object')
+      })
+    })
+  })
+
+  it('is_read and read_at stay consistent → unread rows have null read_at, read rows have a timestamp', () => {
+    // The realtime INSERT handler assumes new rows are unread (read_at null) so
+    // it can safely bump the badge; this guards that invariant.
+    cy.getNotifications({ limit: 50 }).then((res) => {
+      const { items } = res.body.data
+      if (items.length === 0) return cy.log('No items — read-state invariant skipped')
+      items.forEach((item) => {
+        if (item.is_read === false) expect(item.read_at, `row ${item.id} read_at`).to.be.null
+        else expect(item.read_at, `row ${item.id} read_at`).to.not.be.null
+      })
+    })
+  })
+})
+
+// ─── realtime bell — live-update contract (#818) ─────────────────────────────────
+
+describe('Notifications API — realtime bell live-update contract (authenticated)', () => {
+  let userId
+  let baselineUnread
+  let seededId
+
+  before(() => {
+    cy.env(['TEST_EMAIL', 'TEST_PASSWORD']).then(({ TEST_EMAIL, TEST_PASSWORD }) => {
+      cy.task('getSupabaseSession', { email: TEST_EMAIL, password: TEST_PASSWORD }).then(
+        (session) => {
+          expect(session, 'test user session').to.not.be.null
+          userId = session.user.id
+        }
+      )
+    })
+  })
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+    // Capture the baseline, then seed a fresh unread notification for the test user.
+    cy.getUnreadNotificationCount().then((res) => {
+      baselineUnread = res.body.data.count
+    })
+    cy.task('seedNotification', {
+      userId,
+      type: 'product_update',
+      title: 'Cypress realtime seed',
+      message: 'Seeded unread notification for the realtime bell contract',
+      data: { url: '/main/notifications' },
+      is_read: false,
+    }).then((row) => {
+      seededId = row.id
+    })
+  })
+
+  afterEach(() => {
+    // Always clean up the seeded row, whatever the test did with it.
+    cy.task('deleteNotification', { id: seededId })
+    seededId = null
+  })
+
+  it('a newly inserted unread notification → unread-count rises by one and it sorts newest-first', () => {
+    cy.getUnreadNotificationCount().then((res) => {
+      expect(res.body.data.count).to.eq(baselineUnread + 1)
+    })
+    cy.getNotifications({ limit: 5 }).then((res) => {
+      const { items } = res.body.data
+      expect(items[0].id, 'seeded row is newest-first').to.eq(seededId)
+      expect(items[0].is_read).to.eq(false)
+      expect(items[0].title).to.eq('Cypress realtime seed')
+      expect(items[0].data).to.deep.eq({ url: '/main/notifications' })
+    })
+  })
+
+  it('marking the seeded notification read → unread-count returns to baseline and it leaves the unread list', () => {
+    cy.putNotificationRead({ id: seededId }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.data.is_read).to.eq(true)
+      expect(res.body.data.read_at).to.not.be.null
+    })
+    cy.getUnreadNotificationCount().then((res) => {
+      expect(res.body.data.count).to.eq(baselineUnread)
+    })
+    cy.getNotifications({ status: 'unread', limit: 50 }).then((res) => {
+      const ids = res.body.data.items.map((n) => n.id)
+      expect(ids).to.not.include(seededId)
     })
   })
 })

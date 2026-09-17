@@ -3,7 +3,7 @@
 import Button from '@/components/base/Button/Button'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { fetchTradeList, fetchTradeSummary } from '@/lib/api/trade'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import PageHeader from '../../components/PageHeader'
 import TradeTableHeader from './list/component/TradeTableHeader'
 import TradeMetricStrip from './list/component/TradeMetricStrip'
@@ -46,6 +46,7 @@ export default function TradesPageClient({
   initialPage,
   initialLimit,
 }) {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const initialSearch = searchParams.get('search') ?? ''
   const [trades, setTrades] = useState(initialTrades ?? [])
@@ -71,6 +72,15 @@ export default function TradesPageClient({
   const [sortDir, setSortDir] = useState(DEFAULT_SORT_DIR)
 
   const [addTradeOpen, setAddTradeOpen] = useState(false)
+
+  // Open the create modal when routed in from the command palette (?action=add), then strip
+  // the param so a refresh or back-nav doesn't reopen it.
+  useEffect(() => {
+    if (searchParams.get('action') === 'add') {
+      setAddTradeOpen(true)
+      router.replace('/main/trading/trade', { scroll: false })
+    }
+  }, [searchParams, router])
 
   const debounceTimer = useRef(null)
   const isMounted = useRef(false)

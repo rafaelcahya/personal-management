@@ -23,6 +23,7 @@ describe('Running Dashboard API — GET /dashboard — core response', () => {
         'health_today',
         'fitness_age',
         'endurance_score',
+        'streak',
         'last_sync_at'
       )
     })
@@ -623,6 +624,110 @@ describe('Running Dashboard API — GET /dashboard — endurance_score', () => {
       const { endurance_score: score, endurance_tier } = res.body.data.endurance_score
       if (score === null) return cy.log('endurance_score is null — skipping tier co-presence check')
       expect(endurance_tier).to.not.be.null
+    })
+  })
+})
+
+// ─── streak (dashboard field) ─────────────────────────────────────────────────
+
+// Streak counter — issue #820. Weekly streak folded into the dashboard payload.
+// Rules under test: weekly unit, strict reset, >=1 activity of any type per week,
+// at-risk only in the last 2 days of a week with a live streak.
+describe('Running Dashboard API — GET /dashboard — streak', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('streak is an object with required keys', () => {
+    cy.getDashboard().then((res) => {
+      const { streak } = res.body.data
+      expect(streak).to.be.an('object')
+      expect(streak).to.include.all.keys(
+        'current_weeks',
+        'best_weeks',
+        'at_risk',
+        'active_this_week',
+        'unit'
+      )
+    })
+  })
+
+  it('current_weeks and best_weeks are non-negative integers', () => {
+    cy.getDashboard().then((res) => {
+      const { current_weeks, best_weeks } = res.body.data.streak
+      expect(Number.isInteger(current_weeks)).to.eq(true)
+      expect(Number.isInteger(best_weeks)).to.eq(true)
+      expect(current_weeks).to.be.gte(0)
+      expect(best_weeks).to.be.gte(0)
+    })
+  })
+
+  it('at_risk and active_this_week are booleans', () => {
+    cy.getDashboard().then((res) => {
+      const { at_risk, active_this_week } = res.body.data.streak
+      expect(at_risk).to.be.a('boolean')
+      expect(active_this_week).to.be.a('boolean')
+    })
+  })
+
+  it('unit is "week"', () => {
+    cy.getDashboard().then((res) => {
+      expect(res.body.data.streak.unit).to.eq('week')
+    })
+  })
+
+  it('best_weeks is always >= current_weeks', () => {
+    cy.getDashboard().then((res) => {
+      const { current_weeks, best_weeks } = res.body.data.streak
+      expect(best_weeks).to.be.gte(current_weeks)
+    })
+  })
+
+  it('at_risk is only true when a live streak exists and this week is not yet active', () => {
+    cy.getDashboard().then((res) => {
+      const { at_risk, current_weeks, active_this_week } = res.body.data.streak
+      if (at_risk) {
+        expect(current_weeks).to.be.gte(1)
+        expect(active_this_week).to.eq(false)
+      }
+    })
+  })
+
+  it('active_this_week true implies current_weeks >= 1', () => {
+    cy.getDashboard().then((res) => {
+      const { active_this_week, current_weeks } = res.body.data.streak
+      if (active_this_week) expect(current_weeks).to.be.gte(1)
+    })
+  })
+
+  it('at_risk and active_this_week are never both true', () => {
+    cy.getDashboard().then((res) => {
+      const { at_risk, active_this_week } = res.body.data.streak
+      expect(at_risk && active_this_week).to.eq(false)
+    })
+  })
+
+  it('streak is present regardless of the activity type filter', () => {
+    cy.getDashboard({ type: 'Run' }).then((res) => {
+      const { streak } = res.body.data
+      expect(streak).to.be.an('object')
+      expect(streak).to.include.all.keys('current_weeks', 'best_weeks', 'unit')
+    })
+  })
+
+  it('streak counts any activity type — identical across type filters', () => {
+    cy.getDashboard().then((allRes) => {
+      cy.getDashboard({ type: 'Run' }).then((runRes) => {
+        expect(runRes.body.data.streak.current_weeks).to.eq(allRes.body.data.streak.current_weeks)
+        expect(runRes.body.data.streak.best_weeks).to.eq(allRes.body.data.streak.best_weeks)
+      })
+    })
+  })
+
+  it('streak is unaffected by an invalid tz_offset (falls back to UTC)', () => {
+    cy.getDashboard({ tz_offset: 'invalid' }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.data.streak).to.include.all.keys('current_weeks', 'best_weeks', 'unit')
     })
   })
 })

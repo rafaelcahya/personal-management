@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-09-06 (user profile settings — API test coverage)
-**Branch:** release/v1.31
+**Last Updated:** 2026-09-10 (unified home dashboard #821 — API test coverage)
+**Branch:** feat/issue-821-unified-home-dashboard
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,645  | 51%  |
-| UI        | 1,551  | 49%  |
-| **Total** | **3,196** | 100% |
+| API       | 1,682  | 52%  |
+| UI        | 1,551  | 48%  |
+| **Total** | **3,233** | 100% |
 
 ---
 
@@ -22,11 +22,12 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 474   | 695   | 1,169 |
-| Notifications        | 34    | 0     | 34    |
+| Running Tracker      | 485   | 695   | 1,180 |
+| Notifications        | 38    | 0     | 38    |
+| Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,645** | **1,551** | **3,196** |
+| **Total**            | **1,682** | **1,551** | **3,233** |
 
 ---
 
@@ -256,8 +257,9 @@
 | Dashboard            | 42  | 28 | 70    |
 | Dashboard Extended   | 0   | 14 | 14    |
 | Gear                 | 6   | 18 | 24    |
+| Streak               | 11  | 0  | 11    |
 | Weekly Stats Filter  | 17  | 0  | 17    |
-| **Subtotal**         | **65** | **80** | **145** |
+| **Subtotal**         | **76** | **80** | **156** |
 
 #### AI Coach
 
@@ -334,7 +336,10 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **53** | **21** | **74** |
 
-**Running Total — API: 474 | UI: 695 | Total: 1,169**
+**Running Total — API: 485 | UI: 695 | Total: 1,180**
+
+> **Streak Counter (#820)** — `cypress/e2e/running/dashboard/dashboard-api.cy.js` (11 API tests, all passing).
+> Weekly streak folded into `GET /dashboard`. Covers the `streak` object shape/keys, integer & boolean field types, `unit === 'week'`, the `best_weeks >= current_weeks` invariant, at-risk logic (only with a live streak in the last 2 days, mutually exclusive with `active_this_week`), streak being identical across activity-type filters (habit metric ignores type), and invalid `tz_offset` fallback. Data-independent assertions — no seeding required.
 
 ---
 
@@ -346,9 +351,29 @@
 | Unread Count            | 4   | 0  | 4     |
 | Mark Read (+ IDOR/validation) | 10 | 0 | 10   |
 | Mark All Read           | 5   | 0  | 5     |
-| **Subtotal**            | **34** | **0** | **34** |
+| Realtime Bell (contract + live-update) | 4 | 0 | 4 |
+| **Subtotal**            | **38** | **0** | **38** |
 
-**Notifications Total — API: 34 | UI: 0 | Total: 34**
+**Notifications Total — API: 38 | UI: 0 | Total: 38**
+
+> **Realtime Bell (#818)** — `cypress/e2e/notifications/notifications-api.cy.js` (4 API tests, all passing).
+> Realtime is websocket-based, so these cover the data contract the bell relies on: list row shape + `data`/`read_at` invariants (2), and a seeded unread notification raising unread-count / sorting newest-first then returning to baseline on mark-read (2). Seeds via `seedNotification`/`deleteNotification` cy.tasks.
+
+---
+
+### Home (cross-domain)
+
+| Feature              | API | UI | Total |
+| -------------------- | --- | -- | ----- |
+| Inventory highlights | 6   | 0  | 6     |
+| Trading highlights   | 5   | 0  | 5     |
+| Running highlights   | 11  | 0  | 11    |
+| **Subtotal**         | **22** | **0** | **22** |
+
+**Home Total — API: 22 | UI: 0 | Total: 22**
+
+> **Unified Home Dashboard (#821)** — `cypress/e2e/home/home-api.cy.js` (22 API tests, all passing).
+> Three independent authenticated highlight endpoints (`/api/home/v1/{inventory,trading,running}`), response shape `{ data }`. Covers per-endpoint auth guard (401), field shape/types, and invariants: inventory active/favorite ≤ total and `lowStockItems` ≤ 3 & ≤ `lowStockCount`; trading `winRate` 0–100 and `tradesLastMonth` ≤ `totalTrades`; running `best_weeks` ≥ `current_weeks`, `unit==='week'`, `nextRace.days_until` ≥ 0, and `tz_offset` clamp/invalid fallback. Data-independent — no seeding required.
 
 ---
 
@@ -377,8 +402,9 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 474   | 695   | 1,169 |
-| Notifications        | 34    | 0     | 34    |
+| Running Tracker      | 485   | 695   | 1,180 |
+| Notifications        | 38    | 0     | 38    |
+| Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,645** | **1,551** | **3,196** |
+| **Total**            | **1,682** | **1,551** | **3,233** |

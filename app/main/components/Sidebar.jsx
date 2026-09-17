@@ -259,14 +259,20 @@ export default function Sidebar() {
         <SidebarHeader
           className={cn('gap-3 px-4 py-4 border-border', collapsed && 'justify-center px-0')}
         >
-          <div className="size-8 bg-primary rounded-lg flex items-center justify-center shrink-0">
-            <Package2 className="size-4 text-primary-foreground" />
-          </div>
-          {!collapsed && (
-            <span className="font-semibold text-foreground text-sm leading-tight">
-              Personal Management
-            </span>
-          )}
+          <Link
+            href="/main/landing"
+            aria-label="Home"
+            className={cn('flex items-center gap-3', collapsed && 'justify-center')}
+          >
+            <div className="size-8 bg-primary rounded-lg flex items-center justify-center shrink-0">
+              <Package2 className="size-4 text-primary-foreground" />
+            </div>
+            {!collapsed && (
+              <span className="font-semibold text-foreground text-sm leading-tight">
+                Personal Management
+              </span>
+            )}
+          </Link>
         </SidebarHeader>
 
         <SidebarContent className="py-0">
@@ -307,12 +313,17 @@ export default function Sidebar() {
           />
           <aside className="md:hidden fixed top-0 left-0 bottom-0 z-50 w-64 bg-card border-r border-border flex flex-col">
             <SidebarHeader className="justify-between h-14 border-border gap-2 px-4">
-              <div className="flex items-center gap-2">
+              <Link
+                href="/main/landing"
+                aria-label="Home"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-2"
+              >
                 <div className="size-7 bg-primary rounded-lg flex items-center justify-center">
                   <Package2 className="size-4 text-primary-foreground" />
                 </div>
                 <span className="font-semibold text-foreground text-sm">Personal Management</span>
-              </div>
+              </Link>
               <Button
                 variant="ghost"
                 size="icon-sm"
