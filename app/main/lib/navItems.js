@@ -16,6 +16,7 @@ import {
   Microscope,
   GitBranch,
   MapPin,
+  Mountain,
   Bell,
   ShieldCheck,
 } from 'lucide-react'
@@ -96,6 +97,12 @@ export const RUNNING_ITEMS = [
     name: 'Routes',
     href: '/main/running/route-builder',
     icon: MapPin,
+  },
+  {
+    id: 'routeSimulatorNav_sidebar',
+    name: 'Route Simulator',
+    href: '/main/running/route-simulator',
+    icon: Mountain,
   },
   { name: 'Settings', href: '/main/running/settings', icon: Settings },
 ]
