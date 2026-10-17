@@ -134,13 +134,12 @@ cypress/
 
 ## Cross-Agent Signal Inbox
 
-All cross-agent signals are written to and read from one central file:
+All cross-agent signals are posted as **comments on the feature's GitHub issue** (one issue per feature, Project #3). There is no signal file anymore.
 
-```
-.claude/agents/signals/pending-signals.md
-```
-
-Every agent checks this file at kickoff. After handling a signal, mark it `[RESOLVED: YYYY-MM-DD]` — never delete rows.
+- Read signals: `gh issue view {n} --comments`
+- Post a signal: `gh issue comment {n} --body-file <file>`
+- Agents without Bash (UI/UX, Researcher) return the signal in their final report; the caller posts it.
+- When a signal is handled, reply on the issue with `Resolved: <what was done>` — never delete comments.
 
 ---
 
@@ -232,7 +231,7 @@ Ready for: E2E tests + code review
 
 ### Pipeline mode (Orchestrator spawns agents sequentially)
 
-Every agent that completes in a pipeline **MUST** write a signal to the next agent before reporting done. No exceptions.
+Every agent that completes in a pipeline **MUST** post a signal comment on the feature issue for the next agent before reporting done. No exceptions.
 
 | Completing agent | Must write signal to                              |
 | ---------------- | ------------------------------------------------- |
