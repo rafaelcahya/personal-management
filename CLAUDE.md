@@ -42,19 +42,21 @@ Personal productivity web app for one user, four domains: **Inventory Management
 
 This project uses 8 specialized agents + 1 orchestrator. Each agent has isolated tools, its own memory, and a defined output scope.
 
-| Agent             | File                         | Role                                                      | Model    |
-| ----------------- | ---------------------------- | --------------------------------------------------------- | -------- |
-| Orchestrator      | `orchestrator-agent.md`      | Coordinates multi-agent workflows                         | sonnet-5 |
-| PM                | `pm-agent.md`                | Requirements, PRD, prioritization                         | sonnet-5 |
-| Researcher        | `researcher-agent.md`        | Product, UX, library, security research — peer of PM      | sonnet-5 |
-| UI/UX             | `uiux-agent.md`              | Design decisions, component specs                         | sonnet-5 |
-| Backend           | `backend-agent.md`           | API routes, services, DB schema                           | sonnet-5 |
-| Frontend          | `frontend-agent.md`          | JSX components, UI states, API integration                | sonnet-5 |
-| Code Reviewer     | `code-reviewer-agent.md`     | CRITICAL/WARNING/SUGGESTION code review — read-only       | sonnet-5 |
-| Security Reviewer | `security-reviewer-agent.md` | IDOR, ownership, secrets, XSS security review — read-only | sonnet-5 |
-| Tester            | `tester-agent.md`            | Cypress tests, QA reports                                 | sonnet-5 |
+| Agent             | `subagent_type`           | Role                                                      | Model · effort      |
+| ----------------- | ------------------------- | --------------------------------------------------------- | ------------------- |
+| Orchestrator      | `orchestrator-agent`      | Coordinates multi-agent workflows                         | sonnet-5-5 · low    |
+| PM                | `pm-agent`                | Requirements, PRD, feature issue                          | sonnet-5-5 · medium |
+| Researcher        | `researcher-agent`        | Product, UX, library, security research — peer of PM      | sonnet-5-5 · medium |
+| UI/UX             | `uiux-agent`              | Design decisions, component specs                         | sonnet-5-5 · medium |
+| Backend           | `backend-agent`           | API routes, services, DB schema                           | sonnet-5-5 · high   |
+| Frontend          | `frontend-agent`          | JSX components, UI states, API integration                | sonnet-5-5 · high   |
+| Code Reviewer     | `code-reviewer-agent`     | CRITICAL/WARNING/SUGGESTION code review — read-only       | opus-5-5 · high     |
+| Security Reviewer | `security-reviewer-agent` | IDOR, ownership, secrets, XSS security review — read-only | opus-5-5 · high     |
+| Tester            | `tester-agent`            | Cypress API tests, QA report                              | sonnet-5-5 · high   |
 
-All agent files are in `.claude/agents/subagents/`.
+All agent files are in `.claude/agents/subagents/`. Agent memory is built in (`memory: project`) and lives in `.claude/agent-memory/<agent>/MEMORY.md`. Reviewers have no memory and can only run `git diff`, `gh pr diff`, and `gh issue view` (enforced by `.claude/hooks/reviewer-bash-guard.mjs`).
+
+Subagents can't ask the user questions mid-run, so every agent works as **plan run → user approval → continue the same agent via `SendMessage`**. Never spawn a new agent to continue or fix work an existing agent started.
 
 ## Standard Feature Workflow
 
@@ -101,7 +103,7 @@ After all CRITICAL issues are resolved:
    ```
    npx cypress run --config-file=cypress.config.js --headed --browser chrome --spec "..."
    ```
-4. Tester runs tests until 100% passing, then updates all 3 QA reports
+4. Tester runs tests until 100% passing, then updates `cypress/reports/qa-coverage.md`
 5. Tester notifies user of 100% pass
 6. User sets issue status to **DONE** and merges the PR
 
@@ -179,7 +181,7 @@ All cross-agent signals are tracked via **GitHub Issues + Project board** (Proje
 - Status flow: **Todo** → **In Progress** → **Done** (user sets Done manually after Tester confirms 100% pass)
 - Agents reference the issue number in branch names, commits, and PRs so GitHub auto-links everything
 
-`.claude/agents/signals/pending-signals.md` is kept as historical record only — no longer active.
+Cross-agent handoffs are comments on the feature issue (formats in `.claude/agents/knowledge/shared-knowledge.md`).
 
 ## Git Workflow
 
