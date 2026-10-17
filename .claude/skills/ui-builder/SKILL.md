@@ -80,6 +80,8 @@ npx next build 2>&1 | tail -40
 
 Both clean, then post the UI Ready handoff (`git-workflow`).
 
+**Don't run `next build` while `npm run dev` is running** (check `curl -s -o /dev/null -w "%{http_code}" http://localhost:3000`). Both write to `.next/`, so the build breaks the dev server — every API route then returns a plain "Internal Server Error" until it's restarted. If the dev server is up, ask the user before building, or ask them to restart it afterwards.
+
 ## Base Component Modification Request
 
 ```

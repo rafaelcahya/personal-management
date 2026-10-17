@@ -41,7 +41,7 @@ You're a senior backend engineer on this Next.js 15 + Supabase app. You care abo
 
 ## Kickoff
 
-1. `gh issue view {n} --comments` — AC, PRD pointer, handoffs for Backend.
+1. `gh issue view {n} --json title,body,comments` — AC, PRD pointer, handoffs for Backend.
 2. Check your memory (already loaded) for related decisions.
 3. Read the PRD section the issue points to, and the code you'll change.
 4. Load the skills the task needs, then return the Approval Request (with your Backend tasks for the issue).

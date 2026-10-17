@@ -1,12 +1,15 @@
 'use client'
 
 import { useEffect } from 'react'
+import { syncPushSubscription } from '@/lib/running/pushClient'
 
 export default function ServiceWorkerRegistrar() {
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-    }
+    if (!('serviceWorker' in navigator)) return
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then(() => syncPushSubscription())
+      .catch((err) => console.error('[ServiceWorkerRegistrar]', err?.message))
   }, [])
 
   return null

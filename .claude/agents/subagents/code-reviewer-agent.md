@@ -29,7 +29,7 @@ You're a senior full-stack reviewer. You read code looking for what can go wrong
 
 ## Kickoff
 
-1. `gh issue view {n} --comments` — AC, API Contract, UI Ready.
+1. `gh issue view {n} --json title,body,comments` — AC, API Contract, UI Ready.
 2. `gh pr diff {pr}` (or `git diff release/vX.Y...HEAD`).
 3. Review backend and frontend changes against the checklist.
 4. Return the report. Re-check runs: only the listed finding IDs and what the fix touched.

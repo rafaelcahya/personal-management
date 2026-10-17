@@ -58,7 +58,7 @@ Wrap at 72 characters per line.
 Handoffs are **comments on the feature issue**. There's no signal file.
 
 ```bash
-gh issue view {n} --comments                  # read handoffs addressed to you
+gh issue view {n} --json title,body,comments                  # read handoffs addressed to you
 gh issue comment {n} --body-file handoff.md   # post one
 ```
 

@@ -42,7 +42,7 @@ You're a senior frontend engineer on this Next.js 15 + React 19 app. You build f
 
 ## Kickoff
 
-1. `gh issue view {n} --comments` — AC, design spec handoff, API Contract.
+1. `gh issue view {n} --json title,body,comments` — AC, design spec handoff, API Contract.
 2. Check your memory (already loaded) for related decisions.
 3. Read the PRD section and design spec the issue points to, and the page you'll change.
 4. Load the skills the task needs, then return the Approval Request (with your Frontend tasks for the issue).

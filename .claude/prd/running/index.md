@@ -4,42 +4,43 @@
 
 **This module is split into one file per feature.** Read only the file your task needs.
 
-| File                                                       | Covers                                  | Size  |
-| ---------------------------------------------------------- | --------------------------------------- | ----- |
-| [activity-detail.md](./activity-detail.md)                 | 11.3 Activity detail page               | 7 KB  |
-| [ai-insights.md](./ai-insights.md)                         | 10. AI Insight Engine                   | 14 KB |
-| [ai-recommendation-cards.md](./ai-recommendation-cards.md) | 11.5 AI Recommendation Cards            | 1 KB  |
-| [analytics.md](./analytics.md)                             | 11.2 Analytics page                     | 8 KB  |
-| [api-endpoints.md](./api-endpoints.md)                     | 9. API Endpoints                        | 13 KB |
-| [architecture-decisions.md](./architecture-decisions.md)   | 21. Architectural Decisions (final)     | 8 KB  |
-| [background-workers.md](./background-workers.md)           | 15. Background Workers                  | 5 KB  |
-| [dashboard.md](./dashboard.md)                             | 11. Dashboard & Statistics              | 2 KB  |
-| [database-schema.md](./database-schema.md)                 | 8. Database Schema                      | 9 KB  |
-| [derived-metrics.md](./derived-metrics.md)                 | 11.4 Derived Metrics                    | 4 KB  |
-| [encryption.md](./encryption.md)                           | 17. Encryption Strategy                 | 3 KB  |
-| [gear.md](./gear.md)                                       | 12. Gear Management (Shoe Rotation)     | 10 KB |
-| [injury-coach.md](./injury-coach.md)                       | 10.11 Injury & Sports Medicine AI Coach | 14 KB |
-| [metrics-formulas.md](./metrics-formulas.md)               | 14. Computed Metrics Formulas           | 1 KB  |
-| [nfr.md](./nfr.md)                                         | 18. Non-functional Requirements         | 1 KB  |
-| [onboarding.md](./onboarding.md)                           | 4. Onboarding Flow                      | 1 KB  |
-| [overview-scope.md](./overview-scope.md)                   | 3. Integration with Personal Management | 8 KB  |
-| [pace-calculator.md](./pace-calculator.md)                 | 11.6 Pace Calculator page               | 4 KB  |
-| [push-notifications.md](./push-notifications.md)           | 16. Push Notification (PWA)             | 4 KB  |
-| [race-log.md](./race-log.md)                               | 13. Race Log                            | 27 KB |
-| [racing-weight.md](./racing-weight.md)                     | 22. Racing Weight                       | 8 KB  |
-| [route-builder.md](./route-builder.md)                     | 23. Route Builder                       | 17 KB |
-| [route-simulator.md](./route-simulator.md)                 | 24. Route Pacing Simulator              | 18 KB |
-| [settings.md](./settings.md)                               | 11.7 Running Settings page              | 8 KB  |
-| [strava.md](./strava.md)                                   | 5. Strava OAuth Flow                    | 15 KB |
-| [tech-stack.md](./tech-stack.md)                           | 6. Tech Stack                           | 3 KB  |
-| [zone-analytics.md](./zone-analytics.md)                   | 11.2a Zone Analytics — DONE             | 5 KB  |
+| File                                                       | Covers                                                 | Size  |
+| ---------------------------------------------------------- | ------------------------------------------------------ | ----- |
+| [activity-detail.md](./activity-detail.md)                 | 11.3 Activity detail page                              | 7 KB  |
+| [ai-insights.md](./ai-insights.md)                         | 10. AI Insight Engine                                  | 14 KB |
+| [ai-recommendation-cards.md](./ai-recommendation-cards.md) | 11.5 AI Recommendation Cards                           | 1 KB  |
+| [analytics.md](./analytics.md)                             | 11.2 Analytics page                                    | 8 KB  |
+| [api-endpoints.md](./api-endpoints.md)                     | 9. API Endpoints                                       | 13 KB |
+| [architecture-decisions.md](./architecture-decisions.md)   | 21. Architectural Decisions (final)                    | 8 KB  |
+| [background-workers.md](./background-workers.md)           | 15. Background Workers                                 | 5 KB  |
+| [dashboard.md](./dashboard.md)                             | 11. Dashboard & Statistics                             | 2 KB  |
+| [database-schema.md](./database-schema.md)                 | 8. Database Schema                                     | 9 KB  |
+| [derived-metrics.md](./derived-metrics.md)                 | 11.4 Derived Metrics                                   | 4 KB  |
+| [encryption.md](./encryption.md)                           | 17. Encryption Strategy                                | 3 KB  |
+| [gear.md](./gear.md)                                       | 12. Gear Management (Shoe Rotation)                    | 10 KB |
+| [injury-coach.md](./injury-coach.md)                       | 10.11 Injury & Sports Medicine AI Coach                | 14 KB |
+| [metrics-formulas.md](./metrics-formulas.md)               | 14. Computed Metrics Formulas                          | 1 KB  |
+| [nfr.md](./nfr.md)                                         | 18. Non-functional Requirements                        | 1 KB  |
+| [onboarding.md](./onboarding.md)                           | 4. Onboarding Flow                                     | 1 KB  |
+| [overview-scope.md](./overview-scope.md)                   | 3. Integration with Personal Management                | 8 KB  |
+| [pace-calculator.md](./pace-calculator.md)                 | 11.6 Pace Calculator page                              | 4 KB  |
+| [push-notifications.md](./push-notifications.md)           | 16. Push Notification (PWA)                            | 4 KB  |
+| [race-log.md](./race-log.md)                               | 13. Race Log                                           | 27 KB |
+| [racing-weight.md](./racing-weight.md)                     | 22. Racing Weight                                      | 8 KB  |
+| [route-builder.md](./route-builder.md)                     | 23. Route Builder                                      | 17 KB |
+| [route-simulator.md](./route-simulator.md)                 | 24. Route Pacing Simulator                             | 18 KB |
+| [settings.md](./settings.md)                               | 11.7 Running Settings page                             | 8 KB  |
+| [strava.md](./strava.md)                                   | 5. Strava OAuth Flow                                   | 15 KB |
+| [tech-stack.md](./tech-stack.md)                           | 6. Tech Stack                                          | 3 KB  |
+| [version-history.md](./version-history.md)                 | Version history (read only when you need past changes) | 1 KB  |
+| [zone-analytics.md](./zone-analytics.md)                   | 11.2a Zone Analytics — DONE                            | 5 KB  |
 
 <!-- files:end -->
 
 ## Personal Running & Health Performance Platform
 
-**Version:** 3.3
-**Last Updated:** 2026-09-27
+**Version:** 3.4
+**Last Updated:** 2026-10-17
 **Owner:** Rafael Cahya
 **Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · Base Components · Claude AI (Sonnet 4.6) · Strava API
 
