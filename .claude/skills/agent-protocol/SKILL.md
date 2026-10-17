@@ -1,6 +1,6 @@
 ---
 name: agent-protocol
-description: Working rules every project agent follows — the plan-then-continue approval flow, how to read context cheaply (issue first, PRD by section, grep app-constants), memory proposals, the ~15-line final report, comment rules, and the global Definition of Done. Use at the start of every agent task in this repo.
+description: Working rules every project agent follows — the plan-then-continue approval flow, how to read context cheaply (issue first, one PRD feature file, grep app-constants), memory proposals, the ~15-line final report, comment rules, and the global Definition of Done. Use at the start of every agent task in this repo.
 ---
 
 # Agent Protocol
@@ -37,14 +37,14 @@ Proceed? (yes / no / revise)
 
 Every spawn already costs ~22K tokens before any work. Don't add to it by reading more than the task needs.
 
-| Source                                        | How to read it                                                                                                                                             |
-| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GitHub issue                                  | Your task brief. `gh issue view {n} --comments` (AC, tasks, PRD pointers, handoff comments). No Bash? The caller pastes it into your brief                 |
-| PRD files (15–221 KB)                         | Grep the heading the issue points to, then Read with `offset`/`limit`. Never Read a whole PRD file. Never read `PRD_Personal_Management.md` (history only) |
-| `cypress/fixtures/app-constants.json` (66 KB) | Grep the key you need. Never Read the whole file                                                                                                           |
-| Skills                                        | Load a skill only when the task needs it. Inside a skill, open `references/` files only when the step calls for them                                       |
-| Command output                                | Look at errors and summaries only (`... 2>&1 \| tail -40`)                                                                                                 |
-| Codebase                                      | Grep/Glob first, then Read the specific file. Don't scan whole modules "for context"                                                                       |
+| Source                                              | How to read it                                                                                                                                                                                         |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| GitHub issue                                        | Your task brief. `gh issue view {n} --comments` (AC, tasks, PRD pointers, handoff comments). No Bash? The caller pastes it into your brief                                                             |
+| PRD (`.claude/prd/{module}/`, one file per feature) | Read the file(s) the issue points to. No pointer? Open the module `index.md` and pick the feature file. Skip `version-history.md`; never read the old `PRD_*.md` stubs or `PRD_Personal_Management.md` |
+| `cypress/fixtures/app-constants.json` (66 KB)       | Grep the key you need. Never Read the whole file                                                                                                                                                       |
+| Skills                                              | Load a skill only when the task needs it. Inside a skill, open `references/` files only when the step calls for them                                                                                   |
+| Command output                                      | Look at errors and summaries only (`... 2>&1 \| tail -40`)                                                                                                                                             |
+| Codebase                                            | Grep/Glob first, then Read the specific file. Don't scan whole modules "for context"                                                                                                                   |
 
 Project layout: [references/project-map.md](references/project-map.md).
 

@@ -65,7 +65,7 @@ Expected: [behavior the test should be able to assert]
 
 ```
 🎨 UX Gap — UI/UX → PM
-PRD section: [file + heading]
+PRD file: .claude/prd/{module}/{feature}.md
 Gap: [what the spec would produce that hurts UX]
 Proposal: [alternative]
 ```

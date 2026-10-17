@@ -10,7 +10,7 @@ Decisions and gotchas only — stable rules live in the agent file and skills. N
 - 2026-06-20: Nullable aggregate fields (e.g. `ref_band`) — guard with an early return + `cy.log()` before asserting shape. For boxplot data, assert `min <= q1 <= median <= q3 <= max` in one `it()` loop, and cross-check counts (`runs.length === summary.hr_run_count`).
 - 2026-06-20: Parallel blocks (pagi/sore) — test both in one `it()` with `[a, b].forEach(...)`, plus cross-block invariants (`pagi.count + sore.count === total_runs`).
 - 2026-05-07: Cypress can't load `.yaml` fixtures — tests use `app-constants.json`. The `.yaml` is for humans; always update both.
-- 2026-05-07: Reports — propose the report in your plan before writing it; app version comes from the `Version:` header in `.claude/prd/PRD_Shared.md`; `cypress/reports/qa-coverage.md` is cumulative (update/append, never overwrite).
+- 2026-05-07: Reports — propose the report in your plan before writing it; app version comes from the `Version:` header in `.claude/prd/shared/index.md`; `cypress/reports/qa-coverage.md` is cumulative (update/append, never overwrite).
 
 ## Known Flaky / Blocked Tests (verify before relying on these — last checked 2026-05-13)
 

@@ -7,16 +7,24 @@ description: Write or update the PRD files in .claude/prd/ for this repo — whe
 
 ## Files (PM owns all of them)
 
-| File                                 | Covers                                                           |
-| ------------------------------------ | ---------------------------------------------------------------- |
-| `.claude/prd/PRD_Shared.md`          | API standards, UI/UX standards, DB tables, NFRs, product version |
-| `.claude/prd/PRD_Inventory.md`       | Inventory (section 3.1)                                          |
-| `.claude/prd/PRD_Trading.md`         | Trading (section 3.2)                                            |
-| `.claude/prd/PRD_Auth.md`            | Auth + User Settings (sections 3.3–3.4)                          |
-| `.claude/prd/PRD_Running_Tracker.md` | Running Tracker + AI Coach (own numbering)                       |
-| `PRD_Personal_Management.md`         | Legacy — history only, never edit                                |
+One folder per module, **one file per feature**. Each folder has an `index.md` (title, `**Version:**`, file list) and a `version-history.md`. Start from [.claude/prd/README.md](../../prd/README.md).
 
-These files are large (15–221 KB). Read by section: Grep the heading, then Read with `offset`/`limit`.
+| Folder                   | Covers                                                           |
+| ------------------------ | ---------------------------------------------------------------- |
+| `.claude/prd/shared/`    | API standards, UI/UX standards, DB tables, NFRs, product version |
+| `.claude/prd/inventory/` | Inventory (section 3.1)                                          |
+| `.claude/prd/trading/`   | Trading (section 3.2)                                            |
+| `.claude/prd/auth/`      | Auth + User Settings (sections 3.3–3.4)                          |
+| `.claude/prd/running/`   | Running Tracker + AI Coach (own numbering)                       |
+
+- `PRD_Personal_Management.md` — legacy, history only, never edit. The other `PRD_*.md` files are stubs that map old sections to the new files; never write in them.
+- Read only the feature file you're changing (plus the module `index.md` when you bump the version). Skip `version-history.md` unless you need past changes.
+
+## Adding a feature
+
+- New feature → a new file in the module folder, named in kebab-case after the feature (`route-simulator.md`), starting with its numbered heading. Add it to the file table between the `<!-- files:start -->` / `<!-- files:end -->` markers in the module's `index.md`.
+- Change to an existing feature → edit its file only.
+- A feature that clearly belongs to a sub-area of a large file may get its own file — move the whole numbered section, keep the number, and update `index.md`.
 
 ## Writing style (user rule)
 
@@ -34,17 +42,17 @@ User stories: "As a [user], I want to [action], so that [benefit]" — the benef
 
 - Follow the numbering already in the file; add new features at the end of the module's section with the next number (3.1.6 → 3.1.7; sub-flows 3.1.1 D → 3.1.1 E).
 - **Never renumber** existing sections — issues, commits, and other PRDs refer to them.
-- A feature touching two modules lives in the primary module's file; the other file links to it ("Auth rules for this: see PRD_Auth.md section 3.3.0").
+- A feature touching two modules lives in the primary module's file; the other file links to it ("Auth rules for this: see `auth/authentication.md`, section 3.3.0").
 
 ## Versions
 
-- Every significant change bumps the file's header (`**Version:** 3.3` → `3.4`, `**Last Updated:**`) and adds a row to that file's **Version History** table at the bottom:
+- Every significant change bumps the **module's** `index.md` header (`**Version:** 3.3` → `3.4`, `**Last Updated:**`) and adds a row to the module's `version-history.md`:
 
   ```markdown
   | 3.4 | 2026-10-17 | PM Agent | Added route pacing simulator (section 14.2); updated rate limits (section 5.5) |
   ```
 
-- PRD version ≠ product release. Releases (v1.33…) live in each PRD's **Product Release Plan** and as GitHub milestones.
+- PRD version ≠ product release. Releases (v1.33…) live in each module's **Product Release Plan** (in `index.md` for shared and running) and as GitHub milestones.
 
 ## Deprecation
 
@@ -71,4 +79,4 @@ Impact: High = core flow, Med = noticeable friction, Low = cosmetic. Effort: Low
 
 ## After the PRD change
 
-Create the feature issue (`github-issue-create`) with pointers to the exact sections, or — when agents are already working — post a PRD Change Impact comment (`git-workflow`).
+Create the feature issue (`github-issue-create`) with the exact PRD file path(s), or — when agents are already working — post a PRD Change Impact comment (`git-workflow`).

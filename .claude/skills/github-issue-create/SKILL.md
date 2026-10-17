@@ -1,6 +1,6 @@
 ---
 name: github-issue-create
-description: Create the single GitHub issue for a feature or fix in this repo — the required template, PRD section pointers, labels, milestone, Project #3 fields, safe body editing, and the summary table shown to the user afterwards. Use when PM (or the main session) needs to open a new issue.
+description: Create the single GitHub issue for a feature or fix in this repo — the required template, PRD file pointers, labels, milestone, Project 3 fields, safe body editing, and the summary table shown to the user afterwards. Use when PM (or the main session) needs to open a new issue.
 ---
 
 # GitHub Issue Create
@@ -42,12 +42,12 @@ As a [persona], I want [goal] so that [reason].
 
 ## 📝 Notes
 
-PRD: `.claude/prd/[file]` → "[heading]" (read only this section)
+PRD: `.claude/prd/{module}/{feature}.md` (read only this file)
 Design spec: `.claude/design/[file]` (if any)
 [Technical decisions, edge cases, constraints]
 ```
 
-PM fills User Story, Description, Acceptance Criteria, Notes. Backend, Frontend, and Tester fill their own Tasks later. **The PRD pointer in Notes is required** — it's how agents avoid reading a whole PRD.
+PM fills User Story, Description, Acceptance Criteria, Notes. Backend, Frontend, and Tester fill their own Tasks later. **The PRD file pointer in Notes is required** — it's how agents know which single file to read.
 
 ## Create it
 

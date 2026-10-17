@@ -1,6 +1,6 @@
 ---
 name: git-workflow
-description: GitHub and git rules for this repo — one issue per feature on Project #3, writing your task list into the issue before coding, the shared feat/fix branch from release/vX.Y, 50/72 commit messages, PRs with Closes #n, status flow, and posting cross-agent handoff comments. Use whenever you touch the issue, branch, commits, PR, or need to hand off to another agent.
+description: GitHub and git rules for this repo — one issue per feature on Project 3, writing your task list into the issue before coding, the shared feat/fix branch from release/vX.Y, 50/72 commit messages, PRs with the Closes keyword, status flow, and posting cross-agent handoff comments. Use whenever you touch the issue, branch, commits, PR, or need to hand off to another agent.
 ---
 
 # Git Workflow (v2)
