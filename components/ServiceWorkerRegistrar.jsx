@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { syncPushSubscription } from '@/lib/running/pushClient'
+import { syncPushSubscription } from '@/lib/push/pushClient'
 
 export default function ServiceWorkerRegistrar() {
   useEffect(() => {

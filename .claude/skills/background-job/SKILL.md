@@ -64,6 +64,14 @@ Scheduled job: `triggers: [{ cron: '0 8 * * *' }]` (see `raceReminderNotificatio
 - Return a small summary object (`{ skipped: true, reason }`, `{ done: true, count }`) — it shows in the Inngest dashboard.
 - `retries: 2` is the project default.
 
+## Notifying the user
+
+Always use `notify(admin, { userId, type, title, message, data })` from `lib/services/notifications/notify.js`. It saves the in-app notification and pushes to every device the user subscribed, honoring their per-type preference, and a push failure never throws or removes the in-app row. Never call `createNotification` or the push sender directly, and never read push settings in a job.
+
+- Put it in its own `step.run('notify', ...)`; return its result.
+- `data.url` is where the notification opens — always set it.
+- A new notification type needs a migration for `notifications_type_check` **and** `notification_preferences_type_check`, plus entries in `lib/constants/notificationTypes.js` (`NOTIFICATION_TYPES`, `NOTIFICATION_MODULE`, `NOTIFICATION_LABEL`).
+
 ## Firing an event from a route
 
 ```js
