@@ -54,7 +54,7 @@ This project uses 8 specialized agents + 1 orchestrator. Each agent has isolated
 | Security Reviewer | `security-reviewer-agent` | IDOR, ownership, secrets, XSS security review — read-only | opus-5-5 · high     |
 | Tester            | `tester-agent`            | Cypress API tests, QA report                              | sonnet-5-5 · high   |
 
-All agent files are in `.claude/agents/subagents/`. Agent memory is built in (`memory: project`) and lives in `.claude/agent-memory/<agent>/MEMORY.md`. Reviewers have no memory and can only run `git diff`, `gh pr diff`, and `gh issue view` (enforced by `.claude/hooks/reviewer-bash-guard.mjs`).
+All agent files are in `.claude/agents/subagents/`. Each agent preloads its core skills (`skills:` in frontmatter) and loads the rest on demand from `.claude/skills/`. Agent memory is built in (`memory: project`) and lives in `.claude/agent-memory/<agent>/MEMORY.md`. Reviewers have no memory and can only run `git diff`, `gh pr diff`, and `gh issue view` (enforced by `.claude/hooks/reviewer-bash-guard.mjs`).
 
 Subagents can't ask the user questions mid-run, so every agent works as **plan run → user approval → continue the same agent via `SendMessage`**. Never spawn a new agent to continue or fix work an existing agent started.
 
@@ -181,7 +181,7 @@ All cross-agent signals are tracked via **GitHub Issues + Project board** (Proje
 - Status flow: **Todo** → **In Progress** → **Done** (user sets Done manually after Tester confirms 100% pass)
 - Agents reference the issue number in branch names, commits, and PRs so GitHub auto-links everything
 
-Cross-agent handoffs are comments on the feature issue (formats in `.claude/agents/knowledge/shared-knowledge.md`).
+Cross-agent handoffs are comments on the feature issue (formats in the `git-workflow` skill → `references/handoff-formats.md`).
 
 ## Git Workflow
 
