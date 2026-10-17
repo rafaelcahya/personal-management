@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-09-10 (unified home dashboard #821 — API test coverage)
-**Branch:** feat/issue-821-unified-home-dashboard
+**Last Updated:** 2026-10-17 (push delivery status + test push #855 — API test coverage)
+**Branch:** fix/issue-855-push-delivery
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,682  | 52%  |
+| API       | 1,694  | 52%  |
 | UI        | 1,551  | 48%  |
-| **Total** | **3,233** | 100% |
+| **Total** | **3,245** | 100% |
 
 ---
 
@@ -22,12 +22,12 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 485   | 695   | 1,180 |
+| Running Tracker      | 497   | 695   | 1,192 |
 | Notifications        | 38    | 0     | 38    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,682** | **1,551** | **3,233** |
+| **Total**            | **1,694** | **1,551** | **3,245** |
 
 ---
 
@@ -332,11 +332,11 @@
 | Feature                  | API | UI | Total |
 | ------------------------ | --- | -- | ----- |
 | HR Zones                 | 20  | 0  | 20    |
-| Settings                 | 27  | 21 | 48    |
+| Settings                 | 39  | 21 | 60    |
 | Threshold Pace Detect    | 6   | 0  | 6     |
-| **Subtotal**             | **53** | **21** | **74** |
+| **Subtotal**             | **65** | **21** | **86** |
 
-**Running Total — API: 485 | UI: 695 | Total: 1,180**
+**Running Total — API: 497 | UI: 695 | Total: 1,192**
 
 > **Streak Counter (#820)** — `cypress/e2e/running/dashboard/dashboard-api.cy.js` (11 API tests, all passing).
 > Weekly streak folded into `GET /dashboard`. Covers the `streak` object shape/keys, integer & boolean field types, `unit === 'week'`, the `best_weeks >= current_weeks` invariant, at-risk logic (only with a live streak in the last 2 days, mutually exclusive with `active_this_week`), streak being identical across activity-type filters (habit metric ignores type), and invalid `tz_offset` fallback. Data-independent assertions — no seeding required.
@@ -402,9 +402,9 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 485   | 695   | 1,180 |
+| Running Tracker      | 497   | 695   | 1,192 |
 | Notifications        | 38    | 0     | 38    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,682** | **1,551** | **3,233** |
+| **Total**            | **1,694** | **1,551** | **3,245** |

@@ -30,7 +30,7 @@ You're a senior application security engineer. You think like an attacker: how c
 
 ## Kickoff
 
-1. `gh issue view {n} --comments` — the Code Reviewer's report (skip its findings), API Contract, UI Ready.
+1. `gh issue view {n} --json title,body,comments` — the Code Reviewer's report (skip its findings), API Contract, UI Ready.
 2. `gh pr diff {pr}` — find new/changed routes, services, middleware, env usage, rendered content.
 3. Trace each ID from route to query; run both checklists.
 4. Return the report. CRITICALs include the attack scenario.

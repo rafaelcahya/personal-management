@@ -12,7 +12,15 @@ import Card, {
 } from '@/components/base/Card/Card'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { Switch } from '@/components/base/Switch/Switch'
-import { getUserSettings, updateUserSettings, savePushSubscription } from '@/lib/api/running'
+import { getUserSettings, updateUserSettings, getPushStatus, sendTestPush } from '@/lib/api/running'
+import {
+  isPushSupported,
+  getPermission,
+  getCurrentSubscription,
+  subscribeThisDevice,
+  unsubscribeThisDevice,
+} from '@/lib/running/pushClient'
+import PushStatusPanel, { errorText } from './PushStatusPanel'
 
 const TOGGLES = [
   {
@@ -47,13 +55,6 @@ const TOGGLES = [
   },
 ]
 
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
-  const rawData = window.atob(base64)
-  return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0)))
-}
-
 export default function NotificationsSection() {
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(null)
@@ -69,12 +70,34 @@ export default function NotificationsSection() {
   const [pushError, setPushError] = useState(null)
   const [toggleError, setToggleError] = useState(null)
   const [swSupported, setSwSupported] = useState(false)
+  const [permission, setPermission] = useState('default')
+  const [pushStatus, setPushStatus] = useState(null)
+  const [deviceEndpoint, setDeviceEndpoint] = useState(null)
+  const [testing, setTesting] = useState(false)
+  const [testResult, setTestResult] = useState(null)
+  const [statusLoading, setStatusLoading] = useState(true)
+  const [statusError, setStatusError] = useState(false)
+
+  const refreshPushStatus = useCallback(async () => {
+    setPermission(getPermission())
+    setStatusError(false)
+    try {
+      const [status, current] = await Promise.all([getPushStatus(), getCurrentSubscription()])
+      setPushStatus(status)
+      setPushEnabled(status.enabled)
+      setDeviceEndpoint(current?.endpoint ?? null)
+    } catch {
+      setPushStatus(null)
+      setStatusError(true)
+    } finally {
+      setStatusLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    setSwSupported(
-      typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window
-    )
-  }, [])
+    setSwSupported(isPushSupported())
+    refreshPushStatus()
+  }, [refreshPushStatus])
 
   useEffect(() => {
     let cancelled = false
@@ -103,61 +126,54 @@ export default function NotificationsSection() {
     }
   }, [])
 
-  const registerServiceWorker = useCallback(async () => {
-    if (!swSupported) return null
-    const registration = await navigator.serviceWorker.register('/sw.js')
-    await navigator.serviceWorker.ready
-    return registration
-  }, [swSupported])
-
   async function handlePushToggle(newValue) {
     setPushPending(true)
     setPushError(null)
+    setTestResult(null)
 
     try {
       if (newValue) {
-        const permission = await Notification.requestPermission()
-        if (permission !== 'granted') {
+        const result = await Notification.requestPermission()
+        if (result !== 'granted') {
           setPushError('Permission denied. Please allow notifications in your browser settings.')
-          setPushPending(false)
           return
         }
-
-        const registration = await registerServiceWorker()
-        if (!registration) {
-          setPushError('Push notifications are not supported in this browser.')
-          setPushPending(false)
-          return
-        }
-
-        const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
-        if (!vapidKey) {
-          setPushError('Push notifications are not configured.')
-          setPushPending(false)
-          return
-        }
-
-        const subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(vapidKey),
-        })
-
-        await savePushSubscription(subscription.toJSON())
+        await subscribeThisDevice({ fresh: true })
         setPushEnabled(true)
       } else {
-        // Unsubscribe from PushManager if subscribed
-        if ('serviceWorker' in navigator) {
-          const registration = await navigator.serviceWorker.ready
-          const existing = await registration.pushManager.getSubscription()
-          if (existing) await existing.unsubscribe()
-        }
-        await savePushSubscription(null)
+        await unsubscribeThisDevice()
         setPushEnabled(false)
       }
     } catch (err) {
       setPushError(err.message || 'Failed to update push notification setting.')
     } finally {
       setPushPending(false)
+      refreshPushStatus()
+    }
+  }
+
+  async function handleTestPush() {
+    setTesting(true)
+    setTestResult(null)
+    try {
+      const current = await getCurrentSubscription()
+      if (!current) throw new Error('This browser has no push subscription. Turn push on again.')
+      const result = await sendTestPush(current.endpoint)
+      setTestResult(
+        result.sent
+          ? { ok: true, message: 'Sent — it should appear within a few seconds.' }
+          : {
+              ok: false,
+              message: result.expired
+                ? 'The subscription expired. Turn push on again.'
+                : `The test failed: ${errorText(result.error)}.`,
+            }
+      )
+    } catch (err) {
+      setTestResult({ ok: false, message: err.message || 'Failed to send test notification' })
+    } finally {
+      setTesting(false)
+      refreshPushStatus()
     }
   }
 
@@ -239,7 +255,21 @@ export default function NotificationsSection() {
                   className="shrink-0 mt-0.5"
                 />
               </div>
+            </div>
 
+            <PushStatusPanel
+              permission={permission}
+              status={pushStatus}
+              loading={statusLoading}
+              error={statusError}
+              onRetry={refreshPushStatus}
+              deviceEndpoint={deviceEndpoint}
+              onTest={handleTestPush}
+              testing={testing}
+              testResult={testResult}
+            />
+
+            <div className="px-5 flex flex-col divide-y divide-slate-100">
               {/* Per-notification toggles */}
               {TOGGLES.map((toggle, i) => (
                 <div

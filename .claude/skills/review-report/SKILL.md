@@ -8,7 +8,7 @@ description: How Code Reviewer and Security Reviewer review a change in this rep
 ## Read the diff, not the repo
 
 ```bash
-gh issue view {n} --comments          # AC + API Contract + UI Ready + earlier review reports
+gh issue view {n} --json title,body,comments          # AC + API Contract + UI Ready + earlier review reports
 gh pr diff {pr}                        # or: git diff release/vX.Y...HEAD
 git diff --stat release/vX.Y...HEAD    # list of changed files
 ```
