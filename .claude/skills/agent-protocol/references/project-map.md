@@ -39,7 +39,7 @@ cypress/
 └── reports/qa-coverage.md                   QA report (cumulative)
 
 .claude/
-├── prd/                                     PRD files (PM owns)
+├── prd/{shared,inventory,trading,auth,running}/  PRD, one file per feature + index.md (PM owns)
 ├── design/                                  UI/UX specs
 ├── research/                                Researcher reports
 ├── agents/subagents/                        agent definitions

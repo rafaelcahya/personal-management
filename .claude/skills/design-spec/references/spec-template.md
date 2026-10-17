@@ -5,7 +5,7 @@
 
 **Date:** YYYY-MM-DD
 **Issue:** #n
-**PRD:** [file + heading]
+**PRD:** `.claude/prd/{module}/{feature}.md`
 **Module:** Running | Trading | Inventory | Auth | Shared
 
 ## 1. [Section / Component name]

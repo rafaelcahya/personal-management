@@ -33,7 +33,7 @@ The report is **cumulative** — update or add rows, never rewrite it from scrat
 1. Header: set `**Last Updated:** YYYY-MM-DD (feature #n — what was covered)` and `**Branch:**`.
 2. **Detailed Breakdown** → the module's section: add or update the row for your spec (file, endpoint(s), test count).
 3. Recalculate **Module Overview** and **Summary** totals and percentages from the rows you changed.
-4. App version, when the report asks for it, comes from the `Version:` header in `.claude/prd/PRD_Shared.md`.
+4. App version, when the report asks for it, comes from the `Version:` header in `.claude/prd/shared/index.md`.
 
 Put the report change in your plan run first (which rows change) — it's a shared file.
 

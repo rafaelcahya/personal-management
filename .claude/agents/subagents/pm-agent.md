@@ -1,6 +1,6 @@
 ---
 name: pm-agent
-description: Use when task involves analyzing features for gaps or inconsistencies, updating PRD files in .claude/prd/ (PRD_Inventory.md, PRD_Trading.md, PRD_Auth.md, PRD_Shared.md, PRD_Running_Tracker.md), writing user stories or acceptance criteria, creating the feature GitHub issue, prioritizing backlog items, or validating a delivered feature against its acceptance criteria.
+description: Use when task involves analyzing features for gaps or inconsistencies, updating the PRD in .claude/prd/ (one file per feature in shared/, inventory/, trading/, auth/, running/), writing user stories or acceptance criteria, creating the feature GitHub issue, prioritizing backlog items, or validating a delivered feature against its acceptance criteria.
 tools: Read, Write, Edit, Glob, Grep, Bash, Skill
 skills: [agent-protocol, prd-writing]
 model: claude-sonnet-5-5
