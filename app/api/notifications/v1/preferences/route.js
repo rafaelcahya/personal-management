@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { savePushSubscription } from '@/lib/services/running/notifications/pushSubscriptionService'
-import { getPushStatus } from '@/lib/services/running/notifications/getPushStatus'
-import { savePushSubscriptionSchema } from '@/schemas/pushNotification'
+import { getNotificationPreferences } from '@/lib/services/notifications/getNotificationPreferences'
+import { updateNotificationPreference } from '@/lib/services/notifications/updateNotificationPreference'
+import { updatePreferenceSchema } from '@/schemas/pushNotification'
 
 export async function GET() {
   try {
@@ -11,7 +11,6 @@ export async function GET() {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser()
-
     if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized', message: 'Authentication required' },
@@ -19,10 +18,10 @@ export async function GET() {
       )
     }
 
-    const status = await getPushStatus(supabase, user.id)
-    return NextResponse.json({ data: status, message: 'OK' }, { status: 200 })
+    const preferences = await getNotificationPreferences(supabase, user.id)
+    return NextResponse.json({ data: preferences, message: 'OK' }, { status: 200 })
   } catch (err) {
-    console.error('[running/user/push-subscription GET]', err)
+    console.error('[notifications/preferences GET]', err)
     return NextResponse.json(
       { error: 'Internal server error', message: 'Something went wrong' },
       { status: 500 }
@@ -30,14 +29,13 @@ export async function GET() {
   }
 }
 
-export async function POST(request) {
+export async function PATCH(request) {
   try {
     const supabase = await createClient()
     const {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser()
-
     if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized', message: 'Authentication required' },
@@ -50,31 +48,23 @@ export async function POST(request) {
       body = await request.json()
     } catch {
       return NextResponse.json(
-        { error: 'Bad request', message: 'Invalid JSON body' },
+        { error: 'Validation failed', message: 'Invalid JSON in request body' },
         { status: 400 }
       )
     }
 
-    const parsed = savePushSubscriptionSchema.safeParse(body)
+    const parsed = updatePreferenceSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', message: parsed.error.issues[0].message },
         { status: 400 }
       )
     }
-    const subscription = parsed.data.subscription
 
-    const result = await savePushSubscription(supabase, user.id, subscription ?? null)
-
-    return NextResponse.json(
-      {
-        data: { ...result, user_id: user.id },
-        message: subscription ? 'Push subscription saved' : 'Push subscription cleared',
-      },
-      { status: 200 }
-    )
+    const preference = await updateNotificationPreference(supabase, user.id, parsed.data)
+    return NextResponse.json({ data: preference, message: 'Preference updated' }, { status: 200 })
   } catch (err) {
-    console.error('[running/user/push-subscription POST]', err)
+    console.error('[notifications/preferences PATCH]', err)
     return NextResponse.json(
       { error: 'Internal server error', message: 'Something went wrong' },
       { status: 500 }

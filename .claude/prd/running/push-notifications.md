@@ -110,17 +110,12 @@ self.addEventListener('notificationclick', (event) => {
 
 Push used to fail silently: the notification showed up in the list, but nobody could tell whether the push reached a device. Now:
 
-- **Settings → Notifications shows the real state** for the browser you're on: permission (allowed / blocked / not asked), whether _this_ device is the subscribed one or another device is, the last delivered push, and the last problem.
+- **The notification section on Settings shows the real state** for the browser you're on: permission (allowed / blocked / not asked), whether _this_ device is the subscribed one or another device is, the last delivered push, and the last problem.
 - **Send test notification** sends a push to this device and shows the result. It only works from the subscribed device.
 - **Re-sync on app load.** On a device where you turned push on, opening the app checks the browser's current subscription and saves it if it changed. If push was switched off because the subscription expired, it re-subscribes; if you turned it off yourself, it leaves it off.
 - **Delivery log.** Every push attempt is stored in `push_delivery_log` (source, sent / expired / failed, HTTP status, error). Missing VAPID env vars are recorded as a failure instead of crashing the job.
 - **Safety.** Only real browser push services are accepted as a subscription endpoint (FCM, Mozilla, Windows, Apple), over HTTPS. The log and the status API keep fixed error codes only (never raw text from the push service). The test endpoint is limited to 15 per 10 minutes, and log rows older than 30 days are deleted daily (a device whose subscription expired and stays closed for 30+ days loses the expiry record, so it won't re-subscribe by itself — turn push on again there).
 - **Whose device is it.** The browser remembers which account and endpoint it subscribed. Opening the app never takes over a subscription that belongs to another device or another account; it only saves a rotated endpoint, or re-subscribes after _this_ device's subscription expired.
-- Still one device at a time — the most recently opened opted-in device receives pushes. Multi-device comes with the shared notification system (#856).
-
-| Method | Path                                        | Notes                                                                                                                  |
-| ------ | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| GET    | /api/running/v1/user/push-subscription      | `{ enabled, endpoint, last_success, last_failure }`                                                                    |
-| POST   | /api/running/v1/user/push-subscription/test | body `{ endpoint }` — 404 nothing subscribed, 409 not the subscribed device, 200 with `{ sent, expired, status_code }` |
+- **Moved in v1.33 (#856).** Push now supports several devices, and the device list, test button, and per-type switches live on the **Settings** page, under Profile — see `shared/notifications.md` (section 10). The endpoints below were replaced by `/api/notifications/v1/push-subscriptions` and `/api/notifications/v1/preferences`; the status text above now appears there.
 
 ---

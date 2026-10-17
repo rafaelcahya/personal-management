@@ -39,7 +39,7 @@
 
 ## Personal Running & Health Performance Platform
 
-**Version:** 3.4
+**Version:** 3.5
 **Last Updated:** 2026-10-17
 **Owner:** Rafael Cahya
 **Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · Base Components · Claude AI (Sonnet 4.6) · Strava API
