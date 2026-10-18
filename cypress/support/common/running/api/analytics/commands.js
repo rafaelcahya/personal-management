@@ -12,6 +12,8 @@ const PMC = constants.endpoints.running_analytics.pmc
 const SESSION_PROFILE = constants.endpoints.running_analytics.session_profile
 const TEMPERATURE_EFFICIENCY = constants.endpoints.running_analytics.temperature_efficiency
 const VO2MAX_TARGET = constants.endpoints.running_analytics.vo2max_target
+const ACTIVITY_SERIES = constants.endpoints.running_analytics.activity_series
+const ANALYTICS_OVERVIEW = constants.endpoints.running_analytics.overview
 
 Cypress.Commands.add('getTargetEffort', (qs = {}) => {
   return cy.apiRequestWithSession('GET', TARGET_EFFORT, { qs })
@@ -117,4 +119,20 @@ Cypress.Commands.add('putVo2maxTarget', (body) => {
 
 Cypress.Commands.add('putVo2maxTargetNoAuth', (body) => {
   return cy.apiRequestNoAuth('PUT', VO2MAX_TARGET, { body })
+})
+
+Cypress.Commands.add('getActivitySeries', () => {
+  return cy.apiRequestWithSession('GET', ACTIVITY_SERIES)
+})
+
+Cypress.Commands.add('getActivitySeriesNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', ACTIVITY_SERIES)
+})
+
+Cypress.Commands.add('getAnalyticsOverview', () => {
+  return cy.apiRequestWithSession('GET', ANALYTICS_OVERVIEW)
+})
+
+Cypress.Commands.add('getAnalyticsOverviewNoAuth', () => {
+  return cy.apiRequestNoAuth('GET', ANALYTICS_OVERVIEW)
 })

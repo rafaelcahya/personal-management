@@ -21,3 +21,23 @@ Cypress.Commands.add('getActivityIdWithSplitsFromDb', () => {
     return cy.task('getActivityIdWithSplitsFromDb', { userId })
   })
 })
+
+const ANALYTICS_SEED_TAG = 'cy842'
+
+Cypress.Commands.add('seedAnalyticsActivitiesInDb', (count) => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('seedAnalyticsActivitiesInDb', { userId, tag: ANALYTICS_SEED_TAG, count })
+  })
+})
+
+Cypress.Commands.add('deleteSeededAnalyticsActivitiesFromDb', () => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('deleteSeededAnalyticsActivitiesFromDb', { userId, tag: ANALYTICS_SEED_TAG })
+  })
+})
+
+Cypress.Commands.add('getSeededAnalyticsActivitiesFromDb', () => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('getSeededAnalyticsActivitiesFromDb', { userId, tag: ANALYTICS_SEED_TAG })
+  })
+})

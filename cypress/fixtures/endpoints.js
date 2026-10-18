@@ -158,6 +158,8 @@ export const RUNNING_ENDPOINTS = {
   USER_ACTIVITIES: '/api/running/v1/user/activities',
   STRAVA_DISCONNECT: '/api/running/v1/auth/strava/disconnect',
   TARGET_EFFORT: '/api/running/v1/analytics/target-effort',
+  ANALYTICS_ACTIVITY_SERIES: '/api/running/v1/analytics/activity-series',
+  ANALYTICS_OVERVIEW: '/api/running/v1/analytics/overview',
 
   // Injury AI coach endpoints (issue #160)
   SYMPTOMS: '/api/running/v1/symptoms',

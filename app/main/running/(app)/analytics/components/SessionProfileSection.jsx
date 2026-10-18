@@ -1,6 +1,5 @@
 ﻿'use client'
 
-import { useState, useEffect } from 'react'
 import { Clock } from 'lucide-react'
 import {
   BarChart,
@@ -21,7 +20,6 @@ import Card, {
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
-import { fetchSessionProfile } from '@/lib/api/running'
 
 const MORNING_COLOR = '#f59e0b'
 const EVENING_COLOR = 'var(--color-violet-500)'
@@ -40,12 +38,12 @@ function fmtDuration(min) {
 
 function StatRow({ label, pagi, sore }) {
   return (
-    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-2 border-b border-slate-100 last:border-0">
-      <span className="text-xs text-slate-700 font-medium text-right">{pagi}</span>
-      <span className="text-[10px] text-slate-400 uppercase tracking-wide text-center w-24 shrink-0">
+    <div className="grid grid-cols-2 sm:grid-cols-[1fr_auto_1fr] items-center gap-x-2 gap-y-0.5 py-2 border-b border-slate-100 last:border-0">
+      <span className="text-xs text-slate-700 font-medium text-center sm:text-right">{pagi}</span>
+      <span className="order-first col-span-2 sm:order-none sm:col-span-1 text-[11px] text-slate-400 uppercase tracking-wide text-center sm:w-24 shrink-0">
         {label}
       </span>
-      <span className="text-xs text-slate-700 font-medium text-left">{sore}</span>
+      <span className="text-xs text-slate-700 font-medium text-center sm:text-left">{sore}</span>
     </div>
   )
 }
@@ -54,7 +52,7 @@ function SlotHeader({ label, count, colorClass }) {
   return (
     <div className={`text-center mb-1 ${colorClass}`}>
       <p className="text-xs font-bold uppercase tracking-wide">{label}</p>
-      <p className="text-[10px] text-slate-400">{count} runs</p>
+      <p className="text-[11px] text-slate-400">{count} runs</p>
     </div>
   )
 }
@@ -65,8 +63,8 @@ function ThresholdBar({ label, count, threshold }) {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] text-slate-500 uppercase tracking-wide">{label}</span>
-        <span className={`text-[10px] font-medium ${met ? 'text-emerald-600' : 'text-slate-500'}`}>
+        <span className="text-[11px] text-slate-500 uppercase tracking-wide">{label}</span>
+        <span className={`text-[11px] font-medium ${met ? 'text-emerald-600' : 'text-slate-500'}`}>
           {count}/{threshold}
         </span>
       </div>
@@ -126,12 +124,12 @@ function TrainingLoadChart({ pagi, sore }) {
         <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
         <XAxis
           dataKey="name"
-          tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+          tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+          tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
           axisLine={false}
           tickLine={false}
           width={32}
@@ -144,7 +142,7 @@ function TrainingLoadChart({ pagi, sore }) {
             return [label, name]
           }}
         />
-        <Legend iconType="circle" iconSize={7} wrapperStyle={{ fontSize: 10, paddingTop: 8 }} />
+        <Legend iconType="circle" iconSize={7} wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
         <Bar dataKey="Morning" fill={MORNING_COLOR} radius={[3, 3, 0, 0]} maxBarSize={40} />
         <Bar dataKey="Evening" fill={EVENING_COLOR} radius={[3, 3, 0, 0]} maxBarSize={40} />
       </BarChart>
@@ -192,24 +190,7 @@ function Skeleton() {
   )
 }
 
-export default function SessionProfileSection() {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  function load() {
-    setLoading(true)
-    setError(null)
-    fetchSessionProfile()
-      .then(setData)
-      .catch((err) => setError(err.message || 'Failed to load session profile'))
-      .finally(() => setLoading(false))
-  }
-
-  useEffect(() => {
-    load()
-  }, [])
-
+export default function SessionProfileSection({ data, loading, error, onRetry }) {
   const bothThresholdMet = data?.threshold?.pagi_met && data?.threshold?.sore_met
   const totalRunsWithRe =
     (data?.threshold?.pagi_re_count ?? 0) + (data?.threshold?.sore_re_count ?? 0)
@@ -247,8 +228,8 @@ export default function SessionProfileSection() {
             >
               <p className="text-xs text-red-500">{error}</p>
               <Button
-                onClick={load}
-                className="text-xs text-violet-600 underline hover:no-underline"
+                onClick={onRetry}
+                className="max-lg:min-h-11 text-xs text-violet-600 underline hover:no-underline"
               >
                 Try again
               </Button>
@@ -259,12 +240,12 @@ export default function SessionProfileSection() {
             <div className="flex flex-col gap-5">
               {/* Volume comparison */}
               <div>
-                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-3">
+                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide mb-3">
                   Volume
                 </p>
-                <div className="grid grid-cols-[1fr_auto_1fr] mb-1">
+                <div className="grid grid-cols-2 sm:grid-cols-[1fr_auto_1fr] mb-1">
                   <SlotHeader label="Morning" count={data.pagi.count} colorClass="text-amber-600" />
-                  <div className="w-24" />
+                  <div className="hidden sm:block w-24" aria-hidden="true" />
                   <SlotHeader
                     label="Evening"
                     count={data.sore.count}
@@ -295,14 +276,14 @@ export default function SessionProfileSection() {
 
               {/* Training load */}
               <div>
-                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-3">
+                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide mb-3">
                   Training Load
                 </p>
 
                 <TrainingLoadChart pagi={data.pagi} sore={data.sore} />
 
                 {!bothThresholdMet && (
-                  <p className="text-[10px] text-amber-600 bg-amber-50 border border-amber-100 rounded-md px-3 py-2 mt-3">
+                  <p className="text-[11px] text-amber-600 bg-amber-50 border border-amber-100 rounded-md px-3 py-2 mt-3">
                     Based on limited data — interpret with caution. Need ≥{data.threshold.value}{' '}
                     runs with relative effort per slot for accurate analysis.
                   </p>

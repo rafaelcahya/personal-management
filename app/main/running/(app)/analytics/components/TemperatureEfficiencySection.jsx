@@ -1,6 +1,5 @@
 ﻿'use client'
 
-import { useState, useEffect } from 'react'
 import { Thermometer } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import {
@@ -23,7 +22,6 @@ import Card, {
   CardIcon,
   CardTitle,
 } from '@/components/base/Card/Card.jsx'
-import { fetchTemperatureEfficiency } from '@/lib/api/running'
 
 const MORNING_COLOR = '#f59e0b'
 const EVENING_COLOR = '#6366f1'
@@ -43,6 +41,9 @@ function BoxShape(props) {
   const x = cx
   const w = 18
   const thin = n < 3
+  // 11px "0.00" label is ~28px wide; flip it to the left of the box when it would clip on the right
+  const MEDIAN_LABEL_WIDTH = 32
+  const labelOnLeft = xAxis != null && x + w / 2 + 4 + MEDIAN_LABEL_WIDTH > xAxis.x + xAxis.width
 
   return (
     <g>
@@ -103,16 +104,23 @@ function BoxShape(props) {
         strokeWidth={2}
       />
       {/* median label */}
-      <text x={x + w / 2 + 4} y={toY(median) + 4} fontSize={9} fill="var(--color-muted-foreground)">
+      <text
+        x={labelOnLeft ? x - w / 2 - 4 : x + w / 2 + 4}
+        y={toY(median)}
+        dominantBaseline="central"
+        textAnchor={labelOnLeft ? 'end' : 'start'}
+        fontSize={11}
+        fill="var(--color-muted-foreground)"
+      >
         {median.toFixed(2)}
       </text>
-      {/* n label for thin boxes */}
+      {/* n label sits under the lower whisker so it can't collide with the median label */}
       {thin && (
         <text
           x={x}
-          y={toY(max) - 6}
+          y={toY(min) + 14}
           textAnchor="middle"
-          fontSize={8}
+          fontSize={11}
           fill="var(--color-muted-foreground)"
         >
           n={n}
@@ -193,7 +201,7 @@ function SummaryTable({ summary }) {
   ]
   return (
     <div>
-      <div className="grid grid-cols-3 text-[10px] font-semibold text-slate-500 uppercase tracking-wide border-b border-slate-100 pb-1.5 mb-1">
+      <div className="grid grid-cols-[1.4fr_1fr_1fr] sm:grid-cols-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wide border-b border-slate-100 pb-1.5 mb-1">
         <span />
         <span className="text-center text-amber-600">Morning</span>
         <span className="text-center text-indigo-500">Evening</span>
@@ -201,14 +209,14 @@ function SummaryTable({ summary }) {
       {rows.map((r) => (
         <div
           key={r.label}
-          className="grid grid-cols-3 py-1.5 border-b border-slate-100 last:border-0 text-xs"
+          className="grid grid-cols-[1.4fr_1fr_1fr] sm:grid-cols-3 py-1.5 border-b border-slate-100 last:border-0 text-xs"
         >
           <span className="text-slate-400">{r.label}</span>
           <span className="text-center text-slate-700 font-medium">{r.morning}</span>
           <span className="text-center text-slate-700 font-medium">{r.evening}</span>
         </div>
       ))}
-      <p className="text-[10px] text-slate-400 mt-2">
+      <p className="text-[11px] text-slate-400 mt-2">
         Differences not statistically significant (n={summary.hr_run_count})
       </p>
     </div>
@@ -246,24 +254,7 @@ function Skeleton() {
   )
 }
 
-export default function TemperatureEfficiencySection() {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  function load() {
-    setLoading(true)
-    setError(null)
-    fetchTemperatureEfficiency()
-      .then(setData)
-      .catch((err) => setError(err.message || 'Failed to load temperature efficiency data'))
-      .finally(() => setLoading(false))
-  }
-
-  useEffect(() => {
-    load()
-  }, [])
-
+export default function TemperatureEfficiencySection({ data, loading, error, onRetry }) {
   const hrCount = data?.summary?.hr_run_count ?? 0
 
   // Compute Y domain from runs + ref band with some padding
@@ -304,8 +295,8 @@ export default function TemperatureEfficiencySection() {
             >
               <p className="text-xs text-red-500">{error}</p>
               <Button
-                onClick={load}
-                className="text-xs text-violet-600 underline hover:no-underline"
+                onClick={onRetry}
+                className="max-lg:min-h-11 text-xs text-violet-600 underline hover:no-underline"
               >
                 Try again
               </Button>
@@ -318,13 +309,13 @@ export default function TemperatureEfficiencySection() {
               {data.summary.overall_avg_ratio != null && (
                 <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 border border-slate-100 rounded-lg w-fit">
                   <div>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-wide">
+                    <p className="text-[11px] text-slate-400 uppercase tracking-wide">
                       Avg efficiency ratio
                     </p>
                     <p className="text-xl font-bold text-slate-700">
                       {data.summary.overall_avg_ratio.toFixed(2)}
                     </p>
-                    <p className="text-[10px] text-slate-400">
+                    <p className="text-[11px] text-slate-400">
                       pace (sec/km) ÷ HR (bpm) — lower is better
                     </p>
                   </div>
@@ -345,7 +336,7 @@ export default function TemperatureEfficiencySection() {
                         dataKey="avg_temp_c"
                         type="number"
                         domain={['dataMin - 0.5', 'dataMax + 0.5']}
-                        tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+                        tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
                         axisLine={false}
                         tickLine={false}
                         tickFormatter={(v) => `${v}°C`}
@@ -353,7 +344,7 @@ export default function TemperatureEfficiencySection() {
                           value: 'Temperature (°C)',
                           position: 'insideBottom',
                           offset: -2,
-                          fontSize: 10,
+                          fontSize: 11,
                           fill: 'var(--color-muted-foreground)',
                         }}
                       />
@@ -361,7 +352,7 @@ export default function TemperatureEfficiencySection() {
                         dataKey="pace_hr_ratio"
                         type="number"
                         domain={[yMin, yMax]}
-                        tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+                        tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
                         axisLine={false}
                         tickLine={false}
                         width={52}
@@ -371,7 +362,7 @@ export default function TemperatureEfficiencySection() {
                           angle: -90,
                           position: 'insideLeft',
                           offset: 14,
-                          fontSize: 10,
+                          fontSize: 11,
                           fill: 'var(--color-muted-foreground)',
                         }}
                       />
@@ -390,7 +381,7 @@ export default function TemperatureEfficiencySection() {
                           label={{
                             value: 'Your zone',
                             position: 'insideTopRight',
-                            fontSize: 9,
+                            fontSize: 11,
                             fill: 'var(--color-violet-500)',
                           }}
                         />
@@ -405,16 +396,16 @@ export default function TemperatureEfficiencySection() {
                   <div className="flex items-center gap-4 justify-center mt-1">
                     <div className="flex items-center gap-1.5">
                       <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400" />
-                      <span className="text-[10px] text-slate-500">Morning (05–11)</span>
+                      <span className="text-[11px] text-slate-500">Morning (05–11)</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="inline-block w-2.5 h-2.5 rounded-full bg-indigo-400" />
-                      <span className="text-[10px] text-slate-500">Evening (12–)</span>
+                      <span className="text-[11px] text-slate-500">Evening (12–)</span>
                     </div>
                     {data.ref_band && (
                       <div className="flex items-center gap-1.5">
                         <span className="inline-block w-6 h-2 rounded bg-violet-200 border border-violet-300" />
-                        <span className="text-[10px] text-slate-500">Your efficiency zone</span>
+                        <span className="text-[11px] text-slate-500">Your efficiency zone</span>
                       </div>
                     )}
                   </div>

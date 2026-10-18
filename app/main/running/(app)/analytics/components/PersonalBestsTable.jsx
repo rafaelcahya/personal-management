@@ -1,11 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Trophy } from 'lucide-react'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
-import { fetchPersonalBests } from '@/lib/api/running'
 import {
   Accordion,
   AccordionItem,
@@ -63,7 +61,7 @@ function DistanceRow({ distance, entries, onRowClick }) {
       <AccordionItem value={distance}>
         <AccordionTrigger
           id={`personalBestsAccordionTrigger_${slug}_analyticsPage`}
-          className="px-4 py-3"
+          className="px-4 py-3 max-lg:min-h-11"
         >
           <div className={`${COLS} flex-1 pr-2`}>
             <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">
@@ -97,7 +95,7 @@ function DistanceRow({ distance, entries, onRowClick }) {
                     id={`personalBestsRow_${slug}_${entry.rank}_analyticsPage`}
                     type="button"
                     onClick={() => entry.activity_id && onRowClick(entry.activity_id)}
-                    className={`flex w-full items-center text-left px-4 py-2.5 border-b border-slate-50 last:border-b-0 transition-colors hover:bg-slate-50 ${
+                    className={`flex w-full items-center text-left px-4 py-2.5 max-lg:min-h-11 border-b border-slate-50 last:border-b-0 transition-colors hover:bg-slate-50 ${
                       isPR ? 'bg-amber-50 hover:bg-amber-100' : ''
                     }`}
                   >
@@ -134,32 +132,8 @@ function DistanceRow({ distance, entries, onRowClick }) {
   )
 }
 
-export default function PersonalBestsTable() {
+export default function PersonalBestsTable({ data, loading, error, onRetry }) {
   const router = useRouter()
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  const load = useCallback(() => {
-    setLoading(true)
-    setError(null)
-    let cancelled = false
-    fetchPersonalBests()
-      .then((result) => {
-        if (!cancelled) setData(result)
-      })
-      .catch(() => {
-        if (!cancelled) setError('Failed to load personal bests')
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  useEffect(load, [load])
 
   if (loading) {
     return (
@@ -185,8 +159,8 @@ export default function PersonalBestsTable() {
         <p className="text-sm text-red-700 flex-1">{error}</p>
         <Button
           variant="ghost"
-          onClick={load}
-          className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
+          onClick={onRetry}
+          className="max-lg:min-h-11 text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
         >
           Try again
         </Button>
