@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getServerUser } from '@/lib/supabase/getServerUser'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getPushStatus } from '@/lib/services/notifications/getPushStatus'
 import { savePushDevice } from '@/lib/services/notifications/savePushDevice'
@@ -33,10 +34,8 @@ export async function GET() {
 export async function POST(request) {
   try {
     const supabase = await createClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
+    // A subscription outlives the token, so confirm the session with the Auth server.
+    const { user, error: authError } = await getServerUser(supabase)
     if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized', message: 'Authentication required' },

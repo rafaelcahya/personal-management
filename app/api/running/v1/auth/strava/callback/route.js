@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getServerUser } from '@/lib/supabase/getServerUser'
 import { inngest } from '@/lib/inngest/client'
 import { encrypt } from '@/lib/utils/running/encrypt'
 
@@ -37,10 +38,8 @@ export async function GET(request) {
     return NextResponse.redirect(new URL(await getErrorRedirect(supabase), request.url))
   }
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
+  // The Strava link outlives the token, so confirm the session with the Auth server.
+  const { user, error: authError } = await getServerUser(supabase)
 
   if (authError || !user) {
     return NextResponse.redirect(new URL('/login', request.url))
