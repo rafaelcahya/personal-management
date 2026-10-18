@@ -38,7 +38,7 @@ function Vo2maxTargetInput({ current, onSave, onClear }) {
           max={90}
           step={0.5}
           placeholder="e.g. 50"
-          className="h-8 w-24 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+          className="h-8 max-lg:h-11 w-24 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
           aria-label="VO2max target value in ml/kg/min"
           {...register('vo2max_target', { valueAsNumber: true })}
         />
@@ -48,7 +48,7 @@ function Vo2maxTargetInput({ current, onSave, onClear }) {
           type="submit"
           size="sm"
           disabled={isSubmitting}
-          className="bg-violet-600 hover:bg-violet-700 text-white h-8 px-3 text-xs"
+          className="bg-violet-600 hover:bg-violet-700 text-white h-8 max-lg:min-h-11 px-3 text-xs"
         >
           {isSubmitting ? 'Saving…' : 'Save'}
         </Button>
@@ -59,7 +59,7 @@ function Vo2maxTargetInput({ current, onSave, onClear }) {
             variant="ghost"
             size="sm"
             onClick={onClear}
-            className="text-xs text-slate-400 hover:text-red-500 h-8 px-2"
+            className="text-xs text-slate-400 hover:text-red-500 h-8 max-lg:min-h-11 px-2"
             aria-label="Clear VO2max target"
           >
             Clear
@@ -84,7 +84,7 @@ function ManualTargetFooter({ manualTarget, onSaveTarget, onClearTarget }) {
           variant="ghost"
           size="sm"
           onClick={() => setOpen(true)}
-          className="text-xs text-slate-400 hover:text-violet-600 px-0 h-auto"
+          className="max-lg:min-h-11 text-xs text-slate-400 hover:text-violet-600 px-0 h-auto"
         >
           {manualTarget != null
             ? `Personal target: ${manualTarget} ml/kg/min — update`
@@ -113,7 +113,7 @@ function ManualTargetFooter({ manualTarget, onSaveTarget, onClearTarget }) {
         variant="ghost"
         size="sm"
         onClick={() => setOpen(false)}
-        className="text-xs text-slate-400 self-start px-0 h-auto"
+        className="max-lg:min-h-11 text-xs text-slate-400 self-start px-0 h-auto"
       >
         Cancel
       </Button>
@@ -205,7 +205,7 @@ export default function Vo2maxGapCard({ data, manualTarget, onSaveTarget, onClea
           <Button
             id="setGoalBtn_analyticsPage"
             asChild
-            className="bg-violet-600 hover:bg-violet-700 text-white"
+            className="max-lg:min-h-11 bg-violet-600 hover:bg-violet-700 text-white"
           >
             <Link href="/main/running/race-log">Set a race goal</Link>
           </Button>
@@ -235,7 +235,7 @@ export default function Vo2maxGapCard({ data, manualTarget, onSaveTarget, onClea
           <p className="text-sm font-semibold text-slate-700">VO2max Target</p>
         </div>
 
-        <div id="vo2maxGapNumbers_analyticsPage" className="grid grid-cols-3 gap-3">
+        <div id="vo2maxGapNumbers_analyticsPage" className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="rounded-lg bg-slate-50 border border-slate-200 p-3 text-center">
             <p className="text-xs text-slate-500 mb-1">Current</p>
             <p className="text-xl font-bold text-violet-600">
@@ -277,7 +277,7 @@ export default function Vo2maxGapCard({ data, manualTarget, onSaveTarget, onClea
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowUpdateInput(false)}
-                className="text-xs text-slate-400 self-start px-0 h-auto"
+                className="max-lg:min-h-11 text-xs text-slate-400 self-start px-0 h-auto"
               >
                 Cancel
               </Button>
@@ -289,7 +289,7 @@ export default function Vo2maxGapCard({ data, manualTarget, onSaveTarget, onClea
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowUpdateInput(true)}
-                className="text-xs text-violet-600 hover:text-violet-700 px-0 h-auto"
+                className="max-lg:min-h-11 text-xs text-violet-600 hover:text-violet-700 px-0 h-auto"
               >
                 Update target
               </Button>
@@ -297,7 +297,7 @@ export default function Vo2maxGapCard({ data, manualTarget, onSaveTarget, onClea
               <Link
                 id="vo2maxUseRaceGoalLink_analyticsPage"
                 href="/main/running/race-log"
-                className="text-xs text-slate-400 hover:text-slate-600"
+                className="inline-flex items-center max-lg:min-h-11 text-xs text-slate-400 hover:text-slate-600"
               >
                 Use a race goal instead
               </Link>
@@ -344,7 +344,7 @@ export default function Vo2maxGapCard({ data, manualTarget, onSaveTarget, onClea
         <Button
           id="setGoalBtn_analyticsPage"
           asChild
-          className="bg-violet-600 hover:bg-violet-700 text-white self-start"
+          className="max-lg:min-h-11 bg-violet-600 hover:bg-violet-700 text-white self-start"
         >
           <Link href="/main/running/race-log">Add target time</Link>
         </Button>
@@ -422,7 +422,7 @@ export default function Vo2maxGapCard({ data, manualTarget, onSaveTarget, onClea
           <Button
             id="setNewGoalBtn_analyticsPage"
             asChild
-            className="bg-violet-600 hover:bg-violet-700 text-white"
+            className="max-lg:min-h-11 bg-violet-600 hover:bg-violet-700 text-white"
           >
             <Link href="/main/running/race-log">Set a new goal</Link>
           </Button>
@@ -463,7 +463,7 @@ export default function Vo2maxGapCard({ data, manualTarget, onSaveTarget, onClea
           </p>
         </div>
 
-        <div id="vo2maxGapNumbers_analyticsPage" className="grid grid-cols-2 gap-3">
+        <div id="vo2maxGapNumbers_analyticsPage" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="rounded-lg bg-white/70 border border-violet-100 p-3 text-center">
             <p className="text-xs text-slate-500 mb-1">Current</p>
             <p className="text-xl font-bold text-violet-600">{data.currentVo2max}</p>
@@ -542,7 +542,7 @@ export default function Vo2maxGapCard({ data, manualTarget, onSaveTarget, onClea
         </div>
       )}
 
-      <div id="vo2maxGapNumbers_analyticsPage" className="grid grid-cols-3 gap-3">
+      <div id="vo2maxGapNumbers_analyticsPage" className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="rounded-lg bg-slate-50 border border-slate-200 p-3 text-center">
           <p className="text-xs text-slate-500 mb-1">Current</p>
           <p className="text-xl font-bold text-violet-600">{data.currentVo2max}</p>

@@ -96,7 +96,7 @@ export default function WeeklyDistanceChart({ activities }) {
     xAxis: (
       <XAxis
         dataKey="label"
-        tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+        tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
         tickLine={false}
         axisLine={false}
         interval={2}
@@ -105,7 +105,7 @@ export default function WeeklyDistanceChart({ activities }) {
     yAxis: (
       <YAxis
         domain={[0, Math.ceil(maxKm * 1.15)]}
-        tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+        tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
         tickLine={false}
         axisLine={false}
         unit=" km"
@@ -132,7 +132,7 @@ export default function WeeklyDistanceChart({ activities }) {
             onClick={() => setChartType('bar')}
             aria-pressed={chartType === 'bar'}
             aria-label="Bar chart"
-            className={`p-1.5 rounded transition-colors ${
+            className={`max-lg:min-h-11 max-lg:min-w-11 p-1.5 rounded transition-colors ${
               chartType === 'bar'
                 ? 'bg-violet-100 text-violet-600'
                 : 'text-slate-400 hover:text-slate-600'
@@ -147,7 +147,7 @@ export default function WeeklyDistanceChart({ activities }) {
             onClick={() => setChartType('line')}
             aria-pressed={chartType === 'line'}
             aria-label="Line chart"
-            className={`p-1.5 rounded transition-colors ${
+            className={`max-lg:min-h-11 max-lg:min-w-11 p-1.5 rounded transition-colors ${
               chartType === 'line'
                 ? 'bg-violet-100 text-violet-600'
                 : 'text-slate-400 hover:text-slate-600'

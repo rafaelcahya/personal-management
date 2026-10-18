@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-10-18 (new push notifications #857 — API test coverage)
-**Branch:** feat/issue-857-new-push-notifications
+**Last Updated:** 2026-10-18 (Running Analytics review #842 — overview + activity-series API coverage, spec speed-up)
+**Branch:** fix/issue-842-running-analytics
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,712  | 52%  |
-| UI        | 1,551  | 48%  |
-| **Total** | **3,263** | 100% |
+| API       | 1,771  | 53%  |
+| UI        | 1,551  | 47%  |
+| **Total** | **3,322** | 100% |
 
 ---
 
@@ -22,12 +22,12 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 523   | 695   | 1,218 |
+| Running Tracker      | 540   | 695   | 1,235 |
 | Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,754** | **1,551** | **3,305** |
+| **Total**            | **1,771** | **1,551** | **3,322** |
 
 ---
 
@@ -274,8 +274,10 @@
 
 | Feature                | API | UI | Total |
 | ---------------------- | --- | -- | ----- |
+| Activity Series        | 8   | 0  | 8     |
 | Analytics AI           | 15  | 20 | 35    |
 | Analytics              | 0   | 9  | 9     |
+| Analytics Overview     | 13  | 0  | 13    |
 | Endurance Score        | 9   | 0  | 9     |
 | Fitness Age            | 10  | 0  | 10    |
 | Gear Analytics         | 10  | 0  | 10    |
@@ -287,7 +289,7 @@
 | VO2Max Target Effort   | 4   | 31 | 35    |
 | VO2max Target (personal) | 14 | 0  | 14    |
 | Zone Analytics         | 24  | 0  | 24    |
-| **Subtotal**           | **140** | **87** | **227** |
+| **Subtotal**           | **161** | **87** | **248** |
 
 #### Injury AI
 
@@ -339,7 +341,7 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **91** | **21** | **112** |
 
-**Running Total — API: 523 | UI: 695 | Total: 1,218**
+**Running Total — API: 540 | UI: 695 | Total: 1,235**
 
 > **Settings, Health & Strava (#845)** — `cypress/e2e/running/settings/settings-api.cy.js` (65 tests). Added health subjective/weight (auth, CRUD, 400 validation, malformed id 400, unknown uuid 404), Strava connect redirect and `strava_oauth_state` cookie, callback state rejection (no Strava call), not-connected sync/re-enrich/disconnect, seeded `needs_reconnect` (409) and disconnect, hr-zones read/validate/update+restore, threshold-pace-detect 422, profile 400, and the `DELETE /user/activities` confirmation guard only. The real-Strava callback test was removed (CB-4).
 > **Not covered:** IDOR on health `[id]` (no second-user credentials; the Cypress DB client is RLS-bound so it cannot seed another user row), `DELETE /user/activities` success path and `last_sync_at` reset (test account owns 13 real activities), threshold-pace-detect with seeded streams, `re-enrich-metrics`.
@@ -416,9 +418,9 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 523   | 695   | 1,218 |
+| Running Tracker      | 540   | 695   | 1,235 |
 | Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,754** | **1,551** | **3,305** |
+| **Total**            | **1,771** | **1,551** | **3,322** |

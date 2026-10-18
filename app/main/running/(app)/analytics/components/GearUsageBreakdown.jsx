@@ -109,7 +109,7 @@ export default function GearUsageBreakdown({ gear, error }) {
                       {gearDisplayName(g)}
                     </span>
                     {g.retired && (
-                      <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full w-fit">
+                      <span className="text-[11px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full w-fit">
                         Retired
                       </span>
                     )}
@@ -154,7 +154,7 @@ function RetiredToggle({ showRetired, onToggle }) {
       variant="ghost"
       id="gearRetiredToggle_analyticsPage"
       onClick={onToggle}
-      className="self-start text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+      className="max-lg:min-h-11 self-start text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
     >
       {showRetired ? 'Hide retired gear' : 'Show retired gear'}
     </Button>
