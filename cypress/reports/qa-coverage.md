@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-10-18 (new push notifications #857 — API test coverage)
-**Branch:** feat/issue-857-new-push-notifications
+**Last Updated:** 2026-10-18 (Running Analytics review #842 — overview + activity-series API coverage, spec speed-up)
+**Branch:** fix/issue-842-running-analytics
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,712  | 52%  |
-| UI        | 1,551  | 48%  |
-| **Total** | **3,263** | 100% |
+| API       | 1,733  | 53%  |
+| UI        | 1,551  | 47%  |
+| **Total** | **3,284** | 100% |
 
 ---
 
@@ -22,12 +22,12 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 481   | 695   | 1,176 |
+| Running Tracker      | 502   | 695   | 1,197 |
 | Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,712** | **1,551** | **3,263** |
+| **Total**            | **1,733** | **1,551** | **3,284** |
 
 ---
 
@@ -274,8 +274,10 @@
 
 | Feature                | API | UI | Total |
 | ---------------------- | --- | -- | ----- |
+| Activity Series        | 8   | 0  | 8     |
 | Analytics AI           | 15  | 20 | 35    |
 | Analytics              | 0   | 9  | 9     |
+| Analytics Overview     | 13  | 0  | 13    |
 | Endurance Score        | 9   | 0  | 9     |
 | Fitness Age            | 10  | 0  | 10    |
 | Gear Analytics         | 10  | 0  | 10    |
@@ -287,7 +289,7 @@
 | VO2Max Target Effort   | 4   | 31 | 35    |
 | VO2max Target (personal) | 14 | 0  | 14    |
 | Zone Analytics         | 24  | 0  | 24    |
-| **Subtotal**           | **140** | **87** | **227** |
+| **Subtotal**           | **161** | **87** | **248** |
 
 #### Injury AI
 
@@ -336,7 +338,7 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **49** | **21** | **70** |
 
-**Running Total — API: 481 | UI: 695 | Total: 1,176**
+**Running Total — API: 502 | UI: 695 | Total: 1,197**
 
 > **Streak Counter (#820)** — `cypress/e2e/running/dashboard/dashboard-api.cy.js` (11 API tests, all passing).
 > Weekly streak folded into `GET /dashboard`. Covers the `streak` object shape/keys, integer & boolean field types, `unit === 'week'`, the `best_weeks >= current_weeks` invariant, at-risk logic (only with a live streak in the last 2 days, mutually exclusive with `active_this_week`), streak being identical across activity-type filters (habit metric ignores type), and invalid `tz_offset` fallback. Data-independent assertions — no seeding required.
@@ -409,9 +411,9 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 481   | 695   | 1,176 |
+| Running Tracker      | 502   | 695   | 1,197 |
 | Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,712** | **1,551** | **3,263** |
+| **Total**            | **1,733** | **1,551** | **3,284** |

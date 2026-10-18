@@ -29,11 +29,11 @@ export default function ZoneBreakdownBars({ zones, colors }) {
         return (
           <div key={zone.label} className="flex flex-col gap-0.5">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-medium text-slate-600 w-28 shrink-0 truncate">
+              <span className="font-medium text-slate-600 min-w-0 flex-1 sm:flex-none sm:w-28 sm:shrink-0 truncate">
                 {zone.label}
               </span>
               {hasData ? (
-                <span className="text-slate-400 tabular-nums">
+                <span className="text-slate-400 tabular-nums shrink-0">
                   {fmtZoneTime(zone.time_sec)} · {fmtDistKm(zone.distance_m)} · {pct}%
                 </span>
               ) : (

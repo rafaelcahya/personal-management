@@ -57,7 +57,7 @@ function DatePickerButton({ id, label, value, onChange, maxDate, minDate }) {
         fromDate={fromDate}
         toDate={toBound}
         className={cn(
-          'h-8 gap-1.5 border-slate-200',
+          'h-8 max-lg:h-11 gap-1.5 border-slate-200',
           value ? 'text-slate-700 pr-1' : 'text-slate-400'
         )}
       />
@@ -66,7 +66,7 @@ function DatePickerButton({ id, label, value, onChange, maxDate, minDate }) {
           variant="ghost"
           size="icon-xs"
           onClick={() => onChange(null)}
-          className="size-5 text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+          className="size-5 max-lg:size-11 text-slate-400 hover:text-slate-600 hover:bg-slate-100"
           aria-label={`Clear ${label}`}
         >
           <X className="size-3" />
@@ -106,10 +106,10 @@ export default function ZoneFilterBar({
         minDate={startDate}
       />
 
-      <div className="w-px h-4 bg-slate-200" aria-hidden="true" />
+      <div className="hidden sm:block w-px h-4 bg-slate-200" aria-hidden="true" />
 
       <Select value={range} onValueChange={onRangeChange} disabled={!!(startDate && endDate)}>
-        <SelectTrigger id="zoneRangeSelect_analyticsPage" className="w-40">
+        <SelectTrigger id="zoneRangeSelect_analyticsPage" className="w-full sm:w-40 max-lg:h-11">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -122,7 +122,7 @@ export default function ZoneFilterBar({
       </Select>
 
       <Select value={activityType} onValueChange={onTypeChange}>
-        <SelectTrigger id="zoneTypeSelect_analyticsPage" className="w-36">
+        <SelectTrigger id="zoneTypeSelect_analyticsPage" className="w-full sm:w-36 max-lg:h-11">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

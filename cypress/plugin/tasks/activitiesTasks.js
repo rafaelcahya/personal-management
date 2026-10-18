@@ -4,8 +4,22 @@ import {
   getActivityCountFromDb,
   getActivityIdWithSplitsFromDb,
 } from '../../support/db/running/activities/activitiesDb.js'
+import {
+  seedAnalyticsActivitiesInDb,
+  deleteSeededAnalyticsActivitiesFromDb,
+  getSeededAnalyticsActivitiesFromDb,
+} from '../../support/db/running/activities/activitySeedDb.js'
 
 export const activitiesTasks = (supabaseAdmin) => ({
+  async seedAnalyticsActivitiesInDb({ userId, tag, count }) {
+    return seedAnalyticsActivitiesInDb(userId, tag, count)
+  },
+  async deleteSeededAnalyticsActivitiesFromDb({ userId, tag }) {
+    return deleteSeededAnalyticsActivitiesFromDb(userId, tag)
+  },
+  async getSeededAnalyticsActivitiesFromDb({ userId, tag }) {
+    return getSeededAnalyticsActivitiesFromDb(userId, tag)
+  },
   async getActivityListFromDb({ userId }) {
     return getActivityListFromDb(supabaseAdmin, userId)
   },

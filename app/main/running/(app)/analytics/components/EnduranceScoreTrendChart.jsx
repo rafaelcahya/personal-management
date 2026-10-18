@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import {
   LineChart,
   Line,
@@ -13,7 +12,6 @@ import {
 } from 'recharts'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
-import { fetchEnduranceScoreTrend } from '@/lib/api/running'
 import { ENDURANCE_TIER_BANDS, getEnduranceTier } from '@/lib/services/running/utils/enduranceScore'
 
 function fmtWeek(dateStr) {
@@ -21,32 +19,7 @@ function fmtWeek(dateStr) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-export default function EnduranceScoreTrendChart() {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  const load = useCallback(() => {
-    setLoading(true)
-    setError(null)
-    let cancelled = false
-    fetchEnduranceScoreTrend()
-      .then((d) => {
-        if (!cancelled) setData(d)
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err.message || 'Failed to load endurance score data')
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  useEffect(load, [load])
-
+export default function EnduranceScoreTrendChart({ data, loading, error, onRetry }) {
   if (loading) {
     return (
       <Skeleton id="enduranceScoreTrendLoading_analyticsPage" className="h-[220px] rounded-lg" />
@@ -59,8 +32,8 @@ export default function EnduranceScoreTrendChart() {
         <p className="text-sm text-red-400">{error}</p>
         <Button
           variant="ghost"
-          onClick={load}
-          className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+          onClick={onRetry}
+          className="max-lg:min-h-11 text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
         >
           Try again
         </Button>
@@ -105,7 +78,7 @@ export default function EnduranceScoreTrendChart() {
               label={{
                 value: band.label,
                 position: 'insideRight',
-                fontSize: 9,
+                fontSize: 11,
                 fill: 'var(--color-muted-foreground)',
               }}
             />
@@ -113,14 +86,14 @@ export default function EnduranceScoreTrendChart() {
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={[0, 100]}
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             width={28}
