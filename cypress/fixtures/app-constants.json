@@ -149,7 +149,9 @@
       "pmc": "/api/running/v1/analytics/pmc",
       "session_profile": "/api/running/v1/analytics/session-profile",
       "temperature_efficiency": "/api/running/v1/analytics/temperature-efficiency",
-      "vo2max_target": "/api/running/v1/analytics/vo2max-target"
+      "vo2max_target": "/api/running/v1/analytics/vo2max-target",
+      "activity_series": "/api/running/v1/analytics/activity-series",
+      "overview": "/api/running/v1/analytics/overview"
     },
     "running_user_profile": {
       "get": "/api/running/v1/user/profile",

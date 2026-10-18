@@ -80,7 +80,7 @@ export default function RacePredictor({ activities }) {
               key={b.key}
               size="xs"
               onClick={() => setSourceBracket(b.key)}
-              className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
+              className={`max-lg:min-h-11 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
                 activeBracket.key === b.key
                   ? 'text-white border-transparent'
                   : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'

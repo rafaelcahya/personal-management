@@ -318,7 +318,7 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
                   size="xs"
                   onClick={() => setHistoryOpen(true)}
                   aria-label="View analysis history"
-                  className="flex items-center gap-1 text-xs text-slate-400 hover:text-violet-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
+                  className="max-lg:min-h-11 max-lg:min-w-11 justify-center flex items-center gap-1 text-xs text-slate-400 hover:text-violet-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
                 >
                   <History className="h-3.5 w-3.5" aria-hidden="true" />
                   History
@@ -353,7 +353,7 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
                   <Button
                     id={`analyticsAiRetryBtn_${sectionId}_analyticsPage`}
                     variant="ghost"
-                    className="text-violet-600 hover:text-violet-700 px-0 h-auto font-normal text-xs"
+                    className="max-lg:min-h-11 text-violet-600 hover:text-violet-700 px-0 h-auto font-normal text-xs"
                     onClick={() => {
                       stopPolling()
                       setInsights(undefined)
@@ -380,7 +380,7 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
                     id={`analyticsAiGenerateBtn_${sectionId}_analyticsPage`}
                     disabled={generating}
                     onClick={handleGenerate}
-                    className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 focus-visible:ring-2 focus-visible:ring-violet-200"
+                    className="bg-violet-600 hover:bg-violet-700 text-white text-xs h-8 max-lg:min-h-11 focus-visible:ring-2 focus-visible:ring-violet-200"
                   >
                     {generating ? (
                       <>
@@ -440,7 +440,7 @@ export default function AnalyticsAICard({ section, isPageStale = false }) {
                       variant="ghost"
                       disabled={generating || isPending}
                       onClick={handleGenerate}
-                      className="text-violet-600 hover:text-violet-700 px-0 h-auto text-xs font-normal focus-visible:ring-2 focus-visible:ring-violet-200"
+                      className="max-lg:min-h-11 text-violet-600 hover:text-violet-700 px-0 h-auto text-xs font-normal focus-visible:ring-2 focus-visible:ring-violet-200"
                       aria-label="Refresh AI recommendations"
                     >
                       {generating ? (

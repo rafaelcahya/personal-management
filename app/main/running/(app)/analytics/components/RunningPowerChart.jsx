@@ -95,14 +95,14 @@ export default function RunningPowerChart({ activities }) {
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={['auto', 'auto']}
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             unit=" W"

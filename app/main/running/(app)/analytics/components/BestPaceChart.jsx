@@ -65,7 +65,7 @@ export default function BestPaceChart({ activities }) {
           />
           <YAxis
             domain={[paceMin, paceMax]}
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             tickFormatter={fmtPaceTick}

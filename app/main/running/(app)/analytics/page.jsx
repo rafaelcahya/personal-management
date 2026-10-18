@@ -1,14 +1,8 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { BarChart2, TrendingUp, Zap, Activity, Trophy, Mountain } from 'lucide-react'
-import {
-  fetchActivities,
-  fetchPerformanceTrends,
-  getDashboard,
-  fetchAnalyticsStaleness,
-  fetchZoneReference,
-} from '@/lib/api/running'
+import { fetchActivitySeries, fetchAnalyticsStaleness, fetchZoneReference } from '@/lib/api/running'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import PageHeader from '@/app/main/components/PageHeader'
@@ -17,6 +11,9 @@ import { RUN_TYPES } from './components/utils'
 import Section from './components/Section'
 import SectionsManager from './components/SectionsManager'
 import { useSectionVisibility } from './hooks/useSectionVisibility'
+import { useAnalyticsOverview } from './hooks/useAnalyticsOverview'
+import { useInView } from './hooks/useInView'
+import LazyMount, { LAZY_HEIGHT } from './components/LazyMount'
 import WeeklyDistanceChart from './components/WeeklyDistanceChart'
 // import PaceTrendChart from './components/PaceTrendChart'
 // import PerformanceManagementChart from './components/PerformanceManagementChart'
@@ -41,8 +38,6 @@ import TemperatureEfficiencySection from './components/TemperatureEfficiencySect
 
 export default function AnalyticsPage() {
   const [activities, setActivities] = useState([])
-  const [trendData, setTrendData] = useState([])
-  const [trainingLoad, setTrainingLoad] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [isPageStale, setIsPageStale] = useState(false)
@@ -52,65 +47,55 @@ export default function AnalyticsPage() {
 
   const { visibility, setVisible, showAll, resetToDefault, visibleCount, total } =
     useSectionVisibility()
+  const { sectionProps } = useAnalyticsOverview()
+  const [zonesRefNode, zonesNearViewport] = useInView()
 
-  function loadRefData() {
+  const loadRefData = useCallback(() => {
     setRefLoading(true)
     setRefError(null)
     fetchZoneReference()
       .then((data) => setRefData(data))
       .catch(() => setRefError('Failed to load zone reference'))
       .finally(() => setRefLoading(false))
-  }
-
-  useEffect(() => {
-    loadRefData()
   }, [])
 
+  // Reference table sits far below the fold; fetch it only once it is close to the viewport
   useEffect(() => {
+    if (zonesNearViewport) loadRefData()
+  }, [zonesNearViewport, loadRefData])
+
+  const loadSeries = useCallback(() => {
     let cancelled = false
-
-    async function load() {
-      setLoading(true)
-      setError(null)
-      try {
-        const [activitiesRes, trendsRes, dashboardRes, stalenessRes] = await Promise.allSettled([
-          fetchActivities({ page: 1, limit: 200 }),
-          fetchPerformanceTrends(50),
-          getDashboard(),
-          fetchAnalyticsStaleness(),
-        ])
-
-        if (cancelled) return
-
-        if (activitiesRes.status === 'fulfilled') {
-          setActivities(activitiesRes.value?.data ?? [])
-        }
-        if (trendsRes.status === 'fulfilled') {
-          setTrendData(trendsRes.value?.data ?? [])
-        }
-        if (dashboardRes.status === 'fulfilled') {
-          setTrainingLoad(dashboardRes.value?.training_load ?? null)
-        }
-        if (stalenessRes.status === 'fulfilled') {
-          setIsPageStale(stalenessRes.value?.is_stale ?? false)
-        }
-      } catch (err) {
+    setLoading(true)
+    setError(null)
+    fetchActivitySeries()
+      .then((rows) => {
+        if (!cancelled) setActivities(rows ?? [])
+      })
+      .catch((err) => {
         if (!cancelled) setError(err.message || 'Failed to load analytics data')
-      } finally {
+      })
+      .finally(() => {
         if (!cancelled) setLoading(false)
-      }
-    }
-
-    load()
+      })
     return () => {
       cancelled = true
     }
   }, [])
 
-  const runTrendData = useMemo(
-    () => trendData.filter((a) => RUN_TYPES.has(a.activity_type)),
-    [trendData]
-  )
+  useEffect(() => loadSeries(), [loadSeries])
+
+  useEffect(() => {
+    let cancelled = false
+    fetchAnalyticsStaleness()
+      .then((res) => {
+        if (!cancelled) setIsPageStale(res?.is_stale ?? false)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const vis = (id) => visibility[id] !== false
 
@@ -172,8 +157,8 @@ export default function AnalyticsPage() {
           <p className="text-sm text-red-500">{error}</p>
           <Button
             variant="ghost"
-            onClick={() => window.location.reload()}
-            className="text-xs text-violet-600 underline hover:no-underline"
+            onClick={loadSeries}
+            className="max-lg:min-h-11 text-xs text-violet-600 underline hover:no-underline"
           >
             Try again
           </Button>
@@ -196,7 +181,9 @@ export default function AnalyticsPage() {
               icon={BarChart2}
             >
               <WeeklyDistanceChart activities={activities} />
-              <AnalyticsAICard section="weekly_distance" isPageStale={isPageStale} />
+              <LazyMount>
+                <AnalyticsAICard section="weekly_distance" isPageStale={isPageStale} />
+              </LazyMount>
             </Section>
           )}
 
@@ -265,7 +252,9 @@ export default function AnalyticsPage() {
               icon={Activity}
             >
               <Vo2maxTrendChart activities={activities} />
-              <AnalyticsAICard section="vo2max_trend" isPageStale={isPageStale} />
+              <LazyMount>
+                <AnalyticsAICard section="vo2max_trend" isPageStale={isPageStale} />
+              </LazyMount>
             </Section>
           )}
 
@@ -284,7 +273,9 @@ export default function AnalyticsPage() {
               description="How your current VO2max compares to what you need for your race goal — and how long it will take to close the gap."
               icon={Activity}
             >
-              <Vo2maxTargetEffortSection activities={activities} />
+              <LazyMount minHeight={LAZY_HEIGHT.targetEffort}>
+                <Vo2maxTargetEffortSection activities={activities} />
+              </LazyMount>
             </Section>
           )}
 
@@ -296,7 +287,9 @@ export default function AnalyticsPage() {
               icon={TrendingUp}
             >
               <EfTrendChart activities={activities} />
-              <AnalyticsAICard section="ef_trend" isPageStale={isPageStale} />
+              <LazyMount>
+                <AnalyticsAICard section="ef_trend" isPageStale={isPageStale} />
+              </LazyMount>
             </Section>
           )}
 
@@ -308,7 +301,9 @@ export default function AnalyticsPage() {
               icon={TrendingUp}
             >
               <RacePredictor activities={activities} />
-              <AnalyticsAICard section="race_predictor" isPageStale={isPageStale} />
+              <LazyMount>
+                <AnalyticsAICard section="race_predictor" isPageStale={isPageStale} />
+              </LazyMount>
             </Section>
           )}
 
@@ -319,7 +314,7 @@ export default function AnalyticsPage() {
               description="Your top 5 fastest times for key distances. Click any row to see the activity where you recorded that effort."
               icon={Trophy}
             >
-              <PersonalBestsTable />
+              <PersonalBestsTable {...sectionProps('personal_bests')} />
             </Section>
           )}
 
@@ -330,7 +325,7 @@ export default function AnalyticsPage() {
               description="Total calories burned per month across the last 6 months, estimated from your runs using your current weight."
               icon={BarChart2}
             >
-              <CalorieTrendChart />
+              <CalorieTrendChart {...sectionProps('calorie_trend')} />
             </Section>
           )}
 
@@ -341,7 +336,7 @@ export default function AnalyticsPage() {
               description="Your cardiovascular Fitness Age per week, based on VO₂max vs. NTNU population norms (Nes et al. 2011). Lower than your chronological age means above-average fitness."
               icon={Activity}
             >
-              <FitnessAgeTrendChart />
+              <FitnessAgeTrendChart {...sectionProps('fitness_age')} />
             </Section>
           )}
 
@@ -352,12 +347,16 @@ export default function AnalyticsPage() {
               description="Weekly composite score (0–100) combining VO₂max fitness, 28-day training load, and your longest run in the last 8 weeks. Higher is better."
               icon={Activity}
             >
-              <EnduranceScoreTrendChart />
+              <EnduranceScoreTrendChart {...sectionProps('endurance_score')} />
             </Section>
           )}
 
           {vis('trainingZonesSection_analyticsPage') && (
-            <div id="trainingZonesSection_analyticsPage" className="scroll-mt-20">
+            <div
+              id="trainingZonesSection_analyticsPage"
+              ref={zonesRefNode}
+              className="scroll-mt-20"
+            >
               <TrainingZonesReference
                 data={refData}
                 loading={refLoading}
@@ -369,13 +368,19 @@ export default function AnalyticsPage() {
 
           {vis('zoneAnalyticsSection_analyticsPage') && (
             <div id="zoneAnalyticsSection_analyticsPage" className="scroll-mt-20">
-              <ZoneAnalyticsSection />
+              <LazyMount minHeight={LAZY_HEIGHT.zoneAnalytics}>
+                <ZoneAnalyticsSection />
+              </LazyMount>
             </div>
           )}
 
-          {vis('sessionProfileSection_analyticsPage') && <SessionProfileSection />}
+          {vis('sessionProfileSection_analyticsPage') && (
+            <SessionProfileSection {...sectionProps('session_profile')} />
+          )}
 
-          {vis('temperatureEfficiencySection_analyticsPage') && <TemperatureEfficiencySection />}
+          {vis('temperatureEfficiencySection_analyticsPage') && (
+            <TemperatureEfficiencySection {...sectionProps('temperature_efficiency')} />
+          )}
         </>
       )}
     </main>

@@ -12,6 +12,12 @@
 //   GET /api/running/v1/ai/insights/staleness             (#360)
 //   GET /api/running/v1/analytics/session-profile         (#413)
 //   GET /api/running/v1/analytics/temperature-efficiency  (#413)
+//   GET /api/running/v1/analytics/overview                (#842)
+//   GET /api/running/v1/analytics/activity-series         (#842)
+//
+// The activity-series block seeds 120 tagged activities (external_id cy842-*) for the Cypress
+// test account in before() and deletes only those rows in after(). It runs last so the other
+// blocks see the account's original data.
 
 import constants from '../../../fixtures/app-constants.json'
 
@@ -19,6 +25,20 @@ const AI = constants.endpoints.running_analytics_ai
 const INSIGHTS_EP = AI.insights
 const GENERATE_EP = AI.generate
 const STALENESS_EP = AI.staleness
+
+// Most describes below assert different properties of the same GET response, so each
+// (command, query) pair is requested once per spec run and later tests re-read the stored
+// response. The first test for an endpoint still goes through beforeEach session cookies.
+const responses = {}
+const cached = (command, qs) => {
+  const key = `${command}:${JSON.stringify(qs ?? {})}`
+  if (responses[key]) return cy.wrap(responses[key], { log: false })
+  const request = qs === undefined ? cy[command]() : cy[command](qs)
+  return request.then((res) => {
+    responses[key] = res
+    return res
+  })
+}
 
 // ─── personal-bests ──────────────────────────────────────────────────────────
 
@@ -37,7 +57,7 @@ describe('Personal Bests API — authenticated response shape', () => {
   })
 
   it('returns 200 with a top-level data object', () => {
-    cy.getPersonalBests().then((res) => {
+    cached('getPersonalBests').then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('data')
       expect(res.body).to.have.property('message', 'OK')
@@ -46,7 +66,7 @@ describe('Personal Bests API — authenticated response shape', () => {
 
   it('data contains all 5 expected distance keys', () => {
     const expectedDistances = ['1 mile', '5K', '10K', '15K', 'Half-Marathon']
-    cy.getPersonalBests().then((res) => {
+    cached('getPersonalBests').then((res) => {
       expect(res.status).to.eq(200)
       const { data } = res.body
       expectedDistances.forEach((distance) => {
@@ -57,7 +77,7 @@ describe('Personal Bests API — authenticated response shape', () => {
   })
 
   it('each distance entry array has at most 5 items', () => {
-    cy.getPersonalBests().then((res) => {
+    cached('getPersonalBests').then((res) => {
       expect(res.status).to.eq(200)
       Object.values(res.body.data).forEach((entries) => {
         expect(entries.length).to.be.lte(5)
@@ -72,7 +92,7 @@ describe('Personal Bests API — entry field shape', () => {
   })
 
   it('each entry includes required fields when present', () => {
-    cy.getPersonalBests().then((res) => {
+    cached('getPersonalBests').then((res) => {
       expect(res.status).to.eq(200)
       const firstNonEmpty = Object.entries(res.body.data).find(([, entries]) => entries.length > 0)
       if (!firstNonEmpty) {
@@ -90,7 +110,7 @@ describe('Personal Bests API — entry field shape', () => {
   })
 
   it('rank of top entry is 1', () => {
-    cy.getPersonalBests().then((res) => {
+    cached('getPersonalBests').then((res) => {
       const firstNonEmpty = Object.entries(res.body.data).find(([, entries]) => entries.length > 0)
       if (!firstNonEmpty) return cy.log('No personal best entries — rank check skipped')
       expect(firstNonEmpty[1][0].rank).to.eq(1)
@@ -98,7 +118,7 @@ describe('Personal Bests API — entry field shape', () => {
   })
 
   it('entries within a distance are ordered rank ascending', () => {
-    cy.getPersonalBests().then((res) => {
+    cached('getPersonalBests').then((res) => {
       Object.values(res.body.data).forEach((entries) => {
         if (entries.length < 2) return
         for (let i = 1; i < entries.length; i++) {
@@ -125,7 +145,7 @@ describe('VO2max Target Effort API — authenticated response shape', () => {
   })
 
   it('returns 200 with a top-level data object', () => {
-    cy.getTargetEffort().then((res) => {
+    cached('getTargetEffort').then((res) => {
       expect([200, 500]).to.include(res.status)
       if (res.status === 200) {
         expect(res.body).to.have.property('data')
@@ -134,7 +154,7 @@ describe('VO2max Target Effort API — authenticated response shape', () => {
   })
 
   it('response data includes a status field', () => {
-    cy.getTargetEffort().then((res) => {
+    cached('getTargetEffort').then((res) => {
       expect(res.status).to.not.eq(401)
       if (res.status === 200) {
         expect(['no_goal', 'no_target_time', 'insufficient_data', 'ok']).to.include(
@@ -151,7 +171,7 @@ describe('VO2max Target Effort API — ok status field shape', () => {
   })
 
   it('when status is ok: response includes all required fields', () => {
-    cy.getTargetEffort().then((res) => {
+    cached('getTargetEffort').then((res) => {
       expect(res.status).to.not.eq(401)
       if (res.status !== 200) return
       const d = res.body.data
@@ -190,7 +210,7 @@ describe('Calorie Trend API — authenticated response shape', () => {
   })
 
   it('returns 200 with data array and weight_kg', () => {
-    cy.getCalorieTrend().then((res) => {
+    cached('getCalorieTrend').then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('data')
       expect(res.body.data).to.be.an('array')
@@ -200,14 +220,14 @@ describe('Calorie Trend API — authenticated response shape', () => {
   })
 
   it('weight_kg is null or a positive number', () => {
-    cy.getCalorieTrend().then((res) => {
+    cached('getCalorieTrend').then((res) => {
       const { weight_kg } = res.body
       expect(weight_kg === null || (typeof weight_kg === 'number' && weight_kg > 0)).to.be.true
     })
   })
 
   it('data is empty array when weight_kg is null', () => {
-    cy.getCalorieTrend().then((res) => {
+    cached('getCalorieTrend').then((res) => {
       if (res.body.weight_kg === null) {
         expect(res.body.data).to.deep.eq([])
       }
@@ -221,7 +241,7 @@ describe('Calorie Trend API — monthly entry field shape', () => {
   })
 
   it('each entry has month and total_kcal fields', () => {
-    cy.getCalorieTrend().then((res) => {
+    cached('getCalorieTrend').then((res) => {
       expect(res.status).to.eq(200)
       const { data } = res.body
       if (data.length === 0) {
@@ -235,7 +255,7 @@ describe('Calorie Trend API — monthly entry field shape', () => {
   })
 
   it('each entry month is in YYYY-MM format', () => {
-    cy.getCalorieTrend().then((res) => {
+    cached('getCalorieTrend').then((res) => {
       const { data } = res.body
       if (data.length === 0) {
         return cy.log('No calorie trend entries — month format check skipped')
@@ -247,7 +267,7 @@ describe('Calorie Trend API — monthly entry field shape', () => {
   })
 
   it('each entry total_kcal is a non-negative integer', () => {
-    cy.getCalorieTrend().then((res) => {
+    cached('getCalorieTrend').then((res) => {
       const { data } = res.body
       if (data.length === 0) {
         return cy.log('No calorie trend entries — total_kcal check skipped')
@@ -260,7 +280,7 @@ describe('Calorie Trend API — monthly entry field shape', () => {
   })
 
   it('entries are sorted chronologically ascending by month', () => {
-    cy.getCalorieTrend().then((res) => {
+    cached('getCalorieTrend').then((res) => {
       const { data } = res.body
       if (data.length < 2) {
         return cy.log('Fewer than 2 entries — sort order check skipped')
@@ -272,7 +292,7 @@ describe('Calorie Trend API — monthly entry field shape', () => {
   })
 
   it('at most 6 monthly entries are returned', () => {
-    cy.getCalorieTrend().then((res) => {
+    cached('getCalorieTrend').then((res) => {
       expect(res.body.data.length).to.be.lte(6)
     })
   })
@@ -303,7 +323,7 @@ describe('Gear Analytics API — authenticated response shape', () => {
   })
 
   it('returns 200 with a data array', () => {
-    cy.getGearAnalytics().then((res) => {
+    cached('getGearAnalytics').then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('data')
       expect(res.body.data).to.be.an('array')
@@ -318,7 +338,7 @@ describe('Gear Analytics API — gear entry field shape', () => {
   })
 
   it('each gear entry has all required fields when data is non-empty', () => {
-    cy.getGearAnalytics().then((res) => {
+    cached('getGearAnalytics').then((res) => {
       expect(res.status).to.eq(200)
       const { data } = res.body
       if (data.length === 0) {
@@ -341,7 +361,7 @@ describe('Gear Analytics API — gear entry field shape', () => {
   })
 
   it('retired is a boolean', () => {
-    cy.getGearAnalytics().then((res) => {
+    cached('getGearAnalytics').then((res) => {
       const { data } = res.body
       if (data.length === 0) return cy.log('No gear entries — retired type check skipped')
       data.forEach((entry) => {
@@ -351,7 +371,7 @@ describe('Gear Analytics API — gear entry field shape', () => {
   })
 
   it('total_activities is a non-negative integer', () => {
-    cy.getGearAnalytics().then((res) => {
+    cached('getGearAnalytics').then((res) => {
       const { data } = res.body
       if (data.length === 0) return cy.log('No gear entries — total_activities check skipped')
       data.forEach((entry) => {
@@ -362,7 +382,7 @@ describe('Gear Analytics API — gear entry field shape', () => {
   })
 
   it('total_distance_m and total_moving_time_sec are non-negative numbers', () => {
-    cy.getGearAnalytics().then((res) => {
+    cached('getGearAnalytics').then((res) => {
       const { data } = res.body
       if (data.length === 0) return cy.log('No gear entries — distance/time check skipped')
       data.forEach((entry) => {
@@ -375,7 +395,7 @@ describe('Gear Analytics API — gear entry field shape', () => {
   })
 
   it('category is null or a string', () => {
-    cy.getGearAnalytics().then((res) => {
+    cached('getGearAnalytics').then((res) => {
       const { data } = res.body
       if (data.length === 0) return cy.log('No gear entries — category check skipped')
       data.forEach((entry) => {
@@ -385,7 +405,7 @@ describe('Gear Analytics API — gear entry field shape', () => {
   })
 
   it('entries are sorted by total_distance_m descending', () => {
-    cy.getGearAnalytics().then((res) => {
+    cached('getGearAnalytics').then((res) => {
       const { data } = res.body
       if (data.length < 2) return cy.log('Fewer than 2 gear entries — sort order check skipped')
       for (let i = 1; i < data.length; i++) {
@@ -401,28 +421,28 @@ describe('Gear Analytics API — query params', () => {
   })
 
   it('?range=4w returns 200', () => {
-    cy.getGearAnalytics({ range: '4w' }).then((res) => {
+    cached('getGearAnalytics', { range: '4w' }).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.data).to.be.an('array')
     })
   })
 
   it('?range=3m returns 200', () => {
-    cy.getGearAnalytics({ range: '3m' }).then((res) => {
+    cached('getGearAnalytics', { range: '3m' }).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.data).to.be.an('array')
     })
   })
 
   it('?activity_type=Run returns 200', () => {
-    cy.getGearAnalytics({ activity_type: 'Run' }).then((res) => {
+    cached('getGearAnalytics', { activity_type: 'Run' }).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.data).to.be.an('array')
     })
   })
 
   it('?range=invalid returns 400', () => {
-    cy.getGearAnalytics({ range: 'invalid_range_xyz' }).then((res) => {
+    cached('getGearAnalytics', { range: 'invalid_range_xyz' }).then((res) => {
       expect(res.status).to.eq(400)
     })
   })
@@ -459,7 +479,7 @@ describe('Zone Analytics API — authenticated response shape', () => {
   })
 
   it('returns 200 with a data object', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('data')
       expect(res.body.data).to.be.an('object')
@@ -468,14 +488,14 @@ describe('Zone Analytics API — authenticated response shape', () => {
   })
 
   it('data has hr, pace, cadence, activity_count keys', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       const { data } = res.body
       expect(data).to.include.all.keys('hr', 'pace', 'cadence', 'activity_count')
     })
   })
 
   it('activity_count is a non-negative integer', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       const { activity_count } = res.body.data
       expect(Number.isInteger(activity_count)).to.be.true
       expect(activity_count).to.be.gte(0)
@@ -489,32 +509,32 @@ describe('Zone Analytics API — hr block shape', () => {
   })
 
   it('hr block has method, has_data, missing_config keys', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       const { hr } = res.body.data
       expect(hr).to.include.all.keys('method', 'has_data', 'missing_config')
     })
   })
 
   it('hr.has_data is a boolean', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       expect(res.body.data.hr.has_data).to.be.a('boolean')
     })
   })
 
   it('hr.missing_config is a boolean', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       expect(res.body.data.hr.missing_config).to.be.a('boolean')
     })
   })
 
   it('hr.method is a valid zone method string', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       expect(res.body.data.hr.method).to.be.oneOf(['max_hr', 'karvonen', 'threshold'])
     })
   })
 
   it('hr.zones is null or an array of 5 zones', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       const { zones } = res.body.data.hr
       if (zones === null) {
         return cy.log('HR zones are null — no config set, skipping zone count check')
@@ -525,7 +545,7 @@ describe('Zone Analytics API — hr block shape', () => {
   })
 
   it('each hr zone entry has label, min, max, time_sec, distance_m, pct_time, pct_dist when zones non-null', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       const { zones } = res.body.data.hr
       if (!zones) return cy.log('HR zones null — zone field shape skipped')
       zones.forEach((zone) => {
@@ -543,7 +563,7 @@ describe('Zone Analytics API — hr block shape', () => {
   })
 
   it('pct_time values across all hr zones sum to ~100 when has_data is true', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       const { hr } = res.body.data
       if (!hr.zones || !hr.has_data) return cy.log('No HR zone data — pct_time sum check skipped')
       const total = hr.zones.reduce((sum, z) => sum + z.pct_time, 0)
@@ -560,20 +580,20 @@ describe('Zone Analytics API — pace block shape', () => {
   })
 
   it('pace block has threshold_pace_sec, has_threshold, has_data keys', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       const { pace } = res.body.data
       expect(pace).to.include.all.keys('threshold_pace_sec', 'has_threshold', 'has_data')
     })
   })
 
   it('pace.has_threshold is a boolean', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       expect(res.body.data.pace.has_threshold).to.be.a('boolean')
     })
   })
 
   it('pace.threshold_pace_sec is null or a positive number', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       const { threshold_pace_sec } = res.body.data.pace
       expect(
         threshold_pace_sec === null ||
@@ -583,7 +603,7 @@ describe('Zone Analytics API — pace block shape', () => {
   })
 
   it('pace.zones is null or an array of 5 entries when has_threshold is true', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       const { pace } = res.body.data
       if (!pace.has_threshold) {
         expect(pace.zones).to.be.null
@@ -601,20 +621,20 @@ describe('Zone Analytics API — cadence block shape', () => {
   })
 
   it('cadence block has has_data key', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       const { cadence } = res.body.data
       expect(cadence).to.have.property('has_data')
     })
   })
 
   it('cadence.has_data is a boolean', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       expect(res.body.data.cadence.has_data).to.be.a('boolean')
     })
   })
 
   it('cadence.bands is null or an array of 4 cadence bands', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       const { bands } = res.body.data.cadence
       if (bands === null) {
         return cy.log('No cadence bands — array check skipped')
@@ -625,7 +645,7 @@ describe('Zone Analytics API — cadence block shape', () => {
   })
 
   it('each cadence band has label, time_sec, pct_time, distance_m, pct_dist fields when bands non-null', () => {
-    cy.getZoneAnalytics().then((res) => {
+    cached('getZoneAnalytics').then((res) => {
       const { bands } = res.body.data.cadence
       if (!bands) return cy.log('Cadence bands null — field shape skipped')
       bands.forEach((band) => {
@@ -641,25 +661,25 @@ describe('Zone Analytics API — query params', () => {
   })
 
   it('?range=4w returns 200', () => {
-    cy.getZoneAnalytics({ range: '4w' }).then((res) => {
+    cached('getZoneAnalytics', { range: '4w' }).then((res) => {
       expect(res.status).to.eq(200)
     })
   })
 
   it('?range=3m returns 200', () => {
-    cy.getZoneAnalytics({ range: '3m' }).then((res) => {
+    cached('getZoneAnalytics', { range: '3m' }).then((res) => {
       expect(res.status).to.eq(200)
     })
   })
 
   it('?activity_type=Run returns 200', () => {
-    cy.getZoneAnalytics({ activity_type: 'Run' }).then((res) => {
+    cached('getZoneAnalytics', { activity_type: 'Run' }).then((res) => {
       expect(res.status).to.eq(200)
     })
   })
 
   it('?range=invalid returns 400', () => {
-    cy.getZoneAnalytics({ range: 'bogus_range' }).then((res) => {
+    cached('getZoneAnalytics', { range: 'bogus_range' }).then((res) => {
       expect(res.status).to.eq(400)
     })
   })
@@ -671,7 +691,7 @@ describe('Zone Analytics Reference API — response shape', () => {
   })
 
   it('returns 200 with zones array and config flags', () => {
-    cy.getZonesReference().then((res) => {
+    cached('getZonesReference').then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('data')
       const { data } = res.body
@@ -680,14 +700,14 @@ describe('Zone Analytics Reference API — response shape', () => {
   })
 
   it('data.zones is an array of 5 entries', () => {
-    cy.getZonesReference().then((res) => {
+    cached('getZonesReference').then((res) => {
       expect(res.body.data.zones).to.be.an('array')
       expect(res.body.data.zones).to.have.length(5)
     })
   })
 
   it('each reference zone has zone, name, hr, pace, guidance fields', () => {
-    cy.getZonesReference().then((res) => {
+    cached('getZonesReference').then((res) => {
       res.body.data.zones.forEach((z) => {
         expect(z).to.include.all.keys('zone', 'name', 'hr', 'pace', 'guidance')
         expect(z.guidance).to.be.a('string')
@@ -696,7 +716,7 @@ describe('Zone Analytics Reference API — response shape', () => {
   })
 
   it('hr_configured and pace_configured are booleans', () => {
-    cy.getZonesReference().then((res) => {
+    cached('getZonesReference').then((res) => {
       const { hr_configured, pace_configured } = res.body.data
       expect(hr_configured).to.be.a('boolean')
       expect(pace_configured).to.be.a('boolean')
@@ -731,7 +751,7 @@ describe('PMC API — authenticated response shape', () => {
   })
 
   it('returns 200 with a data object', () => {
-    cy.getPmc().then((res) => {
+    cached('getPmc').then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('data')
       expect(res.body.data).to.be.an('object')
@@ -739,7 +759,7 @@ describe('PMC API — authenticated response shape', () => {
   })
 
   it('data has series array and meets_min_history boolean', () => {
-    cy.getPmc().then((res) => {
+    cached('getPmc').then((res) => {
       const { data } = res.body
       expect(data).to.have.property('series')
       expect(data.series).to.be.an('array')
@@ -749,7 +769,7 @@ describe('PMC API — authenticated response shape', () => {
   })
 
   it('series has at most 90 entries by default', () => {
-    cy.getPmc().then((res) => {
+    cached('getPmc').then((res) => {
       expect(res.body.data.series.length).to.be.lte(90)
     })
   })
@@ -761,7 +781,7 @@ describe('PMC API — series entry field shape', () => {
   })
 
   it('each series entry has date, chronic_load_28d, acute_load_7d, tsb fields', () => {
-    cy.getPmc().then((res) => {
+    cached('getPmc').then((res) => {
       const { series } = res.body.data
       if (series.length === 0) {
         return cy.log('No PMC series entries — field shape skipped')
@@ -773,7 +793,7 @@ describe('PMC API — series entry field shape', () => {
   })
 
   it('each series entry date is in YYYY-MM-DD format', () => {
-    cy.getPmc().then((res) => {
+    cached('getPmc').then((res) => {
       const { series } = res.body.data
       if (series.length === 0) {
         return cy.log('No PMC series entries — date format check skipped')
@@ -785,7 +805,7 @@ describe('PMC API — series entry field shape', () => {
   })
 
   it('each series entry chronic_load_28d, acute_load_7d, tsb are numbers', () => {
-    cy.getPmc().then((res) => {
+    cached('getPmc').then((res) => {
       const { series } = res.body.data
       if (series.length === 0) {
         return cy.log('No PMC series entries — numeric type check skipped')
@@ -799,7 +819,7 @@ describe('PMC API — series entry field shape', () => {
   })
 
   it('each series entry chronic_load_28d and acute_load_7d are non-negative', () => {
-    cy.getPmc().then((res) => {
+    cached('getPmc').then((res) => {
       const { series } = res.body.data
       if (series.length === 0) return cy.log('No PMC series entries — range check skipped')
       series.forEach((entry) => {
@@ -810,7 +830,7 @@ describe('PMC API — series entry field shape', () => {
   })
 
   it('tsb equals chronic_load_28d minus acute_load_7d (rounded to 1 decimal)', () => {
-    cy.getPmc().then((res) => {
+    cached('getPmc').then((res) => {
       const { series } = res.body.data
       if (series.length === 0) return cy.log('No PMC series entries — TSB formula check skipped')
       const entry = series[0]
@@ -820,7 +840,7 @@ describe('PMC API — series entry field shape', () => {
   })
 
   it('series entries are in ascending date order', () => {
-    cy.getPmc().then((res) => {
+    cached('getPmc').then((res) => {
       const { series } = res.body.data
       if (series.length < 2) return cy.log('Fewer than 2 entries — sort order check skipped')
       for (let i = 1; i < series.length; i++) {
@@ -836,28 +856,28 @@ describe('PMC API — days query param', () => {
   })
 
   it('?days=30 returns series with at most 30 entries', () => {
-    cy.getPmc({ days: 30 }).then((res) => {
+    cached('getPmc', { days: 30 }).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.data.series.length).to.be.lte(30)
     })
   })
 
   it('?days=60 returns series with at most 60 entries', () => {
-    cy.getPmc({ days: 60 }).then((res) => {
+    cached('getPmc', { days: 60 }).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.data.series.length).to.be.lte(60)
     })
   })
 
   it('?days=90 returns series with at most 90 entries', () => {
-    cy.getPmc({ days: 90 }).then((res) => {
+    cached('getPmc', { days: 90 }).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.data.series.length).to.be.lte(90)
     })
   })
 
   it('?days=999 (invalid) falls back to 90-day default', () => {
-    cy.getPmc({ days: 999 }).then((res) => {
+    cached('getPmc', { days: 999 }).then((res) => {
       expect(res.status).to.eq(200)
       // Falls back to default 90 days — series length is at most 90
       expect(res.body.data.series.length).to.be.lte(90)
@@ -885,7 +905,7 @@ describe('Running Performance Trends API — GET /performance-trends', () => {
   })
 
   it('returns 200 with data array', () => {
-    cy.getPerformanceTrends().then((res) => {
+    cached('getPerformanceTrends').then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('data')
       expect(res.body.data).to.be.an('array')
@@ -893,7 +913,7 @@ describe('Running Performance Trends API — GET /performance-trends', () => {
   })
 
   it('each item has started_at and distance_m fields', () => {
-    cy.getPerformanceTrends().then((res) => {
+    cached('getPerformanceTrends').then((res) => {
       const items = res.body.data
       if (items.length === 0)
         return cy.log('No performance trend items — skipping field assertions')
@@ -905,7 +925,7 @@ describe('Running Performance Trends API — GET /performance-trends', () => {
   })
 
   it('?limit=20 returns at most 20 items', () => {
-    cy.getPerformanceTrends({ limit: 20 }).then((res) => {
+    cached('getPerformanceTrends', { limit: 20 }).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.data).to.be.an('array')
       expect(res.body.data.length).to.be.lte(20)
@@ -913,7 +933,7 @@ describe('Running Performance Trends API — GET /performance-trends', () => {
   })
 
   it('?type=Run filter returns 200', () => {
-    cy.getPerformanceTrends({ type: 'Run' }).then((res) => {
+    cached('getPerformanceTrends', { type: 'Run' }).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.data).to.be.an('array')
     })
@@ -1232,7 +1252,7 @@ describe('Session Profile API — authenticated response shape', () => {
   })
 
   it('returns 200 with success flag and top-level keys', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('success', true)
       expect(res.body).to.include.all.keys('pagi', 'sore', 'threshold', 'total_runs')
@@ -1240,7 +1260,7 @@ describe('Session Profile API — authenticated response shape', () => {
   })
 
   it('total_runs is a non-negative integer', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       expect(res.status).to.eq(200)
       const { total_runs } = res.body
       expect(Number.isInteger(total_runs)).to.be.true
@@ -1255,7 +1275,7 @@ describe('Session Profile API — pagi and sore block shape', () => {
   })
 
   it('pagi block has all required stats keys', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       const { pagi } = res.body
       expect(pagi).to.include.all.keys(
         'count',
@@ -1272,7 +1292,7 @@ describe('Session Profile API — pagi and sore block shape', () => {
   })
 
   it('sore block has all required stats keys', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       const { sore } = res.body
       expect(sore).to.include.all.keys(
         'count',
@@ -1289,7 +1309,7 @@ describe('Session Profile API — pagi and sore block shape', () => {
   })
 
   it('pagi.count and sore.count are non-negative integers', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       const { pagi, sore } = res.body
       expect(Number.isInteger(pagi.count)).to.be.true
       expect(pagi.count).to.be.gte(0)
@@ -1299,7 +1319,7 @@ describe('Session Profile API — pagi and sore block shape', () => {
   })
 
   it('pagi.count + sore.count equals total_runs', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       const { pagi, sore, total_runs } = res.body
       // total_runs only counts classified sessions (pagi + sore); unclassified are excluded
       expect(pagi.count + sore.count).to.eq(total_runs)
@@ -1307,7 +1327,7 @@ describe('Session Profile API — pagi and sore block shape', () => {
   })
 
   it('avg fields are null when count is 0, numbers when count > 0', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       ;[res.body.pagi, res.body.sore].forEach((block) => {
         if (block.count === 0) {
           // All avg fields must be null when no runs in that window
@@ -1329,7 +1349,7 @@ describe('Session Profile API — pagi and sore block shape', () => {
   })
 
   it('avg_relative_effort is null or a non-negative number', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       ;[res.body.pagi, res.body.sore].forEach((block) => {
         expect(
           block.avg_relative_effort === null ||
@@ -1340,7 +1360,7 @@ describe('Session Profile API — pagi and sore block shape', () => {
   })
 
   it('avg_hr is null or a positive number', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       ;[res.body.pagi, res.body.sore].forEach((block) => {
         expect(block.avg_hr === null || (typeof block.avg_hr === 'number' && block.avg_hr > 0)).to
           .be.true
@@ -1349,7 +1369,7 @@ describe('Session Profile API — pagi and sore block shape', () => {
   })
 
   it('relative_effort_count and hr_count are non-negative integers', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       ;[res.body.pagi, res.body.sore].forEach((block) => {
         expect(Number.isInteger(block.relative_effort_count)).to.be.true
         expect(block.relative_effort_count).to.be.gte(0)
@@ -1366,7 +1386,7 @@ describe('Session Profile API — threshold block shape', () => {
   })
 
   it('threshold block has all required keys', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       const { threshold } = res.body
       expect(threshold).to.include.all.keys(
         'value',
@@ -1379,13 +1399,13 @@ describe('Session Profile API — threshold block shape', () => {
   })
 
   it('threshold.value equals 20 (RE_THRESHOLD_MIN_COUNT)', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       expect(res.body.threshold.value).to.eq(20)
     })
   })
 
   it('pagi_met and sore_met are booleans', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       const { threshold } = res.body
       expect(threshold.pagi_met).to.be.a('boolean')
       expect(threshold.sore_met).to.be.a('boolean')
@@ -1393,7 +1413,7 @@ describe('Session Profile API — threshold block shape', () => {
   })
 
   it('pagi_re_count and sore_re_count are non-negative integers', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       const { threshold } = res.body
       expect(Number.isInteger(threshold.pagi_re_count)).to.be.true
       expect(threshold.pagi_re_count).to.be.gte(0)
@@ -1403,7 +1423,7 @@ describe('Session Profile API — threshold block shape', () => {
   })
 
   it('pagi_met reflects whether pagi_re_count >= threshold.value', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       const { threshold } = res.body
       const expectedPagiMet = threshold.pagi_re_count >= threshold.value
       expect(threshold.pagi_met).to.eq(expectedPagiMet)
@@ -1411,7 +1431,7 @@ describe('Session Profile API — threshold block shape', () => {
   })
 
   it('sore_met reflects whether sore_re_count >= threshold.value', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       const { threshold } = res.body
       const expectedSoreMet = threshold.sore_re_count >= threshold.value
       expect(threshold.sore_met).to.eq(expectedSoreMet)
@@ -1419,14 +1439,14 @@ describe('Session Profile API — threshold block shape', () => {
   })
 
   it('pagi_re_count matches pagi.relative_effort_count', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       const { pagi, threshold } = res.body
       expect(threshold.pagi_re_count).to.eq(pagi.relative_effort_count)
     })
   })
 
   it('sore_re_count matches sore.relative_effort_count', () => {
-    cy.getSessionProfile().then((res) => {
+    cached('getSessionProfile').then((res) => {
       const { sore, threshold } = res.body
       expect(threshold.sore_re_count).to.eq(sore.relative_effort_count)
     })
@@ -1454,7 +1474,7 @@ describe('Temperature Efficiency API — authenticated response shape', () => {
   })
 
   it('returns 200 with success flag and top-level keys', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body).to.have.property('success', true)
       expect(res.body).to.include.all.keys('runs', 'temp_groups', 'summary', 'ref_band')
@@ -1462,26 +1482,26 @@ describe('Temperature Efficiency API — authenticated response shape', () => {
   })
 
   it('runs is an array', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       expect(res.body.runs).to.be.an('array')
     })
   })
 
   it('temp_groups is an array', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       expect(res.body.temp_groups).to.be.an('array')
     })
   })
 
   it('summary has morning, evening, overall_avg_ratio, hr_run_count keys', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { summary } = res.body
       expect(summary).to.include.all.keys('morning', 'evening', 'overall_avg_ratio', 'hr_run_count')
     })
   })
 
   it('summary.hr_run_count is a non-negative integer', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { hr_run_count } = res.body.summary
       expect(Number.isInteger(hr_run_count)).to.be.true
       expect(hr_run_count).to.be.gte(0)
@@ -1489,7 +1509,7 @@ describe('Temperature Efficiency API — authenticated response shape', () => {
   })
 
   it('ref_band is null or an object with low and high', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { ref_band } = res.body
       if (ref_band === null) {
         return cy.log('ref_band is null — fewer than 3 qualifying runs, skip shape check')
@@ -1508,7 +1528,7 @@ describe('Temperature Efficiency API — runs array field shape', () => {
   })
 
   it('each run entry has all required fields when data is non-empty', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { runs } = res.body
       if (runs.length === 0) {
         return cy.log('No qualifying runs — run field shape skipped')
@@ -1528,7 +1548,7 @@ describe('Temperature Efficiency API — runs array field shape', () => {
   })
 
   it('time_of_day is either pagi or malam', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { runs } = res.body
       if (runs.length === 0) return cy.log('No runs — time_of_day check skipped')
       runs.forEach((run) => {
@@ -1538,7 +1558,7 @@ describe('Temperature Efficiency API — runs array field shape', () => {
   })
 
   it('distance_km, avg_pace_sec, avg_hr, avg_temp_c, pace_hr_ratio are numbers', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { runs } = res.body
       if (runs.length === 0) return cy.log('No runs — numeric type check skipped')
       runs.forEach((run) => {
@@ -1552,7 +1572,7 @@ describe('Temperature Efficiency API — runs array field shape', () => {
   })
 
   it('pace_hr_ratio is positive for all runs', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { runs } = res.body
       if (runs.length === 0) return cy.log('No runs — ratio positivity check skipped')
       runs.forEach((run) => {
@@ -1562,7 +1582,7 @@ describe('Temperature Efficiency API — runs array field shape', () => {
   })
 
   it('runs count matches summary.hr_run_count', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       expect(res.body.runs.length).to.eq(res.body.summary.hr_run_count)
     })
   })
@@ -1574,7 +1594,7 @@ describe('Temperature Efficiency API — temp_groups field shape', () => {
   })
 
   it('each temp group has temp_c, n, q1, median, q3, min, max fields', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { temp_groups } = res.body
       if (temp_groups.length === 0) {
         return cy.log('No temp groups — field shape skipped')
@@ -1586,7 +1606,7 @@ describe('Temperature Efficiency API — temp_groups field shape', () => {
   })
 
   it('temp_c is an integer (1-degree bucket)', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { temp_groups } = res.body
       if (temp_groups.length === 0) return cy.log('No temp groups — temp_c check skipped')
       temp_groups.forEach((group) => {
@@ -1596,7 +1616,7 @@ describe('Temperature Efficiency API — temp_groups field shape', () => {
   })
 
   it('n is a positive integer in each group', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { temp_groups } = res.body
       if (temp_groups.length === 0) return cy.log('No temp groups — n check skipped')
       temp_groups.forEach((group) => {
@@ -1607,7 +1627,7 @@ describe('Temperature Efficiency API — temp_groups field shape', () => {
   })
 
   it('min <= q1 <= median <= q3 <= max in each group', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { temp_groups } = res.body
       if (temp_groups.length === 0) return cy.log('No temp groups — ordering check skipped')
       temp_groups.forEach((group) => {
@@ -1620,7 +1640,7 @@ describe('Temperature Efficiency API — temp_groups field shape', () => {
   })
 
   it('temp_groups are sorted by temp_c ascending', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { temp_groups } = res.body
       if (temp_groups.length < 2) return cy.log('Fewer than 2 temp groups — sort check skipped')
       for (let i = 1; i < temp_groups.length; i++) {
@@ -1636,7 +1656,7 @@ describe('Temperature Efficiency API — summary morning/evening block shape', (
   })
 
   it('morning block has count, avg_temp_c, avg_pace_sec, avg_hr, avg_ratio keys', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { morning } = res.body.summary
       expect(morning).to.include.all.keys(
         'count',
@@ -1649,7 +1669,7 @@ describe('Temperature Efficiency API — summary morning/evening block shape', (
   })
 
   it('evening block has count, avg_temp_c, avg_pace_sec, avg_hr, avg_ratio keys', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { evening } = res.body.summary
       expect(evening).to.include.all.keys(
         'count',
@@ -1662,7 +1682,7 @@ describe('Temperature Efficiency API — summary morning/evening block shape', (
   })
 
   it('morning.count and evening.count are non-negative integers', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { morning, evening } = res.body.summary
       expect(Number.isInteger(morning.count)).to.be.true
       expect(morning.count).to.be.gte(0)
@@ -1672,14 +1692,14 @@ describe('Temperature Efficiency API — summary morning/evening block shape', (
   })
 
   it('morning.count + evening.count equals hr_run_count', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { morning, evening, hr_run_count } = res.body.summary
       expect(morning.count + evening.count).to.eq(hr_run_count)
     })
   })
 
   it('avg fields in morning are null when count is 0, numbers when count > 0', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { morning } = res.body.summary
       if (morning.count === 0) {
         expect(morning.avg_temp_c).to.be.null
@@ -1695,7 +1715,7 @@ describe('Temperature Efficiency API — summary morning/evening block shape', (
   })
 
   it('avg fields in evening are null when count is 0, numbers when count > 0', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { evening } = res.body.summary
       if (evening.count === 0) {
         expect(evening.avg_temp_c).to.be.null
@@ -1711,7 +1731,7 @@ describe('Temperature Efficiency API — summary morning/evening block shape', (
   })
 
   it('overall_avg_ratio is null when hr_run_count is 0, positive number otherwise', () => {
-    cy.getTemperatureEfficiency().then((res) => {
+    cached('getTemperatureEfficiency').then((res) => {
       const { overall_avg_ratio, hr_run_count } = res.body.summary
       if (hr_run_count === 0) {
         expect(overall_avg_ratio).to.be.null
@@ -1719,6 +1739,293 @@ describe('Temperature Efficiency API — summary morning/evening block shape', (
         expect(overall_avg_ratio).to.be.a('number')
         expect(overall_avg_ratio).to.be.gt(0)
       }
+    })
+  })
+})
+
+// ─── overview ────────────────────────────────────────────────────────────────
+
+const OVERVIEW_SECTIONS = [
+  'calorie_trend',
+  'endurance_score',
+  'fitness_age',
+  'personal_bests',
+  'session_profile',
+  'temperature_efficiency',
+]
+
+describe('Analytics Overview API — auth guard', () => {
+  it('returns 401 when unauthenticated', () => {
+    cy.getAnalyticsOverviewNoAuth().then((res) => {
+      expect(res.status).to.eq(401)
+      expect(res.body).to.have.property('error')
+    })
+  })
+})
+
+describe('Analytics Overview API — response shape', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('returns 200 with data, errors and message OK', () => {
+    cached('getAnalyticsOverview').then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body).to.have.property('message', 'OK')
+      expect(res.body.data).to.be.an('object')
+      expect(res.body.errors).to.be.an('object')
+    })
+  })
+
+  it('data contains all six sections', () => {
+    cached('getAnalyticsOverview').then((res) => {
+      expect(res.body.data).to.include.all.keys(...OVERVIEW_SECTIONS)
+    })
+  })
+
+  it('errors is empty and no section is null for a healthy account', () => {
+    cached('getAnalyticsOverview').then((res) => {
+      expect(res.body.errors).to.deep.eq({})
+      OVERVIEW_SECTIONS.forEach((key) => {
+        expect(res.body.data[key], `data.${key}`).to.not.be.null
+      })
+    })
+  })
+
+  it('calorie_trend has a data array and weight_kg', () => {
+    cached('getAnalyticsOverview').then((res) => {
+      expect(res.body.data.calorie_trend.data).to.be.an('array')
+      expect(res.body.data.calorie_trend).to.have.property('weight_kg')
+    })
+  })
+
+  it('personal_bests is an object of arrays', () => {
+    cached('getAnalyticsOverview').then((res) => {
+      Object.values(res.body.data.personal_bests).forEach((entries) => {
+        expect(entries).to.be.an('array')
+      })
+    })
+  })
+
+  it('session_profile and temperature_efficiency keep their top-level keys', () => {
+    cached('getAnalyticsOverview').then((res) => {
+      const { session_profile, temperature_efficiency } = res.body.data
+      expect(session_profile).to.include.all.keys('pagi', 'sore', 'threshold', 'total_runs')
+      expect(temperature_efficiency).to.include.all.keys(
+        'runs',
+        'temp_groups',
+        'summary',
+        'ref_band'
+      )
+    })
+  })
+})
+
+// Each section must equal what the dedicated endpoint returns for the same session. Those
+// endpoints are scoped by the logged-in user, so equal output means the aggregate does not
+// pull in another user's rows.
+describe('Analytics Overview API — matches the per-section endpoints', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  const withoutSuccess = ({ success, ...rest }) => rest
+
+  it('calorie_trend equals GET /calorie-trend', () => {
+    cached('getAnalyticsOverview').then((overview) => {
+      cached('getCalorieTrend').then((single) => {
+        expect(overview.body.data.calorie_trend.data).to.deep.eq(single.body.data)
+        expect(overview.body.data.calorie_trend.weight_kg).to.deep.eq(single.body.weight_kg)
+      })
+    })
+  })
+
+  it('endurance_score equals GET /endurance-score', () => {
+    cached('getAnalyticsOverview').then((overview) => {
+      cached('getEnduranceScore').then((single) => {
+        expect(overview.body.data.endurance_score).to.deep.eq(single.body.data)
+      })
+    })
+  })
+
+  it('fitness_age equals GET /fitness-age', () => {
+    cached('getAnalyticsOverview').then((overview) => {
+      cached('getFitnessAgeTrend').then((single) => {
+        expect(overview.body.data.fitness_age).to.deep.eq(single.body.data)
+      })
+    })
+  })
+
+  it('personal_bests equals GET /personal-bests', () => {
+    cached('getAnalyticsOverview').then((overview) => {
+      cached('getPersonalBests').then((single) => {
+        expect(overview.body.data.personal_bests).to.deep.eq(single.body.data)
+      })
+    })
+  })
+
+  it('session_profile equals GET /session-profile', () => {
+    cached('getAnalyticsOverview').then((overview) => {
+      cached('getSessionProfile').then((single) => {
+        expect(overview.body.data.session_profile).to.deep.eq(withoutSuccess(single.body))
+      })
+    })
+  })
+
+  it('temperature_efficiency equals GET /temperature-efficiency', () => {
+    cached('getAnalyticsOverview').then((overview) => {
+      cached('getTemperatureEfficiency').then((single) => {
+        expect(overview.body.data.temperature_efficiency).to.deep.eq(withoutSuccess(single.body))
+      })
+    })
+  })
+})
+
+// ─── activity-series ─────────────────────────────────────────────────────────
+
+const SERIES_COLUMNS = [
+  'id',
+  'started_at',
+  'activity_type',
+  'distance_m',
+  'avg_pace_sec_per_km',
+  'avg_hr',
+  'elevation_gain_m',
+  'efficiency_factor',
+  'estimated_vo2max',
+  'avg_watts',
+  'weighted_avg_watts',
+  'device_watts',
+]
+const SEED_COUNT = 120
+
+describe('Activity Series API — auth guard', () => {
+  it('returns 401 when unauthenticated', () => {
+    cy.getActivitySeriesNoAuth().then((res) => {
+      expect(res.status).to.eq(401)
+      expect(res.body).to.have.property('error')
+    })
+  })
+})
+
+describe('Activity Series API — account with more than 100 activities', () => {
+  let preExistingCount
+  let seededRows
+  let dbRows
+
+  before(() => {
+    cy.deleteSeededAnalyticsActivitiesFromDb()
+    cy.getActivityCountFromDb().then((count) => {
+      preExistingCount = count
+    })
+    cy.seedAnalyticsActivitiesInDb(SEED_COUNT).then((result) => {
+      expect(result.inserted).to.eq(SEED_COUNT)
+    })
+    cy.getSeededAnalyticsActivitiesFromDb().then((rows) => {
+      seededRows = rows
+    })
+    cy.getActivityListFromDb().then((rows) => {
+      dbRows = rows
+    })
+  })
+
+  after(() => {
+    cy.deleteSeededAnalyticsActivitiesFromDb().then((result) => {
+      expect(result.deleted).to.eq(SEED_COUNT)
+    })
+    cy.getActivityCountFromDb().then((count) => {
+      expect(count, 'pre-existing activities untouched by cleanup').to.eq(preExistingCount)
+    })
+  })
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('returns 200 with data array, total and message OK', () => {
+    cached('getActivitySeries').then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.data).to.be.an('array')
+      expect(res.body.total).to.be.a('number')
+      expect(res.body).to.have.property('message', 'OK')
+      expect(res.body.total).to.eq(res.body.data.length)
+    })
+  })
+
+  it('returns every activity with no 100-row cap', () => {
+    cached('getActivitySeries').then((res) => {
+      expect(dbRows.length, 'account holds more than 100 rows').to.be.greaterThan(100)
+      expect(res.body.data.length).to.be.greaterThan(100)
+      expect(res.body.data.length).to.eq(dbRows.length)
+      expect(res.body.total).to.eq(preExistingCount + SEED_COUNT)
+    })
+  })
+
+  it('includes every seeded activity exactly once', () => {
+    cached('getActivitySeries').then((res) => {
+      const ids = res.body.data.map((row) => row.id)
+      expect(new Set(ids).size).to.eq(ids.length)
+      expect(seededRows).to.have.length(SEED_COUNT)
+      seededRows.forEach((seeded) => {
+        expect(ids).to.include(seeded.id)
+      })
+    })
+  })
+
+  it('each row carries exactly the light chart columns and no user_id', () => {
+    cached('getActivitySeries').then((res) => {
+      res.body.data.forEach((row) => {
+        expect(row).to.have.all.keys(...SERIES_COLUMNS)
+        expect(row).to.not.have.property('user_id')
+      })
+    })
+  })
+
+  it('efficiency_factor, estimated_vo2max and avg_watts are returned and match the DB', () => {
+    cached('getActivitySeries').then((res) => {
+      const byId = Object.fromEntries(res.body.data.map((row) => [row.id, row]))
+      let withEf = 0
+      let withVo2 = 0
+      let withWatts = 0
+      seededRows.forEach((seeded) => {
+        const row = byId[seeded.id]
+        expect(row.efficiency_factor).to.eq(seeded.efficiency_factor)
+        expect(row.estimated_vo2max).to.eq(seeded.estimated_vo2max)
+        expect(row.avg_watts).to.eq(seeded.avg_watts)
+        if (row.efficiency_factor !== null) {
+          withEf++
+          expect(row.efficiency_factor).to.be.a('number')
+        }
+        if (row.estimated_vo2max !== null) {
+          withVo2++
+          expect(row.estimated_vo2max).to.be.a('number')
+        }
+        if (row.avg_watts !== null) {
+          withWatts++
+          expect(row.avg_watts).to.be.a('number')
+        }
+      })
+      expect(withEf, 'seeded rows with EF').to.be.greaterThan(SEED_COUNT / 2)
+      expect(withVo2, 'seeded rows with VO2max').to.be.greaterThan(SEED_COUNT / 2)
+      expect(withWatts, 'seeded rows with watts').to.be.greaterThan(SEED_COUNT / 2)
+    })
+  })
+
+  it('rows are ordered newest first', () => {
+    cached('getActivitySeries').then((res) => {
+      const times = res.body.data.map((row) => new Date(row.started_at).getTime())
+      for (let i = 1; i < times.length; i++) {
+        expect(times[i]).to.be.lte(times[i - 1])
+      }
+    })
+  })
+
+  it('only returns the test account rows', () => {
+    cached('getActivitySeries').then((res) => {
+      const ownIds = new Set(dbRows.map((row) => row.id))
+      res.body.data.forEach((row) => {
+        expect(ownIds.has(row.id), `activity ${row.id} belongs to the test account`).to.be.true
+      })
     })
   })
 })
