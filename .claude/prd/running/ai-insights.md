@@ -186,7 +186,7 @@ Tool use is not used for the Insight Engine — all data is available when the c
 | Type                | Description                                                                                     |
 | ------------------- | ----------------------------------------------------------------------------------------------- |
 | `post_activity`     | Automatic analysis after each activity finishes syncing from Strava                             |
-| `weekly_review`     | Weekly review via cron every Sunday 19:00                                                       |
+| `weekly_review`     | Weekly review via cron every Sunday 19:00 WIB                                                   |
 | `anomaly`           | Anomaly alert after post-activity insight completes (rules-based check + Claude narration)      |
 | `daily`             | Daily insight via cron at 06:00 (readiness / recovery / motivational)                           |
 | `on_demand`         | Manual analysis triggered by the user from the activity detail page                             |
