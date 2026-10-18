@@ -1,13 +1,6 @@
 import { NextResponse } from 'next/server'
-import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-
-const patchSchema = z.object({
-  max_hr: z.number().int().min(60).max(250).nullable().optional(),
-  resting_hr_baseline: z.number().int().min(30).max(120).nullable().optional(),
-  threshold_hr: z.number().int().min(100).max(220).nullable().optional(),
-  hr_zones_method: z.enum(['max_hr', 'karvonen', 'threshold']).optional(),
-})
+import { hrZonesPatchSchema } from '@/schemas/runningUser'
 
 export async function GET() {
   try {
@@ -71,11 +64,15 @@ export async function PATCH(request) {
       )
     }
 
-    const parsed = patchSchema.safeParse(body)
+    const parsed = hrZonesPatchSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Validation failed', issues: parsed.error.issues },
-        { status: 422 }
+        {
+          error: 'Validation failed',
+          message: parsed.error.issues[0]?.message,
+          issues: parsed.error.issues,
+        },
+        { status: 400 }
       )
     }
 

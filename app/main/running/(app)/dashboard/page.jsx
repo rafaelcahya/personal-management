@@ -122,12 +122,22 @@ export default function RunningDashboardPage() {
     try {
       const result = await syncStrava()
       setLastSyncAt(new Date().toISOString())
-      setSyncResult({ count: result.synced })
-      if (result.synced > 0) {
-        await loadDashboard(activeType, { silent: true })
+      if (result.backfill_started) {
+        setSyncResult({
+          count: 0,
+          message: result.message || 'Sync started, activities will appear shortly',
+        })
+      } else {
+        setSyncResult({ count: result.synced })
+        if (result.synced > 0) {
+          await loadDashboard(activeType, { silent: true })
+        }
       }
-    } catch {
-      // sync failure is non-blocking — dashboard data is still shown
+    } catch (err) {
+      // other failures are non-blocking — dashboard data is still shown
+      if (err.needsReconnect) {
+        setSyncResult({ count: 0, message: 'Strava needs reconnecting. See Settings.', warn: true })
+      }
     } finally {
       setSyncing(false)
     }
@@ -228,14 +238,20 @@ export default function RunningDashboardPage() {
                   {syncResult !== null && (
                     <span
                       id="syncResultMsg"
+                      role="status"
                       className={`hidden sm:flex items-center gap-1.5 text-xs font-medium ${
-                        syncResult.count > 0 ? 'text-green-600' : 'text-slate-400'
+                        syncResult.warn
+                          ? 'text-amber-600'
+                          : syncResult.count > 0
+                            ? 'text-green-600'
+                            : 'text-slate-400'
                       }`}
                     >
                       <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
-                      {syncResult.count > 0
-                        ? `${syncResult.count} new ${syncResult.count === 1 ? 'activity' : 'activities'}`
-                        : 'Already up to date'}
+                      {syncResult.message ??
+                        (syncResult.count > 0
+                          ? `${syncResult.count} new ${syncResult.count === 1 ? 'activity' : 'activities'}`
+                          : 'Already up to date')}
                     </span>
                   )}
                   <Button
@@ -257,14 +273,20 @@ export default function RunningDashboardPage() {
 
               {syncResult !== null && (
                 <div
+                  role="status"
                   className={`mt-1.5 sm:hidden flex items-center gap-1.5 text-xs font-medium ${
-                    syncResult.count > 0 ? 'text-green-600' : 'text-slate-400'
+                    syncResult.warn
+                      ? 'text-amber-600'
+                      : syncResult.count > 0
+                        ? 'text-green-600'
+                        : 'text-slate-400'
                   }`}
                 >
                   <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
-                  {syncResult.count > 0
-                    ? `${syncResult.count} new ${syncResult.count === 1 ? 'activity' : 'activities'}`
-                    : 'Already up to date'}
+                  {syncResult.message ??
+                    (syncResult.count > 0
+                      ? `${syncResult.count} new ${syncResult.count === 1 ? 'activity' : 'activities'}`
+                      : 'Already up to date')}
                 </div>
               )}
             </div>

@@ -30,12 +30,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/base/Select/Select'
-import { getUserProfile, updateUserProfile } from '@/lib/api/running'
+import { updateUserProfile } from '@/lib/api/running'
 import { profileSchema } from '@/schemas/runningProfile'
+import SectionLoadError from './SectionLoadError'
 
-export default function ProfileSection() {
-  const [loading, setLoading] = useState(true)
-  const [loadError, setLoadError] = useState(null)
+const LINK_BUTTON_CLASS = 'px-0 h-auto min-h-11 md:min-h-0 text-violet-500'
+
+export default function ProfileSection({ profile, loading, error: loadError, onRetry }) {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState(null)
   const [saveSuccess, setSaveSuccess] = useState(false)
@@ -84,22 +85,8 @@ export default function ProfileSection() {
   }
 
   useEffect(() => {
-    let cancelled = false
-    async function load() {
-      try {
-        const data = await getUserProfile()
-        if (!cancelled) reset({ ...(data ?? {}), sex: data?.sex ?? 'none' })
-      } catch (err) {
-        if (!cancelled) setLoadError(err.message || 'Failed to load profile')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [reset])
+    if (profile) reset({ ...profile, sex: profile.sex ?? 'none' })
+  }, [profile, reset])
 
   async function onSubmit(values) {
     setSaving(true)
@@ -142,9 +129,12 @@ export default function ProfileSection() {
             <Skeleton className="h-4 w-3/4 rounded" />
           </div>
         ) : loadError ? (
-          <div className="px-5 py-4">
-            <p className="text-sm text-red-700">{loadError}</p>
-          </div>
+          <SectionLoadError
+            id="profileLoadError_settingsPage"
+            retryId="profileRetryBtn_settingsPage"
+            message={loadError}
+            onRetry={onRetry}
+          />
         ) : (
           <div className="px-5 py-5">
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -157,7 +147,7 @@ export default function ProfileSection() {
                     placeholder="Your name"
                     className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
-                  <FieldDescription>How your name appears across the app 👤</FieldDescription>
+                  <FieldDescription>How your name appears across the app</FieldDescription>
                   <FieldError />
                 </FieldContent>
 
@@ -177,7 +167,7 @@ export default function ProfileSection() {
                       />
                     )}
                   />
-                  <FieldDescription>Used to calculate age-graded performance 🎂</FieldDescription>
+                  <FieldDescription>Used to calculate age-graded performance</FieldDescription>
                   <FieldError />
                 </FieldContent>
 
@@ -194,7 +184,7 @@ export default function ProfileSection() {
                     placeholder="e.g. 170"
                     className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
-                  <FieldDescription>Used for stride and pace estimations 📐</FieldDescription>
+                  <FieldDescription>Used for stride and pace estimations</FieldDescription>
                   <FieldError />
                 </FieldContent>
 
@@ -212,7 +202,7 @@ export default function ProfileSection() {
                     placeholder="e.g. 65"
                     className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
-                  <FieldDescription>Helps estimate running economy and VO₂max ⚖️</FieldDescription>
+                  <FieldDescription>Helps estimate running economy and VO₂max</FieldDescription>
                   <FieldError />
                 </FieldContent>
 
@@ -235,7 +225,7 @@ export default function ProfileSection() {
                     )}
                   />
                   <FieldDescription>
-                    Used for age-graded performance and category comparisons 🧬
+                    Used for age-graded performance and category comparisons
                   </FieldDescription>
                 </FieldContent>
               </div>
@@ -301,7 +291,7 @@ export default function ProfileSection() {
                           variant="link"
                           size="sm"
                           onClick={() => weightRef.current?.focus()}
-                          className="px-0 h-auto text-violet-500"
+                          className={LINK_BUTTON_CLASS}
                         >
                           weight
                         </Button>{' '}
@@ -310,7 +300,7 @@ export default function ProfileSection() {
                           variant="link"
                           size="sm"
                           onClick={() => heightRef.current?.focus()}
-                          className="px-0 h-auto text-violet-500"
+                          className={LINK_BUTTON_CLASS}
                         >
                           height
                         </Button>{' '}
@@ -323,7 +313,7 @@ export default function ProfileSection() {
                           variant="link"
                           size="sm"
                           onClick={() => weightRef.current?.focus()}
-                          className="px-0 h-auto text-violet-500"
+                          className={LINK_BUTTON_CLASS}
                         >
                           weight
                         </Button>{' '}
@@ -336,7 +326,7 @@ export default function ProfileSection() {
                           variant="link"
                           size="sm"
                           onClick={() => heightRef.current?.focus()}
-                          className="px-0 h-auto text-violet-500"
+                          className={LINK_BUTTON_CLASS}
                         >
                           height
                         </Button>{' '}
@@ -374,7 +364,12 @@ export default function ProfileSection() {
                     {saveError}
                   </div>
                 )}
-                <Button id="profileSaveBtn_settingsPage" type="submit" disabled={saving}>
+                <Button
+                  id="profileSaveBtn_settingsPage"
+                  type="submit"
+                  disabled={saving}
+                  className="h-11 md:h-8"
+                >
                   {saving ? 'Saving…' : 'Save'}
                 </Button>
               </div>

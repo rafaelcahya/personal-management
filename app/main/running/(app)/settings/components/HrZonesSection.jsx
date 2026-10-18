@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/base/Select/Select'
 import { getHrZones, updateHrZones, detectMaxHr } from '@/lib/api/running'
+import SectionLoadError from './SectionLoadError'
 
 const METHOD_OPTIONS = [
   {
@@ -57,9 +58,13 @@ export default function HrZonesSection() {
   const [isThresholdAutoCalc, setIsThresholdAutoCalc] = useState(true)
   const [method, setMethod] = useState('max_hr')
 
+  const [reloadKey, setReloadKey] = useState(0)
+
   useEffect(() => {
     let cancelled = false
     async function load() {
+      setLoading(true)
+      setLoadError(null)
       try {
         const data = await getHrZones()
         if (!cancelled && data) {
@@ -83,7 +88,7 @@ export default function HrZonesSection() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [reloadKey])
 
   function handleMaxHrChange(e) {
     const val = e.target.value
@@ -162,6 +167,19 @@ export default function HrZonesSection() {
       payload.threshold_hr = null
     }
 
+    if (payload.resting_hr_baseline != null && payload.max_hr != null) {
+      if (payload.resting_hr_baseline >= payload.max_hr) {
+        setSaveError('Resting HR must be lower than Max HR')
+        return
+      }
+    }
+    if (payload.threshold_hr != null && payload.max_hr != null) {
+      if (payload.threshold_hr > payload.max_hr) {
+        setSaveError('Threshold HR cannot be higher than Max HR')
+        return
+      }
+    }
+
     setSaving(true)
     setSaveError(null)
     setSaveSuccess(false)
@@ -194,16 +212,19 @@ export default function HrZonesSection() {
             <Skeleton className="h-9 w-full rounded" />
           </div>
         ) : loadError ? (
-          <div className="px-5 py-4">
-            <p className="text-sm text-red-700">{loadError}</p>
-          </div>
+          <SectionLoadError
+            id="hrZonesLoadError_settingsPage"
+            retryId="hrZonesRetryBtn_settingsPage"
+            message={loadError}
+            onRetry={() => setReloadKey((k) => k + 1)}
+          />
         ) : (
           <div className="px-5 py-5 flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Max HR */}
               <FieldContent>
                 <FieldLabel htmlFor="maxHrInput_settingsPage">Max HR (bpm)</FieldLabel>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Input
                     id="maxHrInput_settingsPage"
                     type="number"
@@ -212,7 +233,7 @@ export default function HrZonesSection() {
                     value={maxHr}
                     onChange={handleMaxHrChange}
                     placeholder="e.g. 190"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
+                    className="min-w-0 flex-1 basis-32 text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500"
                   />
                   <Button
                     id="detectMaxHrBtn_settingsPage"
@@ -220,7 +241,7 @@ export default function HrZonesSection() {
                     variant="outline"
                     disabled={detecting}
                     onClick={handleDetectMaxHr}
-                    className="shrink-0 gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
+                    className="shrink-0 gap-1.5 h-11 md:h-8 text-xs text-violet-600 border-violet-200 hover:bg-violet-50"
                   >
                     <Zap className="size-3.5" aria-hidden="true" />
                     {detecting ? 'Detecting…' : 'Detect'}
@@ -229,7 +250,7 @@ export default function HrZonesSection() {
                 {typeof detectSuccess === 'number' && (
                   <p
                     id="maxHrDetectedHint_settingsPage"
-                    className="text-xs text-green-700 flex items-center gap-1"
+                    className="text-xs text-green-700 flex flex-wrap items-center gap-1"
                   >
                     <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
                     Detected: {detectSuccess} bpm — from your highest recorded activity
@@ -343,7 +364,12 @@ export default function HrZonesSection() {
                   {saveError}
                 </div>
               )}
-              <Button id="hrZonesSaveBtn_settingsPage" onClick={handleSave} disabled={saving}>
+              <Button
+                id="hrZonesSaveBtn_settingsPage"
+                onClick={handleSave}
+                disabled={saving}
+                className="h-11 md:h-8"
+              >
                 {saving ? 'Saving…' : 'Save'}
               </Button>
             </div>

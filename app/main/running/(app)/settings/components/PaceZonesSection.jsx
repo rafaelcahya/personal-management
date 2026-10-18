@@ -15,7 +15,7 @@ import Card, {
 import { Tabs, TabsList, TabsTrigger } from '@/components/base/Tabs/Tabs.jsx'
 import Input from '@/components/base/Input/Input'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
-import { getUserProfile, updateUserProfile, detectThresholdPace } from '@/lib/api/running'
+import { updateUserProfile, detectThresholdPace } from '@/lib/api/running'
 
 const INPUT_MODES = [
   { id: 'manual', label: 'Manual', icon: Pencil },
@@ -39,9 +39,7 @@ function mmssToSec(str) {
   return m * 60 + s
 }
 
-export default function PaceZonesSection() {
-  const [loading, setLoading] = useState(true)
-  const [loadError, setLoadError] = useState(null)
+export default function PaceZonesSection({ profile, loading, error: loadError }) {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState(null)
   const [saveSuccess, setSaveSuccess] = useState(false)
@@ -56,24 +54,8 @@ export default function PaceZonesSection() {
   const [detectError, setDetectError] = useState(null)
 
   useEffect(() => {
-    let cancelled = false
-    async function load() {
-      try {
-        const data = await getUserProfile()
-        if (!cancelled && data?.threshold_pace_sec) {
-          setPaceMmss(secToMmss(data.threshold_pace_sec))
-        }
-      } catch (err) {
-        if (!cancelled) setLoadError(err.message || 'Failed to load pace zones settings')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [])
+    if (profile?.threshold_pace_sec) setPaceMmss(secToMmss(profile.threshold_pace_sec))
+  }, [profile])
 
   async function handleDetect() {
     setDetecting(true)
@@ -139,9 +121,10 @@ export default function PaceZonesSection() {
             <Skeleton className="h-9 w-full rounded" />
           </div>
         ) : loadError ? (
-          <div className="px-5 py-4">
-            <p className="text-sm text-red-700">{loadError}</p>
-          </div>
+          <p id="paceZonesLoadError_settingsPage" className="px-5 py-4 text-sm text-red-700">
+            Pace zones could not load because your profile failed to load. Use Retry in the Profile
+            section above.
+          </p>
         ) : (
           <div className="px-5 py-5 flex flex-col gap-4">
             {/* Mode tabs */}
@@ -158,7 +141,7 @@ export default function PaceZonesSection() {
                     id={`paceZonesMode_${id}_settingsPage`}
                     value={id}
                     icon={Icon}
-                    className="whitespace-nowrap"
+                    className="whitespace-nowrap min-h-11 md:min-h-0"
                   >
                     {label}
                   </TabsTrigger>
@@ -178,7 +161,7 @@ export default function PaceZonesSection() {
                   value={paceMmss}
                   onChange={(e) => setPaceMmss(e.target.value)}
                   placeholder="e.g. 5:20"
-                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 max-w-[120px]"
+                  className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 w-full sm:max-w-32"
                 />
                 <FieldDescription>
                   Your sustainable pace for ~60 min — the anchor for all 5 pace zones.
@@ -200,7 +183,7 @@ export default function PaceZonesSection() {
                   variant="outline"
                   disabled={detecting}
                   onClick={handleDetect}
-                  className="gap-1.5 text-xs text-violet-600 border-violet-200 hover:bg-violet-50 w-fit"
+                  className="gap-1.5 h-11 md:h-8 text-xs text-violet-600 border-violet-200 hover:bg-violet-50 w-fit"
                 >
                   <Zap className="size-3.5" aria-hidden="true" />
                   {detecting ? 'Analysing…' : 'Detect from activities'}
@@ -209,7 +192,7 @@ export default function PaceZonesSection() {
                   <div className="flex flex-col gap-2">
                     <div
                       id="detectThresholdPaceResult_settingsPage"
-                      className="flex items-center gap-1.5 text-xs text-green-700"
+                      className="flex flex-wrap items-center gap-1.5 text-xs text-green-700"
                     >
                       <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
                       Detected: <span className="font-semibold">{secToMmss(detectResult)} /km</span>
@@ -227,7 +210,7 @@ export default function PaceZonesSection() {
                             key={a.id}
                             className="flex items-center justify-between gap-2 text-xs text-slate-600"
                           >
-                            <span className="truncate max-w-[200px]">{a.name || 'Run'}</span>
+                            <span className="truncate min-w-0 flex-1">{a.name || 'Run'}</span>
                             <div className="flex items-center gap-2 shrink-0 text-slate-400">
                               {a.distance_m && <span>{(a.distance_m / 1000).toFixed(1)} km</span>}
                               <span>
@@ -247,6 +230,7 @@ export default function PaceZonesSection() {
                   <div
                     id="detectThresholdPaceError_settingsPage"
                     className="flex items-center gap-1.5 text-xs text-red-600"
+                    role="alert"
                   >
                     <AlertCircle className="size-3.5 shrink-0" aria-hidden="true" />
                     {detectError}
@@ -262,7 +246,7 @@ export default function PaceZonesSection() {
                     value={paceMmss}
                     onChange={(e) => setPaceMmss(e.target.value)}
                     placeholder="e.g. 5:20"
-                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 max-w-[120px]"
+                    className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 w-full sm:max-w-32"
                   />
                 </FieldContent>
               </div>
@@ -290,7 +274,12 @@ export default function PaceZonesSection() {
                   {saveError}
                 </div>
               )}
-              <Button id="paceZonesSaveBtn_settingsPage" onClick={handleSave} disabled={saving}>
+              <Button
+                id="paceZonesSaveBtn_settingsPage"
+                onClick={handleSave}
+                disabled={saving}
+                className="h-11 md:h-8"
+              >
                 {saving ? 'Saving…' : 'Save'}
               </Button>
             </div>

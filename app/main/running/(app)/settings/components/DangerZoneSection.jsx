@@ -24,7 +24,7 @@ import {
 } from '@/components/base/Modal/Modal.jsx'
 import { deleteAllActivities } from '@/lib/api/running'
 
-export default function DangerZoneSection() {
+export default function DangerZoneSection({ onDeleted }) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [confirmText, setConfirmText] = useState('')
   const [deleting, setDeleting] = useState(false)
@@ -52,6 +52,7 @@ export default function DangerZoneSection() {
       setDialogOpen(false)
       setConfirmText('')
       setDeleteSuccess(true)
+      onDeleted?.()
     } catch (err) {
       setDeleteError(err.message || 'Failed to delete activities')
     } finally {

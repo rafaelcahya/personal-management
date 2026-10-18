@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { decrypt } from '@/lib/utils/running/encrypt'
+import { refreshStravaToken } from '@/lib/services/running/strava/refreshStravaToken'
+import { isStravaStubbed } from '@/lib/services/running/strava/stravaStub'
 
 export async function POST() {
   try {
@@ -16,11 +17,13 @@ export async function POST() {
       )
     }
 
-    const { data: creds } = await supabase
+    const { data: creds, error: lookupError } = await supabase
       .from('rt_strava_credentials')
-      .select('access_token')
+      .select('access_token, refresh_token, expires_at, needs_reconnect')
       .eq('user_id', user.id)
       .maybeSingle()
+
+    if (lookupError) throw lookupError
 
     if (!creds) {
       return NextResponse.json(
@@ -29,17 +32,39 @@ export async function POST() {
       )
     }
 
-    fetch('https://www.strava.com/oauth/deauthorize', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + decrypt(creds.access_token) },
-    }).catch((err) => console.error('[strava/deauthorize fire-and-forget]', err.message))
+    // Done before the delete: an expired access token would make deauthorize fail silently.
+    let accessToken = null
+    if (!isStravaStubbed()) {
+      try {
+        const tokenResult = await refreshStravaToken(user.id, creds)
+        accessToken = tokenResult.accessToken ?? null
+      } catch (err) {
+        console.error('[strava/disconnect] token refresh failed', err.message)
+      }
+    }
 
-    const { error: deleteError } = await supabase
+    // Delete first so a failing deauthorize call can never leave the user stuck connected.
+    const { data: deleted, error: deleteError } = await supabase
       .from('rt_strava_credentials')
       .delete()
       .eq('user_id', user.id)
+      .select('user_id')
 
     if (deleteError) throw deleteError
+    if (!deleted?.length) throw new Error('Credentials were not deleted')
+
+    if (accessToken) {
+      after(async () => {
+        try {
+          await fetch('https://www.strava.com/oauth/deauthorize', {
+            method: 'POST',
+            headers: { Authorization: 'Bearer ' + accessToken },
+          })
+        } catch (err) {
+          console.error('[strava/disconnect] deauthorize failed', err.message)
+        }
+      })
+    }
 
     return NextResponse.json({ data: null, message: 'Disconnected' }, { status: 200 })
   } catch (err) {
