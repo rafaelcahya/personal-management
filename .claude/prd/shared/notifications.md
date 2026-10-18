@@ -84,6 +84,7 @@ All times are **WIB (Asia/Jakarta, UTC+7)**. Every alert below also shows in the
 | **Low stock**            | Stock drops below 5 (already existed; now also a push)                                                          | Product detail                                           |
 | **Restock reminder**     | Every day 09:00. A product will run out in 14 days or less, going by how fast you use it                        | Product detail                                           |
 | **Event analysis ready** | When the AI analysis of a trading event is saved                                                                | The event (or the event list for a multi-event analysis) |
+| **Gear mileage**         | Every day 09:00. A pair of shoes or gear passes its mileage limit                                               | Running Dashboard                                        |
 | **Weekly summary**       | Every Monday 08:00                                                                                              | Home                                                     |
 | **Session ended**        | You were signed out by accident while this tab was in the background. Shown by your browser, not by the server  | Login                                                    |
 

@@ -55,7 +55,7 @@ ai/anomaly-detector            (trigger: after strava/fetch-streams completes)
 ai/generate-daily-insight      (trigger: cron daily 06:00)
   └─ AI generates 1 insight card for today
 
-ai/weekly-review               (trigger: cron Sunday 19:00)
+ai/weekly-review               (trigger: cron TZ=Asia/Jakarta, Sunday 19:00 WIB)
   └─ AI generates a comprehensive week summary
 
 SCHEDULED CRON FUNCTIONS:
@@ -66,7 +66,7 @@ stravaGapHeal                  (cron: 0 2 * * * — daily at 02:00)
   └─ Cap: 50 activities per user per run (GAP_CAP_PER_USER)
   └─ Sends strava/fetch-streams Inngest event for each qualifying activity
 
-raceReminderNotification       (cron: 0 8 * * * — daily at 08:00)
+raceReminderNotification       (cron: TZ=Asia/Jakarta 0 8 * * * — daily at 08:00 WIB)
   └─ Find upcoming races at 14 / 7 / 3 / 1 days away
   └─ Check if notification already sent for that threshold (notifications_sent JSONB column)
   └─ Send push notification with race-specific message
@@ -74,7 +74,7 @@ raceReminderNotification       (cron: 0 8 * * * — daily at 08:00)
   └─ Respects notify_race_reminder + push_notifications_enabled settings
   └─ Clears expired push subscriptions automatically
 
-fridayPrepNotification         (cron: 0 8 * * 5 — every Friday at 08:00)
+fridayPrepNotification         (cron: TZ=Asia/Jakarta 0 15 * * 5 — every Friday at 15:00 WIB)
   └─ Determine current week range (Monday to now)
   └─ Skip if friday_prep insight already exists for this week_start (deduplication)
   └─ Build weekly context via buildFridayPrepContext (recent activities, training load, etc.)
