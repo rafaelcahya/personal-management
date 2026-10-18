@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-09-10 (unified home dashboard #821 — API test coverage)
-**Branch:** feat/issue-821-unified-home-dashboard
+**Last Updated:** 2026-10-18 (new push notifications #857 — API test coverage)
+**Branch:** feat/issue-857-new-push-notifications
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,682  | 52%  |
+| API       | 1,712  | 52%  |
 | UI        | 1,551  | 48%  |
-| **Total** | **3,233** | 100% |
+| **Total** | **3,263** | 100% |
 
 ---
 
@@ -22,12 +22,12 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 485   | 695   | 1,180 |
-| Notifications        | 38    | 0     | 38    |
+| Running Tracker      | 481   | 695   | 1,176 |
+| Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,682** | **1,551** | **3,233** |
+| **Total**            | **1,712** | **1,551** | **3,263** |
 
 ---
 
@@ -332,11 +332,11 @@
 | Feature                  | API | UI | Total |
 | ------------------------ | --- | -- | ----- |
 | HR Zones                 | 20  | 0  | 20    |
-| Settings                 | 27  | 21 | 48    |
+| Settings                 | 23  | 21 | 44    |
 | Threshold Pace Detect    | 6   | 0  | 6     |
-| **Subtotal**             | **53** | **21** | **74** |
+| **Subtotal**             | **49** | **21** | **70** |
 
-**Running Total — API: 485 | UI: 695 | Total: 1,180**
+**Running Total — API: 481 | UI: 695 | Total: 1,176**
 
 > **Streak Counter (#820)** — `cypress/e2e/running/dashboard/dashboard-api.cy.js` (11 API tests, all passing).
 > Weekly streak folded into `GET /dashboard`. Covers the `streak` object shape/keys, integer & boolean field types, `unit === 'week'`, the `best_weeks >= current_weeks` invariant, at-risk logic (only with a live streak in the last 2 days, mutually exclusive with `active_this_week`), streak being identical across activity-type filters (habit metric ignores type), and invalid `tz_offset` fallback. Data-independent assertions — no seeding required.
@@ -352,9 +352,16 @@
 | Mark Read (+ IDOR/validation) | 10 | 0 | 10   |
 | Mark All Read           | 5   | 0  | 5     |
 | Realtime Bell (contract + live-update) | 4 | 0 | 4 |
-| **Subtotal**            | **38** | **0** | **38** |
+| Settings page notifications: auth guard | 6 | 0 | 6 |
+| Push devices (list, register, 2nd device, validation, remove, IDOR, key-proof on move) | 16 | 0 | 16 |
+| Push test (validation, not my device) | 4 | 0 | 4 |
+| Preferences (incl. new types and browser-only session_ended) | 7 | 0 | 7 |
+| `notify()` keeps the in-app row (low stock path) | 1 | 0 | 1 |
+| **Subtotal**            | **72** | **0** | **72** |
 
-**Notifications Total — API: 38 | UI: 0 | Total: 38**
+**Notifications Total — API: 72 | UI: 0 | Total: 72**
+
+> **Notification section on Settings (#856)** — `cypress/e2e/notifications/settings/notification-settings-api.cy.js` (34 API tests). The push tests that lived in `running/settings/settings-api.cy.js` moved here (16 removed there). The success path of the test push needs a real browser subscription and is checked by hand.
 
 > **Realtime Bell (#818)** — `cypress/e2e/notifications/notifications-api.cy.js` (4 API tests, all passing).
 > Realtime is websocket-based, so these cover the data contract the bell relies on: list row shape + `data`/`read_at` invariants (2), and a seeded unread notification raising unread-count / sorting newest-first then returning to baseline on mark-read (2). Seeds via `seedNotification`/`deleteNotification` cy.tasks.
@@ -402,9 +409,9 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 485   | 695   | 1,180 |
-| Notifications        | 38    | 0     | 38    |
+| Running Tracker      | 481   | 695   | 1,176 |
+| Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,682** | **1,551** | **3,233** |
+| **Total**            | **1,712** | **1,551** | **3,263** |

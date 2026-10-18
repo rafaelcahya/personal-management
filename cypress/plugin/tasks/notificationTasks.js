@@ -9,6 +9,7 @@
 // `apikey` and `Authorization` headers reliably runs as service_role.
 
 const REST = () => `${process.env.SUPABASE_URL}/rest/v1/notifications`
+const REST_BASE = () => `${process.env.SUPABASE_URL}/rest/v1`
 const authHeaders = () => {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
   return { apikey: key, Authorization: `Bearer ${key}` }
@@ -45,6 +46,57 @@ export const notificationTasks = () => ({
       headers: authHeaders(),
     })
     if (!res.ok) throw new Error(`deleteNotification failed (${res.status}): ${await res.text()}`)
+    return { success: true }
+  },
+
+  // ── push devices (push_subscriptions) ──────────────────────────────────────
+
+  async getOtherUserId({ userId }) {
+    const res = await fetch(`${REST_BASE()}/rt_users?select=id&id=neq.${userId}&limit=1`, {
+      headers: authHeaders(),
+    })
+    if (!res.ok) throw new Error(`getOtherUserId failed (${res.status}): ${await res.text()}`)
+    const rows = await res.json()
+    return rows[0]?.id ?? null
+  },
+
+  async seedPushDevice({ userId, endpoint }) {
+    const res = await fetch(`${REST_BASE()}/push_subscriptions`, {
+      method: 'POST',
+      headers: {
+        ...authHeaders(),
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation',
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        endpoint,
+        p256dh: 'cypress-fake-p256dh-key',
+        auth: 'cypress-fake-auth-key',
+        user_agent: 'Cypress seed',
+      }),
+    })
+    const text = await res.text()
+    if (!res.ok) throw new Error(`seedPushDevice failed (${res.status}): ${text}`)
+    return JSON.parse(text)[0]
+  },
+
+  async getPushDevice({ endpoint }) {
+    const res = await fetch(
+      `${REST_BASE()}/push_subscriptions?select=id,user_id&endpoint=eq.${encodeURIComponent(endpoint)}`,
+      { headers: authHeaders() }
+    )
+    if (!res.ok) throw new Error(`getPushDevice failed (${res.status}): ${await res.text()}`)
+    const rows = await res.json()
+    return rows[0] ?? null
+  },
+
+  async deletePushDeviceByEndpoint({ endpoint }) {
+    const res = await fetch(
+      `${REST_BASE()}/push_subscriptions?endpoint=eq.${encodeURIComponent(endpoint)}`,
+      { method: 'DELETE', headers: authHeaders() }
+    )
+    if (!res.ok) throw new Error(`deletePushDeviceByEndpoint failed (${res.status})`)
     return { success: true }
   },
 })

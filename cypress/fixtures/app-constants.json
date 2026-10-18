@@ -171,8 +171,7 @@
       "settings": "/api/running/v1/user/settings",
       "activities": "/api/running/v1/user/activities",
       "max_hr_detect": "/api/running/v1/user/max-hr-detect",
-      "strava_disconnect": "/api/running/v1/auth/strava/disconnect",
-      "push_subscription": "/api/running/v1/user/push-subscription"
+      "strava_disconnect": "/api/running/v1/auth/strava/disconnect"
     },
     "trading_settings": {
       "get": "/api/trade/v1/settings",
@@ -240,7 +239,10 @@
       "list": "/api/notifications/v1",
       "unread_count": "/api/notifications/v1/unread-count",
       "read": "/api/notifications/v1/read",
-      "read_all": "/api/notifications/v1/read-all"
+      "read_all": "/api/notifications/v1/read-all",
+      "push_subscriptions": "/api/notifications/v1/push-subscriptions",
+      "push_subscriptions_test": "/api/notifications/v1/push-subscriptions/test",
+      "preferences": "/api/notifications/v1/preferences"
     }
   },
   "test_ids": {
@@ -1027,6 +1029,30 @@
       "clear_multi_select_btn": "clearMultiSelectBtn_eventPage",
       "brief_desc_warning": "briefDescriptionWarning_eventAnalysisModal"
     },
+    "settings_notifications": {
+      "push_devices_section": "pushDevicesSection_settingsPage",
+      "push_devices_loading": "pushDevicesLoading_settingsPage",
+      "push_devices_error": "pushDevicesError_settingsPage",
+      "push_devices_retry_btn": "pushDevicesRetryBtn_settingsPage",
+      "push_permission": "pushPermission_settingsPage",
+      "push_blocked_help": "pushBlockedHelp_settingsPage",
+      "push_toggle_error": "pushToggleError_settingsPage",
+      "push_this_device_toggle": "pushThisDeviceToggle_settingsPage",
+      "push_devices_empty": "pushDevicesEmpty_settingsPage",
+      "push_devices_list": "pushDevicesList_settingsPage",
+      "push_device_row": "pushDevice_{deviceIdPrefix8}_settingsPage",
+      "remove_push_device_btn": "removePushDeviceBtn_{deviceIdPrefix8}_settingsPage",
+      "send_test_push_btn": "sendTestPushBtn_settingsPage",
+      "send_test_push_result": "sendTestPushResult_settingsPage",
+      "push_last_success": "pushLastSuccess_settingsPage",
+      "push_last_failure": "pushLastFailure_settingsPage",
+      "preferences_section": "notificationPreferencesSection_settingsPage",
+      "preferences_loading": "preferencesLoading_settingsPage",
+      "preferences_error": "preferencesError_settingsPage",
+      "preferences_retry_btn": "preferencesRetryBtn_settingsPage",
+      "preferences_save_error": "preferencesSaveError_settingsPage",
+      "push_pref_toggle": "pushPref_{type}_settingsPage"
+    },
     "running_settings": {
       "page": "settingsPage",
       "profile_loading": "profileLoading_settingsPage",
@@ -1062,15 +1088,6 @@
       "pace_zones_save_btn": "paceZonesSaveBtn_settingsPage",
       "pace_zones_save_success": "paceZonesSaveSuccess_settingsPage",
       "pace_zones_save_error": "paceZonesSaveError_settingsPage",
-      "notifications_loading": "notificationsLoading_settingsPage",
-      "push_notifications_toggle": "pushNotificationsToggle_settingsPage",
-      "push_notifications_error": "pushNotificationsError_settingsPage",
-      "notify_post_activity_toggle": "notifyPostActivityToggle_settingsPage",
-      "notify_weekly_review_toggle": "notifyWeeklyReviewToggle_settingsPage",
-      "notify_friday_prep_toggle": "notifyFridayPrepToggle_settingsPage",
-      "notify_anomaly_toggle": "notifyAnomalyToggle_settingsPage",
-      "notify_race_reminder_toggle": "notifyRaceReminderToggle_settingsPage",
-      "notify_toggle_error": "notifyToggleError_settingsPage",
       "strava_disconnect_btn": "stravaDisconnectBtn_settings",
       "danger_zone_delete_btn": "dangerZoneDeleteBtn_settingsPage",
       "danger_zone_dialog": "dangerZoneDialog_settingsPage",

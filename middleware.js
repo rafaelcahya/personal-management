@@ -67,9 +67,15 @@ export async function middleware(request) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Verifies the JWT locally against the project's public key; no call to the Auth server.
+  // A malformed token can make getClaims() throw; that must read as "not signed in", not a 500.
+  let user = null
+  try {
+    const { data: claimsData } = await supabase.auth.getClaims()
+    if (claimsData?.claims?.sub) user = { id: claimsData.claims.sub }
+  } catch {
+    user = null
+  }
 
   if (!user && path !== '/login') {
     if (path.startsWith('/api/')) {

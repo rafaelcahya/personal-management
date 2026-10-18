@@ -1,51 +1,14 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { decrypt, encrypt } from '@/lib/utils/running/encrypt'
+import { refreshStravaToken } from '@/lib/services/running/strava/refreshStravaToken'
 import { inngest } from '@/lib/inngest/client'
 
 const STRAVA_ACTIVITIES_URL = 'https://www.strava.com/api/v3/athlete/activities'
 const STRAVA_ATHLETE_URL = 'https://www.strava.com/api/v3/athlete'
 const STRAVA_GEAR_URL = 'https://www.strava.com/api/v3/gear'
-const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token'
 const PER_PAGE = 100
-const TOKEN_EXPIRY_BUFFER_SEC = 300
 const GEAR_REFRESH_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000
-
-async function getValidAccessToken(credentials, admin, userId) {
-  const expiresAt = new Date(credentials.expires_at).getTime() / 1000
-  const fiveMinFromNow = Date.now() / 1000 + TOKEN_EXPIRY_BUFFER_SEC
-
-  if (expiresAt > fiveMinFromNow) {
-    return decrypt(credentials.access_token)
-  }
-
-  const res = await fetch(STRAVA_TOKEN_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      client_id: process.env.STRAVA_CLIENT_ID,
-      client_secret: process.env.STRAVA_CLIENT_SECRET,
-      grant_type: 'refresh_token',
-      refresh_token: decrypt(credentials.refresh_token),
-    }),
-  })
-
-  if (!res.ok) throw new Error(`Token refresh failed: ${res.status}`)
-
-  const { access_token, refresh_token, expires_at } = await res.json()
-
-  await admin
-    .from('rt_strava_credentials')
-    .update({
-      access_token: encrypt(access_token),
-      refresh_token: encrypt(refresh_token),
-      expires_at: new Date(expires_at * 1000).toISOString(),
-    })
-    .eq('user_id', userId)
-
-  return access_token
-}
 
 async function syncAthleteShoes(accessToken, admin, userId) {
   try {
@@ -126,11 +89,12 @@ export async function POST(_request) {
       return NextResponse.json({ error: 'Strava not connected' }, { status: 400 })
     }
 
-    if (credentials.needs_reconnect === true) {
+    // Same path as the background jobs: a 401 sets needs_reconnect and sends one notification.
+    const tokenResult = await refreshStravaToken(user.id, credentials)
+    if (tokenResult.skipped || tokenResult.needsReconnect) {
       return NextResponse.json({ synced: 0, skipped: true, reason: 'needs_reconnect' })
     }
-
-    const accessToken = await getValidAccessToken(credentials, admin, user.id)
+    const { accessToken } = tokenResult
 
     // Proactively sync all athlete shoes — before activity loop
     await syncAthleteShoes(accessToken, admin, user.id)
