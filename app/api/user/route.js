@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getServerUser } from '@/lib/supabase/getServerUser'
 
 export async function GET() {
   try {
@@ -16,7 +17,16 @@ export async function GET() {
       )
     }
 
-    const meta = user.user_metadata || {}
+    // The JWT's user_metadata is frozen until the token refreshes, so a just-saved profile would
+    // read back stale. Ask the Auth server for the current profile.
+    const { user: fresh, error: freshError } = await getServerUser(supabase)
+    if (freshError || !fresh) {
+      return NextResponse.json(
+        { error: 'Unauthorized', message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    const meta = fresh.user_metadata || {}
     const data = {
       id: user.id,
       username: meta.username ?? '',
