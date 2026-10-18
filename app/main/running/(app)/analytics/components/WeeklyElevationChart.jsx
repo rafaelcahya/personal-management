@@ -83,14 +83,14 @@ export default function WeeklyElevationChart({ activities }) {
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval={2}
           />
           <YAxis
             domain={[0, Math.ceil(maxGain * 1.15)]}
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             unit=" m"

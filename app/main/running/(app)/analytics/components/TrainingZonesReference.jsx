@@ -88,7 +88,7 @@ export default function TrainingZonesReference({ data, loading, error, onRetry }
               {onRetry && (
                 <Button
                   onClick={onRetry}
-                  className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
+                  className="max-lg:min-h-11 text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded shrink-0"
                 >
                   Retry
                 </Button>

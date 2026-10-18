@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import {
   LineChart,
   Line,
@@ -13,39 +12,13 @@ import {
 } from 'recharts'
 import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
-import { fetchFitnessAgeTrend } from '@/lib/api/running'
 
 function fmtWeek(dateStr) {
   const d = new Date(dateStr + 'T00:00:00')
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-export default function FitnessAgeTrendChart() {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  const load = useCallback(() => {
-    setLoading(true)
-    setError(null)
-    let cancelled = false
-    fetchFitnessAgeTrend()
-      .then((d) => {
-        if (!cancelled) setData(d)
-      })
-      .catch(() => {
-        if (!cancelled) setError('Failed to load fitness age data')
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  useEffect(load, [load])
-
+export default function FitnessAgeTrendChart({ data, loading, error, onRetry }) {
   if (loading) {
     return <Skeleton id="fitnessAgeTrendLoading_analyticsPage" className="h-[200px] rounded-lg" />
   }
@@ -60,8 +33,8 @@ export default function FitnessAgeTrendChart() {
         <p className="text-sm text-red-400">{error}</p>
         <Button
           variant="ghost"
-          onClick={load}
-          className="text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
+          onClick={onRetry}
+          className="max-lg:min-h-11 text-xs text-violet-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200 rounded"
         >
           Try again
         </Button>
@@ -123,14 +96,14 @@ export default function FitnessAgeTrendChart() {
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={[yMin, yMax]}
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             unit=" yrs"
@@ -145,7 +118,7 @@ export default function FitnessAgeTrendChart() {
               label={{
                 value: 'Your age',
                 position: 'insideTopRight',
-                fontSize: 10,
+                fontSize: 11,
                 fill: 'var(--color-muted-foreground)',
               }}
             />

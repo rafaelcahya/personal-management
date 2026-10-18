@@ -145,7 +145,7 @@ export default function TrainingLoadChart({ trainingLoad }) {
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" horizontal={false} />
           <XAxis
             type="number"
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
           />

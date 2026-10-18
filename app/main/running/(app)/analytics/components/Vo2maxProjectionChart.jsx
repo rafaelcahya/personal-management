@@ -137,14 +137,14 @@ export default function Vo2maxProjectionChart({ data, activities }) {
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
             domain={[minY, maxY]}
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(v) => v.toFixed(0)}
@@ -192,7 +192,7 @@ export default function Vo2maxProjectionChart({ data, activities }) {
             label={{
               value: `Target: ${data.requiredVo2max}`,
               position: 'insideTopRight',
-              fontSize: 10,
+              fontSize: 11,
               fill: '#b45309',
             }}
           />

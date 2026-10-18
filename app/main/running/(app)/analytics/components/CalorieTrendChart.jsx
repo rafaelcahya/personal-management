@@ -1,35 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import Button from '@/components/base/Button/Button'
-import { fetchCalorieTrend } from '@/lib/api/running'
 
-export default function CalorieTrendChart() {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    let cancelled = false
-    async function load() {
-      setLoading(true)
-      setError(null)
-      try {
-        const result = await fetchCalorieTrend()
-        if (!cancelled) setData(result)
-      } catch (err) {
-        if (!cancelled) setError(err.message || 'Failed to load calorie trend')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
+export default function CalorieTrendChart({ data, loading, error, onRetry }) {
   if (loading) {
     return (
       <div
@@ -48,9 +22,9 @@ export default function CalorieTrendChart() {
       >
         <p className="text-sm text-red-400">{error}</p>
         <Button
-          onClick={() => window.location.reload()}
+          onClick={onRetry}
           variant="ghost"
-          className="text-xs text-violet-600 underline hover:no-underline"
+          className="max-lg:min-h-11 text-xs text-violet-600 underline hover:no-underline"
         >
           Try again
         </Button>
@@ -87,12 +61,12 @@ export default function CalorieTrendChart() {
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
           <XAxis
             dataKey="month"
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(v) => `${Math.round(v / 1000)}k`}
