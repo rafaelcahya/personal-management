@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import {
@@ -7,6 +7,7 @@ import {
   getAnalysisQuerySchema,
 } from '@/schemas/eventAiAnalysis'
 import { streamEventAnalysis } from '@/lib/services/event/generateEventAnalysis'
+import { notify } from '@/lib/services/notifications/notify'
 
 const DAILY_CAP = 50
 const TABLE = 'event_ai_analysis'
@@ -134,7 +135,9 @@ export async function GET(request) {
       .eq('user_id', user.id)
       .eq('analysis_type', 'multi')
       .is('deleted_at', null)
-      .contains('event_ids', [event_id])
+      // event_ids is jsonb: an array argument is sent as a Postgres array literal and fails to parse,
+      // so pass the JSON text.
+      .contains('event_ids', JSON.stringify([event_id]))
       .order('generated_at', { ascending: false })
       .limit(5)
 
@@ -298,6 +301,30 @@ export async function POST(request) {
                   cost_usd: finalMeta.cost_usd,
                   generated_at: new Date().toISOString(),
                 })
+              }
+
+              // The analysis is saved — tell the user (list + push). A failure here is logged,
+              // never shown, because the analysis itself is already complete.
+              try {
+                await notify(
+                  adminClient,
+                  {
+                    userId: user.id,
+                    type: 'event_analysis_ready',
+                    title: 'Event analysis ready',
+                    message: isMulti
+                      ? `The AI analysis of ${events.length} events is ready.`
+                      : `The AI analysis of "${events.title}" is ready.`,
+                    data: {
+                      url: isMulti
+                        ? '/main/trading/event'
+                        : `/main/trading/event/${parsed.data.event_id}`,
+                    },
+                  },
+                  { defer: after }
+                )
+              } catch (notifyErr) {
+                console.error('[event-analysis] notify error:', notifyErr)
               }
             } catch (persistErr) {
               console.error('[event-analysis] persist error (stream already complete):', persistErr)

@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-10-17 (shared notification system, multi-device push #856 — API test coverage)
-**Branch:** chore/issue-856-notification-system
+**Last Updated:** 2026-10-18 (new push notifications #857 — API test coverage)
+**Branch:** feat/issue-857-new-push-notifications
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,710  | 52%  |
+| API       | 1,712  | 52%  |
 | UI        | 1,551  | 48%  |
-| **Total** | **3,261** | 100% |
+| **Total** | **3,263** | 100% |
 
 ---
 
@@ -23,11 +23,11 @@
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
 | Running Tracker      | 481   | 695   | 1,176 |
-| Notifications        | 70    | 0     | 70    |
+| Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,710** | **1,551** | **3,261** |
+| **Total**            | **1,712** | **1,551** | **3,263** |
 
 ---
 
@@ -355,13 +355,13 @@
 | Settings page notifications: auth guard | 6 | 0 | 6 |
 | Push devices (list, register, 2nd device, validation, remove, IDOR, key-proof on move) | 16 | 0 | 16 |
 | Push test (validation, not my device) | 4 | 0 | 4 |
-| Preferences | 5 | 0 | 5 |
+| Preferences (incl. new types and browser-only session_ended) | 7 | 0 | 7 |
 | `notify()` keeps the in-app row (low stock path) | 1 | 0 | 1 |
-| **Subtotal**            | **70** | **0** | **70** |
+| **Subtotal**            | **72** | **0** | **72** |
 
-**Notifications Total — API: 70 | UI: 0 | Total: 70**
+**Notifications Total — API: 72 | UI: 0 | Total: 72**
 
-> **Notification section on Settings (#856)** — `cypress/e2e/notifications/settings/notification-settings-api.cy.js` (32 API tests). The push tests that lived in `running/settings/settings-api.cy.js` moved here (16 removed there). The success path of the test push needs a real browser subscription and is checked by hand.
+> **Notification section on Settings (#856)** — `cypress/e2e/notifications/settings/notification-settings-api.cy.js` (34 API tests). The push tests that lived in `running/settings/settings-api.cy.js` moved here (16 removed there). The success path of the test push needs a real browser subscription and is checked by hand.
 
 > **Realtime Bell (#818)** — `cypress/e2e/notifications/notifications-api.cy.js` (4 API tests, all passing).
 > Realtime is websocket-based, so these cover the data contract the bell relies on: list row shape + `data`/`read_at` invariants (2), and a seeded unread notification raising unread-count / sorting newest-first then returning to baseline on mark-read (2). Seeds via `seedNotification`/`deleteNotification` cy.tasks.
@@ -410,8 +410,8 @@
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
 | Running Tracker      | 481   | 695   | 1,176 |
-| Notifications        | 70    | 0     | 70    |
+| Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,710** | **1,551** | **3,261** |
+| **Total**            | **1,712** | **1,551** | **3,263** |

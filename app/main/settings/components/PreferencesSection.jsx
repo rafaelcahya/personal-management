@@ -14,6 +14,7 @@ import Button from '@/components/base/Button/Button'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { Switch } from '@/components/base/Switch/Switch'
 import { getNotificationPreferences, updateNotificationPreference } from '@/lib/api/notifications'
+import { cacheSessionEndedPreference } from '@/lib/push/sessionEndedNotice'
 
 export default function PreferencesSection() {
   const [loading, setLoading] = useState(true)
@@ -25,7 +26,10 @@ export default function PreferencesSection() {
   const load = useCallback(async () => {
     setLoadError(false)
     try {
-      setPreferences(await getNotificationPreferences())
+      const list = await getNotificationPreferences()
+      setPreferences(list)
+      const sessionEnded = list.find((p) => p.type === 'session_ended')
+      if (sessionEnded) cacheSessionEndedPreference(sessionEnded.push_enabled)
     } catch {
       setLoadError(true)
     } finally {
@@ -44,6 +48,7 @@ export default function PreferencesSection() {
     setPreferences((list) => list.map((p) => (p.type === type ? { ...p, push_enabled: value } : p)))
     try {
       await updateNotificationPreference(type, value)
+      if (type === 'session_ended') cacheSessionEndedPreference(value)
     } catch (err) {
       setPreferences((list) =>
         list.map((p) => (p.type === type ? { ...p, push_enabled: previous } : p))

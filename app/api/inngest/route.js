@@ -13,6 +13,8 @@ import { stravaBackfill } from '@/lib/inngest/functions/stravaBackfill'
 import { stravaHandleWebhookEvent } from '@/lib/inngest/functions/stravaHandleWebhookEvent'
 import { stravaGapHeal } from '@/lib/inngest/functions/stravaGapHeal'
 import { pruneDeliveryLog } from '@/lib/inngest/functions/pruneDeliveryLog'
+import { restockReminder } from '@/lib/inngest/functions/restockReminder'
+import { weeklySummary } from '@/lib/inngest/functions/weeklySummary'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -30,5 +32,7 @@ export const { GET, POST, PUT } = serve({
     stravaHandleWebhookEvent,
     stravaGapHeal,
     pruneDeliveryLog,
+    restockReminder,
+    weeklySummary,
   ],
 })

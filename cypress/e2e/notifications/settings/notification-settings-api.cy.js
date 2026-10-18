@@ -26,6 +26,11 @@ const NOTIFICATION_TYPES = [
   'low_stock',
   'pr_achieved',
   'gear_mileage',
+  'strava_disconnected',
+  'restock_reminder',
+  'event_analysis_ready',
+  'weekly_summary',
+  'session_ended',
 ]
 
 // ─── auth guard ───────────────────────────────────────────────────────────────
@@ -319,6 +324,35 @@ describe('Notification preferences API', () => {
     cy.patchNotificationPreference({ type: 'product_update', push_enabled: true }).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.data.push_enabled).to.eq(true)
+    })
+  })
+
+  it('GET groups the new types under their modules', () => {
+    cy.getNotificationPreferences().then((res) => {
+      const moduleOf = (type) => res.body.data.find((p) => p.type === type).module
+      expect(moduleOf('strava_disconnected')).to.eq('Running')
+      expect(moduleOf('restock_reminder')).to.eq('Inventory')
+      expect(moduleOf('event_analysis_ready')).to.eq('Trading')
+      expect(moduleOf('weekly_summary')).to.eq('Home')
+      expect(moduleOf('session_ended')).to.eq('Account')
+    })
+  })
+
+  it('PATCH accepts every new type (including the browser-only session_ended) and restores it', () => {
+    ;[
+      'strava_disconnected',
+      'restock_reminder',
+      'event_analysis_ready',
+      'weekly_summary',
+      'session_ended',
+    ].forEach((type) => {
+      cy.patchNotificationPreference({ type, push_enabled: false }).then((res) => {
+        expect(res.status, type).to.eq(200)
+        expect(res.body.data).to.deep.eq({ type, push_enabled: false })
+      })
+      cy.patchNotificationPreference({ type, push_enabled: true }).then((res) =>
+        expect(res.status, type).to.eq(200)
+      )
     })
   })
 
