@@ -9,7 +9,7 @@
 | [agent-instructions.md](./agent-instructions.md) | 8. Agent Instructions                                  | 1 KB  |
 | [api-standards.md](./api-standards.md)           | 4. API Standards                                       | 1 KB  |
 | [database-tables.md](./database-tables.md)       | 6. Database Tables                                     | 3 KB  |
-| [notifications.md](./notifications.md)           | 10. Notifications and Push (v1.33, #856)               | 6 KB  |
+| [notifications.md](./notifications.md)           | 10. Notifications and Push (v1.33, #856, #857)         | 6 KB  |
 | [nfr.md](./nfr.md)                               | 7. Non-Functional Requirements                         | 1 KB  |
 | [ui-color-tokens.md](./ui-color-tokens.md)       | 5. UI/UX Standards                                     | 15 KB |
 | [ui-data-table.md](./ui-data-table.md)           | Data Table Component                                   | 10 KB |
@@ -21,7 +21,7 @@
 
 ## Personal Management App
 
-**Version:** 1.24
+**Version:** 1.25
 **Last Updated:** 2026-10-17
 **Owner:** Rafael Cahya  
 **Stack:** Next.js 15 App Router · Supabase (PostgreSQL) · Tailwind CSS · Base Components · Claude AI (Sonnet 4.6)
