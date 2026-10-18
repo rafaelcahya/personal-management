@@ -54,11 +54,11 @@ function daysUntil(dateStr) {
 }
 
 function getUrgencyClass(days) {
-  if (days <= 1) return 'border-2 border-red-300 bg-red-50/40'
-  if (days <= 3) return 'border border-orange-300 bg-orange-50/40'
-  if (days <= 7) return 'border border-amber-300 bg-amber-50/50'
-  if (days <= 14) return 'border border-amber-200 bg-amber-50/25'
-  return ''
+  if (days <= 1) return 'border-2 border-red-400 bg-white'
+  if (days <= 3) return 'border border-orange-400 bg-white'
+  if (days <= 7) return 'border border-amber-400 bg-white'
+  if (days <= 14) return 'border border-amber-300 bg-white'
+  return 'bg-white'
 }
 
 function CountdownBadge({ dateStr }) {
