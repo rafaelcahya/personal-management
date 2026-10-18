@@ -3,11 +3,18 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { refreshStravaToken } from '@/lib/services/running/strava/refreshStravaToken'
 import { inngest } from '@/lib/inngest/client'
+import { isStravaStubbed } from '@/lib/services/running/strava/stravaStub'
 
 const STRAVA_ACTIVITIES_URL = 'https://www.strava.com/api/v3/athlete/activities'
 const STRAVA_ATHLETE_URL = 'https://www.strava.com/api/v3/athlete'
 const STRAVA_GEAR_URL = 'https://www.strava.com/api/v3/gear'
 const PER_PAGE = 100
+const BACKFILL_DEDUPE_WINDOW_MS = 10 * 60 * 1000
+const NEEDS_RECONNECT_BODY = {
+  error: 'Strava needs reconnect',
+  message: 'Your Strava connection expired. Reconnect Strava to keep syncing.',
+  needs_reconnect: true,
+}
 const GEAR_REFRESH_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000
 
 async function syncAthleteShoes(accessToken, admin, userId) {
@@ -83,16 +90,40 @@ export async function POST(_request) {
       .from('rt_strava_credentials')
       .select('access_token, refresh_token, expires_at, last_sync_at, needs_reconnect')
       .eq('user_id', user.id)
-      .single()
+      .maybeSingle()
 
-    if (credError || !credentials) {
+    if (credError) throw new Error(credError.message)
+    if (!credentials) {
       return NextResponse.json({ error: 'Strava not connected' }, { status: 400 })
+    }
+
+    if (credentials.needs_reconnect) {
+      return NextResponse.json(NEEDS_RECONNECT_BODY, { status: 409 })
+    }
+
+    if (isStravaStubbed()) {
+      return NextResponse.json({ synced: 0, skipped: true, reason: 'stubbed' })
+    }
+
+    // No cursor (first sync, or after all activities were deleted): re-importing the whole
+    // history is too slow for one request, so hand it to the backfill job.
+    if (!credentials.last_sync_at) {
+      await inngest.send({
+        id: `strava-backfill-${user.id}-${Math.floor(Date.now() / BACKFILL_DEDUPE_WINDOW_MS)}`,
+        name: 'strava/backfill',
+        data: { userId: user.id },
+      })
+      return NextResponse.json({
+        synced: 0,
+        backfill_started: true,
+        message: 'Importing your full Strava history in the background. It may take a few minutes.',
+      })
     }
 
     // Same path as the background jobs: a 401 sets needs_reconnect and sends one notification.
     const tokenResult = await refreshStravaToken(user.id, credentials)
     if (tokenResult.skipped || tokenResult.needsReconnect) {
-      return NextResponse.json({ synced: 0, skipped: true, reason: 'needs_reconnect' })
+      return NextResponse.json(NEEDS_RECONNECT_BODY, { status: 409 })
     }
     const { accessToken } = tokenResult
 

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { patchWeightSchema } from '@/schemas/runningManualEntry'
+import { patchWeightSchema, uuidParamSchema } from '@/schemas/runningManualEntry'
 
 export async function PATCH(request, { params }) {
   try {
@@ -19,6 +19,12 @@ export async function PATCH(request, { params }) {
     }
 
     const { id } = await params
+    if (!uuidParamSchema.safeParse({ id }).success) {
+      return NextResponse.json(
+        { error: 'Validation failed', message: 'Invalid id' },
+        { status: 400 }
+      )
+    }
 
     let body
     try {
@@ -34,7 +40,7 @@ export async function PATCH(request, { params }) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', issues: parsed.error.issues },
-        { status: 422 }
+        { status: 400 }
       )
     }
 
@@ -91,6 +97,12 @@ export async function DELETE(_request, { params }) {
     }
 
     const { id } = await params
+    if (!uuidParamSchema.safeParse({ id }).success) {
+      return NextResponse.json(
+        { error: 'Validation failed', message: 'Invalid id' },
+        { status: 400 }
+      )
+    }
 
     const { data: existing, error: fetchError } = await supabase
       .from('rt_weight_logs')

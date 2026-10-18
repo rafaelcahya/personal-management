@@ -12,6 +12,7 @@ import { dbTasks } from './dbTasks.js'
 import { activitiesTasks } from './activitiesTasks.js'
 import { raceLogTasks } from './raceLogTasks.js'
 import { userTasks } from './running/UserTasks.js'
+import { runningSettingsTasks } from './running/RunningSettingsTasks.js'
 import { notificationTasks } from './notificationTasks.js'
 
 export const registerTasks = (on, supabaseAdmin) => {
@@ -30,6 +31,7 @@ export const registerTasks = (on, supabaseAdmin) => {
     ...aiInsightsTasks(supabaseAdmin),
     ...settingsTasks(supabaseAdmin),
     ...userTasks(supabaseAdmin),
+    ...runningSettingsTasks(supabaseAdmin),
     ...notificationTasks(),
   })
 }

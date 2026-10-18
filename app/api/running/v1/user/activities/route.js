@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { deleteAllActivities } from '@/lib/services/running/user/deleteAllActivities'
+import { invalidateRunningAnalytics } from '@/lib/services/running/analyticsCache'
+import { deleteActivitiesSchema } from '@/schemas/runningUser'
 
 export async function DELETE(request) {
   try {
@@ -25,23 +28,23 @@ export async function DELETE(request) {
       )
     }
 
-    if (body.confirmation !== 'DELETE') {
+    const parsed = deleteActivitiesSchema.safeParse(body)
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Validation failed', message: 'Type DELETE to confirm' },
+        {
+          error: 'Validation failed',
+          message: 'Type DELETE to confirm',
+          issues: parsed.error.issues,
+        },
         { status: 400 }
       )
     }
 
-    const { data, error: deleteError } = await supabase
-      .from('rt_activities')
-      .delete()
-      .eq('user_id', user.id)
-      .select('id')
-
-    if (deleteError) throw deleteError
+    const deleted = await deleteAllActivities(supabase, user.id)
+    invalidateRunningAnalytics(user.id)
 
     return NextResponse.json(
-      { data: { deleted: data?.length ?? 0 }, message: 'All activity data deleted' },
+      { data: { deleted }, message: 'All activity data deleted' },
       { status: 200 }
     )
   } catch (err) {

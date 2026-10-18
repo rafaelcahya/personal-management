@@ -22,12 +22,12 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 481   | 695   | 1,176 |
+| Running Tracker      | 523   | 695   | 1,218 |
 | Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,712** | **1,551** | **3,263** |
+| **Total**            | **1,754** | **1,551** | **3,305** |
 
 ---
 
@@ -332,11 +332,18 @@
 | Feature                  | API | UI | Total |
 | ------------------------ | --- | -- | ----- |
 | HR Zones                 | 20  | 0  | 20    |
-| Settings                 | 23  | 21 | 44    |
+| Settings                 | 21  | 21 | 42    |
+| Health Logs (subjective + weight, #845) | 22 | 0 | 22 |
+| Strava Auth Routes + OAuth state (#845) | 13 | 0 | 13 |
+| HR Zones / Profile / Threshold / Delete guard extras (#845) | 9 | 0 | 9 |
 | Threshold Pace Detect    | 6   | 0  | 6     |
-| **Subtotal**             | **49** | **21** | **70** |
+| **Subtotal**             | **91** | **21** | **112** |
 
-**Running Total — API: 481 | UI: 695 | Total: 1,176**
+**Running Total — API: 523 | UI: 695 | Total: 1,218**
+
+> **Settings, Health & Strava (#845)** — `cypress/e2e/running/settings/settings-api.cy.js` (65 tests). Added health subjective/weight (auth, CRUD, 400 validation, malformed id 400, unknown uuid 404), Strava connect redirect and `strava_oauth_state` cookie, callback state rejection (no Strava call), not-connected sync/re-enrich/disconnect, seeded `needs_reconnect` (409) and disconnect, hr-zones read/validate/update+restore, threshold-pace-detect 422, profile 400, and the `DELETE /user/activities` confirmation guard only. The real-Strava callback test was removed (CB-4).
+> **Not covered:** IDOR on health `[id]` (no second-user credentials; the Cypress DB client is RLS-bound so it cannot seed another user row), `DELETE /user/activities` success path and `last_sync_at` reset (test account owns 13 real activities), threshold-pace-detect with seeded streams, `re-enrich-metrics`.
+> **Open bugs:** `GET /health/{subjective,weight}?page=<past last page>` returns 500 (Supabase PGRST103) instead of an empty page - 2 failing tests. The sync rate-limit tier is 15/hour per user and one spec run uses about 5, so a 4th run inside an hour returns 429.
 
 > **Streak Counter (#820)** — `cypress/e2e/running/dashboard/dashboard-api.cy.js` (11 API tests, all passing).
 > Weekly streak folded into `GET /dashboard`. Covers the `streak` object shape/keys, integer & boolean field types, `unit === 'week'`, the `best_weeks >= current_weeks` invariant, at-risk logic (only with a live streak in the last 2 days, mutually exclusive with `active_this_week`), streak being identical across activity-type filters (habit metric ignores type), and invalid `tz_offset` fallback. Data-independent assertions — no seeding required.
@@ -409,9 +416,9 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 481   | 695   | 1,176 |
+| Running Tracker      | 523   | 695   | 1,218 |
 | Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,712** | **1,551** | **3,263** |
+| **Total**            | **1,754** | **1,551** | **3,305** |
