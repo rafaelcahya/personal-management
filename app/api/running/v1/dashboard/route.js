@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getCachedDashboardData } from '@/lib/services/running/analyticsCache'
+import { dashboardQuerySchema } from '@/schemas/runningDashboardQuery'
 import { getYtdStats } from '@/lib/services/running/strava/getYtdStats'
 
 export async function GET(request) {
@@ -21,9 +22,23 @@ export async function GET(request) {
     }
 
     const { searchParams } = new URL(request.url)
-    const activityType = searchParams.get('type') || null
-    const tzOffset = parseInt(searchParams.get('tz_offset') ?? '0', 10)
-    const tzOffsetMs = isNaN(tzOffset) ? 0 : tzOffset * 60 * 1000
+    const parsed = dashboardQuerySchema.safeParse({
+      type: searchParams.get('type') || undefined,
+      tz_offset: searchParams.get('tz_offset') || undefined,
+    })
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: 'Bad request',
+          message: parsed.error.issues[0]?.message ?? 'Invalid query params',
+        },
+        { status: 400 }
+      )
+    }
+
+    const activityType = parsed.data.type ?? null
+    const tzOffsetMs = parsed.data.tz_offset * 60 * 1000
 
     const admin = createAdminClient()
     const [data, credResult, ytd_stats] = await Promise.all([

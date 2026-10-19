@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-10-18 (Running Analytics review #842 — overview + activity-series API coverage, spec speed-up)
-**Branch:** fix/issue-842-running-analytics
+**Last Updated:** 2026-10-19 (Running Dashboard review #843 — calendar, performance-trends, input validation, spec speed-up)
+**Branch:** fix/issue-843-running-dashboard
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,771  | 53%  |
-| UI        | 1,551  | 47%  |
-| **Total** | **3,322** | 100% |
+| API       | 1,810  | 54%  |
+| UI        | 1,551  | 46%  |
+| **Total** | **3,361** | 100% |
 
 ---
 
@@ -22,12 +22,12 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 540   | 695   | 1,235 |
+| Running Tracker      | 579   | 695   | 1,274 |
 | Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,771** | **1,551** | **3,322** |
+| **Total**            | **1,810** | **1,551** | **3,361** |
 
 ---
 
@@ -254,12 +254,14 @@
 | Feature              | API | UI | Total |
 | -------------------- | --- | -- | ----- |
 | AI Coach             | 0   | 20 | 20    |
-| Dashboard            | 42  | 28 | 70    |
+| Dashboard            | 48  | 28 | 76    |
 | Dashboard Extended   | 0   | 14 | 14    |
 | Gear                 | 6   | 18 | 24    |
 | Streak               | 11  | 0  | 11    |
-| Weekly Stats Filter  | 17  | 0  | 17    |
-| **Subtotal**         | **76** | **80** | **156** |
+| Weekly Stats Filter  | 21  | 0  | 21    |
+| Calendar (#843)      | 20  | 0  | 20    |
+| Performance Trends (#843) | 9 | 0 | 9   |
+| **Subtotal**         | **115** | **80** | **195** |
 
 #### AI Coach
 
@@ -341,11 +343,14 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **91** | **21** | **112** |
 
-**Running Total — API: 540 | UI: 695 | Total: 1,235**
+**Running Total — API: 579 | UI: 695 | Total: 1,274**
 
 > **Settings, Health & Strava (#845)** — `cypress/e2e/running/settings/settings-api.cy.js` (65 tests). Added health subjective/weight (auth, CRUD, 400 validation, malformed id 400, unknown uuid 404), Strava connect redirect and `strava_oauth_state` cookie, callback state rejection (no Strava call), not-connected sync/re-enrich/disconnect, seeded `needs_reconnect` (409) and disconnect, hr-zones read/validate/update+restore, threshold-pace-detect 422, profile 400, and the `DELETE /user/activities` confirmation guard only. The real-Strava callback test was removed (CB-4).
 > **Not covered:** IDOR on health `[id]` (no second-user credentials; the Cypress DB client is RLS-bound so it cannot seed another user row), `DELETE /user/activities` success path and `last_sync_at` reset (test account owns 13 real activities), threshold-pace-detect with seeded streams, `re-enrich-metrics`.
 > **Open bugs:** `GET /health/{subjective,weight}?page=<past last page>` returns 500 (Supabase PGRST103) instead of an empty page - 2 failing tests. The sync rate-limit tier is 15/hour per user and one spec run uses about 5, so a 4th run inside an hour returns 429.
+
+> **Running Dashboard review (#843)** — `cypress/e2e/running/dashboard/dashboard-api.cy.js` (132 tests, was 93; all passing, 57 s vs 59 s). New: `GET /calendar` (auth 401, month YYYY-MM 400 + message, empty `month=` = current month, tz_offset 400, type letters-only 400, shape) and `GET /performance-trends` (401, limit default 25 / cap 100 / abc,0,negative,decimal 400, empty `limit=`, type, oldest-to-newest, fields). Dashboard and weekly-stats: `tz_offset` outside -840..840 and `weeks_ago` outside 0..4 return 400, empty values are treated as missing, `type=Run1` 400, `health_today` removed, `recent_activities[]` carries gear_name, avg_temp_c, avg_watts, weighted_avg_watts, device_watts. Seeded block (tag `cy843`, 5 rows, deleted in `after()`, pre-existing activity count asserted unchanged): month edges for tz_offset 0 and -420 (end-exclusive), and CB-2 dashboard calendar equals /calendar for a seeded unique type and for Run. Speed-up: repeated GETs reuse one response per query (`cached`).
+> **Not covered:** CB-1 (sync then fresh dashboard) — `/auth/strava/sync` is rate-limited to 15/hour and the stub returns before any insert; production-build baseline re-measure (needs a browser session). **Note:** `/dashboard` uses stale-while-revalidate, so the first call after a deploy or code change can return the old payload once (seen: stale `health_today` on the first run).
 
 > **Streak Counter (#820)** — `cypress/e2e/running/dashboard/dashboard-api.cy.js` (11 API tests, all passing).
 > Weekly streak folded into `GET /dashboard`. Covers the `streak` object shape/keys, integer & boolean field types, `unit === 'week'`, the `best_weeks >= current_weeks` invariant, at-risk logic (only with a live streak in the last 2 days, mutually exclusive with `active_this_week`), streak being identical across activity-type filters (habit metric ignores type), and invalid `tz_offset` fallback. Data-independent assertions — no seeding required.
@@ -418,9 +423,9 @@
 | Auth + User Settings | 35    | 107   | 142   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 254   | 628   |
-| Running Tracker      | 540   | 695   | 1,235 |
+| Running Tracker      | 579   | 695   | 1,274 |
 | Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 8     | 8     |
-| **Total**            | **1,771** | **1,551** | **3,322** |
+| **Total**            | **1,810** | **1,551** | **3,361** |

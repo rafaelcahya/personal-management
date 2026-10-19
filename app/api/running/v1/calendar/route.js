@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { startOfMonth, endOfMonth, parseISO, isValid } from 'date-fns'
+import { calendarQuerySchema } from '@/schemas/runningCalendar'
+import { getCalendarActivities } from '@/lib/services/running/calendar/getCalendarActivities'
 
 export async function GET(request) {
   try {
@@ -19,39 +20,28 @@ export async function GET(request) {
     }
 
     const { searchParams } = new URL(request.url)
-    const monthParam = searchParams.get('month')
-    const activityType = searchParams.get('type') || null
+    const parsed = calendarQuerySchema.safeParse({
+      month: searchParams.get('month') || undefined,
+      tz_offset: searchParams.get('tz_offset') || undefined,
+      type: searchParams.get('type') || undefined,
+    })
 
-    let refDate = new Date()
-    if (monthParam) {
-      const parsed = parseISO(`${monthParam}-01`)
-      if (isValid(parsed)) refDate = parsed
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: 'Bad request',
+          message: parsed.error.issues[0]?.message ?? 'Invalid query params',
+        },
+        { status: 400 }
+      )
     }
 
-    const monthStart = startOfMonth(refDate)
-    const monthEnd = endOfMonth(refDate)
-
-    let q = supabase
-      .from('rt_activities')
-      .select('id, started_at, activity_type, name, distance_m, relative_effort')
-      .eq('user_id', user.id)
-      .gte('started_at', monthStart.toISOString())
-      .lte('started_at', monthEnd.toISOString())
-      .order('started_at', { ascending: true })
-
-    if (activityType) q = q.eq('activity_type', activityType)
-
-    const { data, error } = await q
-    if (error) throw error
-
-    const activities = (data ?? []).map((a) => ({
-      id: a.id,
-      started_at: a.started_at,
-      activity_type: a.activity_type,
-      name: a.name ?? null,
-      distance_m: a.distance_m ?? null,
-      relative_effort: a.relative_effort ?? null,
-    }))
+    const { month, tz_offset, type } = parsed.data
+    const activities = await getCalendarActivities(supabase, user.id, {
+      month,
+      activityType: type ?? null,
+      tzOffsetMs: tz_offset * 60 * 1000,
+    })
 
     return NextResponse.json({ data: activities }, { status: 200 })
   } catch (err) {

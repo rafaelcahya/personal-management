@@ -8,6 +8,7 @@ import {
   seedAnalyticsActivitiesInDb,
   deleteSeededAnalyticsActivitiesFromDb,
   getSeededAnalyticsActivitiesFromDb,
+  seedTaggedActivitiesInDb,
 } from '../../support/db/running/activities/activitySeedDb.js'
 
 export const activitiesTasks = (supabaseAdmin) => ({
@@ -19,6 +20,9 @@ export const activitiesTasks = (supabaseAdmin) => ({
   },
   async getSeededAnalyticsActivitiesFromDb({ userId, tag }) {
     return getSeededAnalyticsActivitiesFromDb(userId, tag)
+  },
+  async seedTaggedActivitiesInDb({ userId, tag, rows }) {
+    return seedTaggedActivitiesInDb(userId, tag, rows)
   },
   async getActivityListFromDb({ userId }) {
     return getActivityListFromDb(supabaseAdmin, userId)

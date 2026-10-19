@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { refreshStravaToken } from '@/lib/services/running/strava/refreshStravaToken'
 import { inngest } from '@/lib/inngest/client'
 import { isStravaStubbed } from '@/lib/services/running/strava/stravaStub'
+import { invalidateRunningAnalytics } from '@/lib/services/running/analyticsCache'
 
 const STRAVA_ACTIVITIES_URL = 'https://www.strava.com/api/v3/athlete/activities'
 const STRAVA_ATHLETE_URL = 'https://www.strava.com/api/v3/athlete'
@@ -74,6 +75,10 @@ async function syncAthleteShoes(accessToken, admin, userId) {
 }
 
 export async function POST(_request) {
+  // Set as soon as any activity row is written, so the finally block clears the
+  // cached dashboard even when a later step throws or returns an error.
+  let dirty = false
+  let userId = null
   try {
     const supabase = await createClient()
     const {
@@ -84,6 +89,7 @@ export async function POST(_request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    userId = user.id
     const admin = createAdminClient()
 
     const { data: credentials, error: credError } = await admin
@@ -216,6 +222,8 @@ export async function POST(_request) {
           return NextResponse.json({ error: 'Sync failed' }, { status: 500 })
         }
 
+        dirty = true
+
         if (insertedRows?.length > 0) {
           await inngest.send(
             insertedRows.map((r) => ({
@@ -288,6 +296,7 @@ export async function POST(_request) {
 
       // Update mutable Strava fields on existing activities (gear, name, kudos, etc.)
       if (toUpdate.length > 0) {
+        dirty = true
         for (const a of toUpdate) {
           await admin
             .from('rt_activities')
@@ -319,5 +328,7 @@ export async function POST(_request) {
   } catch (err) {
     console.error('[strava/sync]', err.message)
     return NextResponse.json({ error: 'Sync failed' }, { status: 500 })
+  } finally {
+    if (dirty && userId) invalidateRunningAnalytics(userId)
   }
 }
