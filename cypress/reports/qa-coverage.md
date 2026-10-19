@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-10-19 (Running Dashboard review #843 — calendar, performance-trends, input validation, spec speed-up)
-**Branch:** fix/issue-843-running-dashboard
+**Last Updated:** 2026-10-19 (Bearer token auth on /api/* #881 — 39 API tests)
+**Branch:** feat/issue-881-auth-bearer
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,810  | 54%  |
+| API       | 1,849  | 54%  |
 | UI        | 594    | 25%  |
-| **Total** | **2,404** | 100% |
+| **Total** | **2,443** | 100% |
 
 > **UI reconciliation (2026-10-19, #850)** — counted with `npm run cy:coverage -- --it-counts` (it() per spec, UI = `*-ui.cy.js` or a `ui/` folder). Only 18 UI specs exist: Auth 107, Inventory 454, Landing 33 = 594 it(). The old Trading (254), Running (695) and Shared (8) UI numbers had no UI spec behind them and were removed. The Trading Fee/Trade detail tables below still show UI columns for `add-fee`, `summary-fee`, `add-trade` and the other fee/trade specs; those files are API-style specs (a few UI describes inside `add-fee`, `summary-fee`, `add-trade`), so their numbers are not split here. The script's raw API it() total is 2,054 (66 specs), which does not match the 1,810 above (it() inside loops, mixed specs); API numbers were NOT changed and need a separate reconcile.
 
@@ -21,7 +21,7 @@
 
 | Module               | API   | UI    | Total |
 | -------------------- | ----- | ----- | ----- |
-| Auth + User Settings | 35    | 107   | 142   |
+| Auth + User Settings | 74    | 107   | 181   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 0     | 374   |
 | Running Tracker      | 579   | 0     | 579   |
@@ -29,7 +29,7 @@
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 0     | 0     |
-| **Total**            | **1,810** | **594** | **2,404** |
+| **Total**            | **1,849** | **594** | **2,443** |
 
 ---
 
@@ -44,10 +44,14 @@
 | Logout        | 3   | 32 | 35    |
 | Session       | 4   | 17 | 21    |
 | User Settings | 13  | 0  | 13    |
-| **Subtotal**  | **35** | **107** | **142** |
+| Bearer Auth (#881) | 39 | 0 | 39 |
+| **Subtotal**  | **74** | **107** | **181** |
 
 > **User Settings** — `cypress/e2e/settings/settings-api.cy.js` (13 API tests, all passing)
 > Covers `GET /api/user` (4), `PUT /api/user` (7), `POST /api/user/avatar` (2): auth guards, response shape, username/nickname persistence, avatar→`avatar_url` roundtrip, partial update, and no-file validation.
+
+> **Bearer Auth (#881)** — `cypress/e2e/auth/bearer/bearer-api.cy.js` (39 API tests, all passing, headed Chrome, 19 s)
+> Sample of 6 GET routes (hr-zones, activities, products, fees, notifications, /api/user): valid Bearer vs cookie body shape, no header / fake token = 401 JSON. Also: refresh token, Basic scheme, two tokens, query-string token, exp moved to the past, unknown kid, HS256 header, bad Bearer + good cookie = 401, good Bearer + garbage cookie = 200, page + Bearer = redirect to /login, forged x-auth-source (normal route and /api/.../x.png), PUT /api/user with Bearer (200 / 400 / 400 / 400 / valid and restored), other user activity id = 404 (Bearer and cookie). Not covered: truly expired token (the exp-edit case covers the signature check), `/auth/v1/user` call count (needs Supabase edge logs).
 
 ---
 

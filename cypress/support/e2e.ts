@@ -16,6 +16,7 @@
 import './common/db/test-user'
 import './common/auth/ui-commands'
 import './common/auth/api-commands'
+import './common/auth/bearer-commands'
 import './common/trade/api-commands'
 import './common/trade/db-commands'
 import './common/trading/api/dashboard/commands'

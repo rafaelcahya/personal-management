@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getServerUser } from '@/lib/supabase/getServerUser'
+import { getRequestBearer } from '@/lib/auth/getRequestBearer'
+import { updateUserMetadata } from '@/lib/services/user/updateUserMetadata'
+import { updateUserSchema } from '@/schemas/user'
 
 export async function GET() {
   try {
@@ -58,8 +61,24 @@ export async function PUT(req) {
       )
     }
 
-    const body = await req.json()
-    const { username, nickname, avatar } = body
+    let body
+    try {
+      body = await req.json()
+    } catch {
+      return NextResponse.json(
+        { error: 'Bad request', message: 'Invalid JSON in request body' },
+        { status: 400 }
+      )
+    }
+
+    const parsed = updateUserSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Bad request', message: parsed.error.issues[0]?.message ?? 'Invalid request' },
+        { status: 400 }
+      )
+    }
+    const { username, nickname, avatar } = parsed.data
 
     // Store the profile on the Supabase Auth user so it's always tied to the logged-in
     // account; avatar is kept as a public URL under avatar_url (what the navbar reads).
@@ -68,9 +87,23 @@ export async function PUT(req) {
     if (nickname !== undefined) metadata.nickname = nickname
     if (avatar !== undefined) metadata.avatar_url = avatar
 
-    const { error } = await supabase.auth.updateUser({ data: metadata })
-
-    if (error) throw error
+    const bearer = await getRequestBearer()
+    if (bearer.status !== 'none') {
+      try {
+        await updateUserMetadata(bearer.token, metadata)
+      } catch (err) {
+        if (err?.status === 401 || err?.status === 403) {
+          return NextResponse.json(
+            { error: 'Unauthorized', message: 'Authentication required' },
+            { status: 401 }
+          )
+        }
+        throw err
+      }
+    } else {
+      const { error } = await supabase.auth.updateUser({ data: metadata })
+      if (error) throw error
+    }
 
     return NextResponse.json({ data: { user: metadata }, message: 'User updated successfully' })
   } catch {
