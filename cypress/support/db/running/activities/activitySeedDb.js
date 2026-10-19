@@ -80,3 +80,20 @@ export async function getSeededAnalyticsActivitiesFromDb(userId, tag) {
   await assertOk(res, 'read seeded activities')
   return res.json()
 }
+
+// Seeds one row per `rows` entry ({ started_at, activity_type }). Same tag/name/external_id
+// convention as buildRow, so deleteSeededAnalyticsActivitiesFromDb(userId, tag) cleans them up.
+export async function seedTaggedActivitiesInDb(userId, tag, rows) {
+  const body = rows.map((row, i) => ({
+    ...buildRow(userId, tag, i),
+    started_at: row.started_at,
+    activity_type: row.activity_type,
+  }))
+  const res = await fetch(`${REST()}?select=id,name,started_at,activity_type`, {
+    method: 'POST',
+    headers: headers({ 'Content-Type': 'application/json', Prefer: 'return=representation' }),
+    body: JSON.stringify(body),
+  })
+  await assertOk(res, 'seed tagged activities')
+  return res.json()
+}

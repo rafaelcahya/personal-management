@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { weeklyStatsQuerySchema } from '@/schemas/runningDashboardQuery'
 import { getWeeklyStatsOnly } from '@/lib/services/running/dashboard/getDashboardData'
 
 export async function GET(request) {
@@ -18,11 +19,25 @@ export async function GET(request) {
     }
 
     const { searchParams } = new URL(request.url)
-    const activityType = searchParams.get('type') || null
-    const tzOffset = parseInt(searchParams.get('tz_offset') ?? '0', 10)
-    const tzOffsetMs = isNaN(tzOffset) ? 0 : tzOffset * 60 * 1000
-    const rawWeeksAgo = parseInt(searchParams.get('weeks_ago') ?? '0', 10)
-    const weeksAgo = isNaN(rawWeeksAgo) ? 0 : Math.min(4, Math.max(0, rawWeeksAgo))
+    const parsed = weeklyStatsQuerySchema.safeParse({
+      type: searchParams.get('type') || undefined,
+      tz_offset: searchParams.get('tz_offset') || undefined,
+      weeks_ago: searchParams.get('weeks_ago') || undefined,
+    })
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: 'Bad request',
+          message: parsed.error.issues[0]?.message ?? 'Invalid query params',
+        },
+        { status: 400 }
+      )
+    }
+
+    const activityType = parsed.data.type ?? null
+    const tzOffsetMs = parsed.data.tz_offset * 60 * 1000
+    const weeksAgo = parsed.data.weeks_ago
 
     const data = await getWeeklyStatsOnly(user.id, { activityType, tzOffsetMs, weeksAgo })
     return NextResponse.json({ data }, { status: 200 })

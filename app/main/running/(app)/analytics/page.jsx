@@ -12,13 +12,12 @@ import Section from './components/Section'
 import SectionsManager from './components/SectionsManager'
 import { useSectionVisibility } from './hooks/useSectionVisibility'
 import { useAnalyticsOverview } from './hooks/useAnalyticsOverview'
-import { useInView } from './hooks/useInView'
-import LazyMount, { LAZY_HEIGHT } from './components/LazyMount'
+import { useInView } from '@/app/main/running/hooks/useInView'
+import LazyMount, { LAZY_HEIGHT } from '@/app/main/running/components/LazyMount'
 import WeeklyDistanceChart from './components/WeeklyDistanceChart'
 // import PaceTrendChart from './components/PaceTrendChart'
 // import PerformanceManagementChart from './components/PerformanceManagementChart'
 // import RunningPowerChart from './components/RunningPowerChart'
-// import PerformanceTrends from '../dashboard/components/PerformanceTrends'
 import BestPaceChart from './components/BestPaceChart'
 import WeeklyElevationChart from './components/WeeklyElevationChart'
 import TerrainDistributionChart from './components/TerrainDistributionChart'
@@ -167,12 +166,6 @@ export default function AnalyticsPage() {
 
       {!loading && !error && (
         <>
-          {/* Performance Trends — hidden, re-enable when data is reliable
-          <div id="performanceTrendsSection_analyticsPage" className="scroll-mt-20">
-            <PerformanceTrends />
-          </div>
-          */}
-
           {vis('weeklyDistanceSection') && (
             <Section
               id="weeklyDistanceSection"

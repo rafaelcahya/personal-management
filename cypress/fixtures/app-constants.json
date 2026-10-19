@@ -106,7 +106,9 @@
     },
     "running_dashboard": {
       "dashboard": "/api/running/v1/dashboard",
-      "weekly_stats": "/api/running/v1/dashboard/weekly-stats"
+      "weekly_stats": "/api/running/v1/dashboard/weekly-stats",
+      "calendar": "/api/running/v1/calendar",
+      "performance_trends": "/api/running/v1/performance-trends"
     },
     "running_gear": {
       "list": "/api/running/v1/gear",
@@ -618,18 +620,8 @@
       "next_race_location": "nextRaceLocation",
       "next_race_target_time": "nextRaceTargetTime",
       "next_race_progress_bar": "nextRaceProgressBar",
-      "activity_calendar_card": "activityCalendarCard",
-      "recent_activities_card": "recentActivitiesCard",
-      "ai_coach_card": "aiCoachCard",
-      "ai_coach_loading": "aiCoachLoading_dashboardPage",
-      "ai_coach_empty": "aiCoachEmpty_dashboardPage",
-      "ai_coach_error": "aiCoachError_dashboardPage",
-      "ai_coach_content": "aiCoachContent_dashboardPage",
-      "ai_coach_retry_btn": "aiCoachRetryBtn_dashboardPage",
-      "health_checkin_card": "healthCheckinCard",
       "skeleton": "dashboardSkeleton",
       "error": "dashboardError",
-      "performance_trends_card": "performanceTrendsCard",
       "sync_status_bar": "syncStatusBar",
       "sync_btn": "syncBtn_dashboard",
       "sync_result_msg": "syncResultMsg",
@@ -638,7 +630,23 @@
       "streak_card": "streakCard_dashboardPage",
       "streak_current": "streakCurrent_dashboardPage",
       "streak_best": "streakBest_dashboardPage",
-      "streak_at_risk": "streakAtRisk_dashboardPage"
+      "streak_at_risk": "streakAtRisk_dashboardPage",
+      "weekly_stats_week_filter": "weeklyStatsWeekFilter_dashboardPage",
+      "weekly_stats_moving_pace": "weeklyStatsMovingPace_dashboardPage",
+      "weekly_stats_elapsed_pace": "weeklyStatsElapsedPace_dashboardPage",
+      "activity_type_filter_all": "activityTypeFilterAll_dashboardPage",
+      "activity_type_filter": "activityTypeFilter",
+      "activity_section": "activitySection",
+      "calendar_prev_month_btn": "calendarPrevMonthBtn_dashboardPage",
+      "calendar_next_month_btn": "calendarNextMonthBtn_dashboardPage",
+      "calendar_grid": "calendarGrid_dashboardPage",
+      "calendar_day": "calendarDay",
+      "calendar_error": "calendarError_dashboardPage",
+      "calendar_retry_btn": "calendarRetryBtn_dashboardPage",
+      "calendar_empty": "calendarEmpty_dashboardPage",
+      "recent_activity_btn": "recentActivityBtn",
+      "recent_activities_empty": "recentActivitiesEmpty_dashboardPage",
+      "see_all_activities_link": "seeAllActivitiesLink_dashboardPage"
     },
     "running_ai_coach": {
       "page": "aiCoachPage",
@@ -726,9 +734,10 @@
       "loading_skeleton": "loadingSkeleton_productHistoryPage"
     },
     "running_gear": {
-      "page": "gearPage",
+      "page": "shoeRotationSection_dashboardPage",
       "loading_skeleton": "gearLoadingSkeleton",
       "error": "gearError",
+      "retry_btn": "shoeRotationRetryBtn_dashboardPage",
       "list": "gearList",
       "gear_card": "gearCard",
       "category_input": "gearCategoryInput",

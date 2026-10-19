@@ -41,3 +41,17 @@ Cypress.Commands.add('getSeededAnalyticsActivitiesFromDb', () => {
     return cy.task('getSeededAnalyticsActivitiesFromDb', { userId, tag: ANALYTICS_SEED_TAG })
   })
 })
+
+const DASHBOARD_SEED_TAG = 'cy843'
+
+Cypress.Commands.add('seedTaggedActivitiesInDb', (rows) => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('seedTaggedActivitiesInDb', { userId, tag: DASHBOARD_SEED_TAG, rows })
+  })
+})
+
+Cypress.Commands.add('deleteSeededDashboardActivitiesFromDb', () => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('deleteSeededAnalyticsActivitiesFromDb', { userId, tag: DASHBOARD_SEED_TAG })
+  })
+})

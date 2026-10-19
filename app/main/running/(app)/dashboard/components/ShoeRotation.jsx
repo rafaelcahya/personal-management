@@ -31,11 +31,11 @@ function MileageBar({ distanceKm, retirementKm }) {
   return (
     <div aria-label={`${Math.round(pct)}% of retirement threshold`}>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-[10px] text-slate-400">
+        <span className="text-xs text-slate-400">
           {distanceKm.toFixed(2)} km / {Number(retirementKm).toFixed(2)} km
         </span>
         <span
-          className={`text-[10px] font-medium ${
+          className={`text-xs font-medium ${
             pct >= 90 ? 'text-red-600' : pct >= 70 ? 'text-amber-600' : 'text-slate-500'
           }`}
         >
@@ -152,7 +152,7 @@ function GearEditForm({ gear, onSave, onCancel }) {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="h-7 px-3 text-xs gap-1.5"
+          className="h-7 max-sm:h-11 px-3 text-xs gap-1.5"
           id="gearSaveBtn"
           aria-label="Save gear settings"
         >
@@ -168,7 +168,7 @@ function GearEditForm({ gear, onSave, onCancel }) {
           variant="secondary"
           disabled={isSubmitting}
           onClick={onCancel}
-          className="h-7 px-3 text-xs gap-1.5 text-violet-600 font-medium"
+          className="h-7 max-sm:h-11 px-3 text-xs gap-1.5 text-violet-600 font-medium"
           aria-label="Cancel editing"
         >
           <X className="size-3" aria-hidden="true" />
@@ -256,7 +256,7 @@ function GearCard({ gear, onUpdate }) {
                 setEditing((v) => !v)
                 setSaveError(null)
               }}
-              className="text-slate-400 hover:text-violet-600 hover:bg-violet-50"
+              className="max-sm:size-11 text-slate-400 hover:text-violet-600 hover:bg-violet-50"
               aria-label={editing ? 'Close editor' : `Edit ${gear.name}`}
               aria-expanded={editing}
             >
@@ -299,7 +299,7 @@ function GearCard({ gear, onUpdate }) {
         <MileageBar distanceKm={distanceKm} retirementKm={activeLimitKm} />
         {isNearRetirement && (
           <p
-            className="mt-1 flex items-center gap-1 text-[10px] font-medium text-amber-600"
+            className="mt-1 flex items-center gap-1 text-xs font-medium text-amber-600"
             role="alert"
             aria-label="Approaching retirement threshold"
           >
@@ -338,23 +338,24 @@ export default function ShoeRotation() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    async function load() {
-      setLoading(true)
-      setError(null)
-      try {
-        const res = await fetchGear()
-        setGearList(res.data ?? [])
-      } catch (err) {
-        if (err.message === 'UNAUTHORIZED') {
-          window.location.href = '/login'
-          return
-        }
-        setError(err.message || 'Failed to load gear')
-      } finally {
-        setLoading(false)
+  async function load() {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetchGear()
+      setGearList(res.data ?? [])
+    } catch (err) {
+      if (err.message === 'UNAUTHORIZED') {
+        window.location.href = '/login'
+        return
       }
+      setError(err.message || 'Failed to load gear')
+    } finally {
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
     load()
   }, [])
 
@@ -365,18 +366,9 @@ export default function ShoeRotation() {
   const activeGear = gearList.filter((g) => !g.retired)
   const retiredGear = gearList.filter((g) => g.retired)
 
-  function retryLoad() {
-    setError(null)
-    setLoading(true)
-    fetchGear()
-      .then((res) => setGearList(res.data ?? []))
-      .catch((err) => setError(err.message || 'Failed to load gear'))
-      .finally(() => setLoading(false))
-  }
-
   return (
     <section
-      id="gearPage"
+      id="shoeRotationSection_dashboardPage"
       aria-label="Shoe Rotation"
       aria-live="polite"
       className="flex flex-col h-full"
@@ -412,7 +404,13 @@ export default function ShoeRotation() {
           {!loading && error && (
             <div id="gearError" role="alert" className="flex items-center gap-3">
               <p className="text-sm text-red-600">{error}</p>
-              <Button variant="link" size="sm" onClick={retryLoad} className="shrink-0">
+              <Button
+                id="shoeRotationRetryBtn_dashboardPage"
+                variant="link"
+                size="sm"
+                onClick={load}
+                className="shrink-0 max-sm:h-11"
+              >
                 Retry
               </Button>
             </div>
