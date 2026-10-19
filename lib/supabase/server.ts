@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { AuthSessionMissingError, type UserResponse } from '@supabase/supabase-js'
+import { getRequestBearer } from '@/lib/auth/getRequestBearer'
+import { hasValidBearerClaims } from '@/lib/auth/bearer'
 
 /**
  * Especially important if using Fluid compute: Don't put this client in a
@@ -9,29 +11,43 @@ import { AuthSessionMissingError, type UserResponse } from '@supabase/supabase-j
  */
 export async function createClient() {
   const cookieStore = await cookies()
+  const bearer = await getRequestBearer()
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
+  // Bearer mode: the Authorization header makes PostgREST run as the token's user (RLS applies),
+  // and the empty cookie adapter keeps a stale cookie from being read or written. A header that
+  // middleware flagged but that no longer parses gets no token at all, so it ends as a 401.
+  const supabase =
+    bearer.status !== 'none'
+      ? createServerClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            cookies: { getAll: () => [], setAll() {} },
+            global: bearer.token ? { headers: { Authorization: `Bearer ${bearer.token}` } } : {},
           }
-        },
-      },
-    }
-  )
+        )
+      : createServerClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            cookies: {
+              getAll() {
+                return cookieStore.getAll()
+              },
+              setAll(cookiesToSet) {
+                try {
+                  cookiesToSet.forEach(({ name, value, options }) =>
+                    cookieStore.set(name, value, options)
+                  )
+                } catch {
+                  // The `setAll` method was called from a Server Component.
+                  // This can be ignored if you have middleware refreshing
+                  // user sessions.
+                }
+              },
+            },
+          }
+        )
 
   // getUser() asks the Auth server on every call. getClaims() checks the JWT signature locally
   // against the project's public key (ES256 JWKS), so routes skip that round-trip. The trade-off:
@@ -47,12 +63,14 @@ export async function createClient() {
     let claims
     let claimsError = null
     try {
-      const { data, error } = await supabase.auth.getClaims()
+      const { data, error } = await supabase.auth.getClaims(bearer.token ?? undefined)
       claims = data?.claims
       claimsError = error
     } catch {
       // A malformed token can make getClaims() throw; treat it as not signed in (401), not a 500.
     }
+    // The cookie path keeps its current checks; the extra claim checks are for Bearer only.
+    if (bearer.status !== 'none' && !hasValidBearerClaims(claims)) claims = undefined
     if (!claims?.sub) {
       return {
         data: { user: null },
