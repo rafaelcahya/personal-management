@@ -1,20 +1,27 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { previewSimulationSchema } from '@/schemas/routeSimulation'
-import { computeSimulation } from '@/lib/services/running/routeSimulations/computeSimulation'
+import { previewSimulation } from '@/lib/services/running/routeSimulations/previewSimulation'
+import {
+  authenticate,
+  errorResponse,
+  readJsonBody,
+  rejectOversizedBody,
+} from '@/lib/utils/running/routeHandlers'
+
+// Matches the 4 MB GPX cap plus room for the rest of the payload.
+const MAX_BODY_BYTES = 5_000_000
 
 export async function POST(request) {
   try {
-    const supabase = await createClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const { supabase, user } = await authenticate()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const body = await request.json()
+    const tooLarge = rejectOversizedBody(request, MAX_BODY_BYTES)
+    if (tooLarge) return tooLarge
+
+    const { body, response } = await readJsonBody(request)
+    if (response) return response
+
     const parsed = previewSimulationSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json(
@@ -23,13 +30,9 @@ export async function POST(request) {
       )
     }
 
-    const data = await computeSimulation(supabase, user.id, parsed.data)
+    const data = await previewSimulation(supabase, user.id, parsed.data)
     return NextResponse.json({ data, message: 'OK' }, { status: 200 })
   } catch (err) {
-    if (err.status) {
-      return NextResponse.json({ error: err.message }, { status: err.status })
-    }
-    console.error('[route-simulations/preview POST]', err.message)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return errorResponse(err, 'route-simulations/preview POST')
   }
 }

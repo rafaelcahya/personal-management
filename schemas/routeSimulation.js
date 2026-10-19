@@ -2,13 +2,13 @@ import { z } from 'zod'
 
 const MIN_PACE = 150 // 2:30 /km
 const MAX_PACE = 900 // 15:00 /km
-const MAX_GPX_LENGTH = 8_000_000 // ~8 MB of GPX text
+const MAX_GPX_LENGTH = 4_000_000 // ~4 MB of GPX text
 
 const baseSimulationInput = z
   .object({
     source: z.enum(['gpx_upload', 'activity']),
     gpx: z.string().max(MAX_GPX_LENGTH).optional(),
-    activity_id: z.string().uuid().optional(),
+    activity_id: z.uuid('Invalid activity ID').optional(),
     target_mode: z.enum(['pace', 'time']),
     target_pace_sec_per_km: z.number().int().min(MIN_PACE).max(MAX_PACE).optional(),
     target_time_sec: z
@@ -55,4 +55,14 @@ export const createSimulationSchema = z
 
 export const updateSimulationSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(100, 'Name too long'),
+})
+
+export const simulationIdSchema = z.uuid('Invalid simulation ID')
+
+export const simulationListQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+})
+
+export const strategyRequestSchema = z.object({
+  regenerate: z.boolean().optional().default(false),
 })

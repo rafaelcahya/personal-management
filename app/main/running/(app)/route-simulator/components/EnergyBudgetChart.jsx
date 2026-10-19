@@ -35,8 +35,8 @@ export default function EnergyBudgetChart({ profile }) {
         <AreaChart data={profile} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
           <defs>
             <linearGradient id="energyFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f97316" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="#f97316" stopOpacity={0.03} />
+              <stop offset="0%" stopColor="var(--color-orange-500)" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="var(--color-orange-500)" stopOpacity={0.03} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
@@ -57,7 +57,7 @@ export default function EnergyBudgetChart({ profile }) {
           <Area
             type="monotone"
             dataKey="energy_pct"
-            stroke="#f97316"
+            stroke="var(--color-orange-500)"
             strokeWidth={2}
             fill="url(#energyFill)"
           />
