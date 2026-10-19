@@ -13,6 +13,7 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
+import './common/db/test-user'
 import './common/auth/ui-commands'
 import './common/auth/api-commands'
 import './common/trade/api-commands'

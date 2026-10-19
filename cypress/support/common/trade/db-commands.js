@@ -1,17 +1,3 @@
-Cypress.Commands.add('getTestUserId', () => {
-  return cy.env(['TEST_EMAIL', 'TEST_PASSWORD']).then(({ TEST_EMAIL, TEST_PASSWORD }) => {
-    return cy
-      .task('getSupabaseSession', {
-        email: TEST_EMAIL,
-        password: TEST_PASSWORD,
-      })
-      .then((session) => {
-        if (!session) throw new Error('Failed to get test user session')
-        return session.user.id
-      })
-  })
-})
-
 Cypress.Commands.add('getSingleTradeFromDb', (tradeId) => {
   return cy.getTestUserId().then((userId) => {
     return cy.task('getSingleTradeFromDb', { tradeId, userId })

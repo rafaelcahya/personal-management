@@ -53,6 +53,9 @@
       "budget": "/api/inventory/v1/budget"
     },
     "product": {
+      "favorite_toggle": "/api/inventory/v1/product/:id/favorite",
+      "last_price_by_id": "/api/inventory/v1/product/:id/last-price",
+      "stock_by_id": "/api/inventory/v1/product/stock/:id",
       "list": "/api/inventory/v1/product/list",
       "create": "/api/inventory/v1/product/create",
       "detail": "/api/inventory/v1/product",
@@ -84,6 +87,7 @@
       "detail": "/api/valuation/v1/detail/:ticker"
     },
     "user": {
+      "avatar": "/api/user/avatar",
       "profile": "/api/user",
       "profile_v1": "/api/user/v1/profile",
       "update_profile": "/api/user/v1/update"
@@ -100,6 +104,7 @@
       "sync_webhook": "/api/running/v1/sync/webhook"
     },
     "running_manual": {
+      "activity_types": "/api/running/v1/activities/types",
       "activities": "/api/running/v1/activities",
       "subjective_health": "/api/running/v1/health/subjective",
       "weight_log": "/api/running/v1/health/weight"
@@ -125,6 +130,7 @@
       "update": "/api/running/v1/goals"
     },
     "running_activity_streams": {
+      "streams": "/api/running/v1/activities/:id/streams",
       "get": "/api/running/v1/activities"
     },
     "running_ai_insights": {
@@ -188,6 +194,7 @@
       "update": "/api/trade/v1/settings/update"
     },
     "trading_event": {
+      "import_suggestions": "/api/trade/v1/event/import-suggestions",
       "list": "/api/trade/v1/event/list",
       "create": "/api/trade/v1/event/create",
       "update": "/api/trade/v1/event/update",
@@ -198,6 +205,7 @@
       "tags": "/api/trade/v1/event/tags"
     },
     "trading_ai": {
+      "event_analysis_history": "/api/trade/v1/ai/event-analysis/history",
       "event_analysis_get": "/api/trade/v1/ai/event-analysis",
       "event_analysis_post": "/api/trade/v1/ai/event-analysis"
     },
@@ -230,12 +238,14 @@
       "injury_coach_history": "/api/running/v1/ai/injury-coach/history"
     },
     "running_routes": {
+      "export_gpx": "/api/running/v1/routes/:id/export/gpx",
       "list": "/api/running/v1/routes",
       "create": "/api/running/v1/routes",
       "update": "/api/running/v1/routes",
       "delete": "/api/running/v1/routes"
     },
     "investment_flow": {
+      "close": "/api/investment-flow/v1/close",
       "list": "/api/investment-flow/v1",
       "create": "/api/investment-flow/v1",
       "update": "/api/investment-flow/v1",
@@ -253,6 +263,66 @@
       "push_subscriptions": "/api/notifications/v1/push-subscriptions",
       "push_subscriptions_test": "/api/notifications/v1/push-subscriptions/test",
       "preferences": "/api/notifications/v1/preferences"
+    },
+    "product_brand": {
+      "list": "/api/inventory/v1/product-brand/list",
+      "create": "/api/inventory/v1/product-brand/create",
+      "update": "/api/inventory/v1/product-brand/update",
+      "delete": "/api/inventory/v1/product-brand/delete",
+      "detail": "/api/inventory/v1/product-brand",
+      "summary": "/api/inventory/v1/product-brand/summary"
+    },
+    "product_name": {
+      "list": "/api/inventory/v1/product-name/list",
+      "create": "/api/inventory/v1/product-name/create",
+      "update": "/api/inventory/v1/product-name/update",
+      "delete": "/api/inventory/v1/product-name/delete",
+      "detail": "/api/inventory/v1/product-name",
+      "summary": "/api/inventory/v1/product-name/summary",
+      "bulk_update_status": "/api/inventory/v1/product-name/bulk-update-status"
+    },
+    "product_history": {
+      "list": "/api/inventory/v1/product-history/list",
+      "update": "/api/inventory/v1/product-history/update"
+    },
+    "trading_fee": {
+      "list": "/api/trade/v1/fee/list",
+      "create": "/api/trade/v1/fee/create",
+      "update": "/api/trade/v1/fee/update",
+      "delete": "/api/trade/v1/fee/delete",
+      "detail": "/api/trade/v1/fee",
+      "summary": "/api/trade/v1/fee/summary"
+    },
+    "trading_trade": {
+      "list": "/api/trade/v1/trade/list",
+      "create": "/api/trade/v1/trade/create",
+      "update": "/api/trade/v1/trade/update",
+      "delete": "/api/trade/v1/trade/delete",
+      "detail": "/api/trade/v1/trade",
+      "summary": "/api/trade/v1/trade/summary",
+      "options": "/api/trade/v1/trade/options"
+    },
+    "trading_options": {
+      "buy_reason": "/api/trade/v1/options/buy-reason",
+      "entry_occasion": "/api/trade/v1/options/entry-occasion",
+      "entry_session": "/api/trade/v1/options/entry-session",
+      "sell_reason": "/api/trade/v1/options/sell-reason",
+      "stock_type": "/api/trade/v1/options/stock-type"
+    },
+    "running_route_simulations": {
+      "list": "/api/running/v1/route-simulations",
+      "create": "/api/running/v1/route-simulations",
+      "detail": "/api/running/v1/route-simulations/:id",
+      "preview": "/api/running/v1/route-simulations/preview",
+      "ai_strategy": "/api/running/v1/route-simulations/:id/ai-strategy"
+    },
+    "app_misc": {
+      "chat": "/api/chat",
+      "trade_chat": "/api/trade-chat",
+      "docs": "/api/docs",
+      "inngest": "/api/inngest",
+      "map_directions": "/api/map-directions",
+      "map_match": "/api/map-match"
     }
   },
   "test_ids": {
