@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-10-19 (Bearer token auth on /api/* #881 — 39 API tests)
-**Branch:** feat/issue-881-auth-bearer
+**Last Updated:** 2026-10-19 (Route Simulator and Route Builder #846 — 121 API tests, 104 more than before)
+**Branch:** fix/issue-846-route-simulator-builder
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,849  | 54%  |
+| API       | 1,953  | 54%  |
 | UI        | 594    | 25%  |
-| **Total** | **2,443** | 100% |
+| **Total** | **2,547** | 100% |
 
 > **UI reconciliation (2026-10-19, #850)** — counted with `npm run cy:coverage -- --it-counts` (it() per spec, UI = `*-ui.cy.js` or a `ui/` folder). Only 18 UI specs exist: Auth 107, Inventory 454, Landing 33 = 594 it(). The old Trading (254), Running (695) and Shared (8) UI numbers had no UI spec behind them and were removed. The Trading Fee/Trade detail tables below still show UI columns for `add-fee`, `summary-fee`, `add-trade` and the other fee/trade specs; those files are API-style specs (a few UI describes inside `add-fee`, `summary-fee`, `add-trade`), so their numbers are not split here. The script's raw API it() total is 2,054 (66 specs), which does not match the 1,810 above (it() inside loops, mixed specs); API numbers were NOT changed and need a separate reconcile.
 
@@ -24,12 +24,12 @@
 | Auth + User Settings | 74    | 107   | 181   |
 | Inventory Management | 728   | 454   | 1,182 |
 | Trading Management   | 374   | 0     | 374   |
-| Running Tracker      | 579   | 0     | 579   |
+| Running Tracker      | 683   | 0     | 683   |
 | Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 0     | 0     |
-| **Total**            | **1,849** | **594** | **2,443** |
+| **Total**            | **1,953** | **594** | **2,547** |
 
 ---
 
@@ -320,8 +320,17 @@
 
 | Feature        | API | UI | Total |
 | -------------- | --- | -- | ----- |
-| Route Builder  | 17  | 0  | 17    |
-| **Subtotal**   | **17** | **0** | **17** |
+| Route Builder  | 43  | 0  | 43    |
+| **Subtotal**   | **43** | **0** | **43** |
+
+#### Route Simulator
+
+| Feature          | API | UI | Total |
+| ---------------- | --- | -- | ----- |
+| Route Simulator  | 78  | 0  | 78    |
+| **Subtotal**     | **78** | **0** | **78** |
+
+> **Route Simulator and Route Builder (#846)** — `running/route-builder/route-builder-api.cy.js` (43, moved from `running/route-builder.cy.js`) and `running/route-simulator/route-simulator-api.cy.js` (78). 121 API tests, all passing, headed Chrome, 1 min 1 s. Covered: 401 on all 7 simulation endpoints and the route, GPX and map endpoints; 400/422 validation (every superRefine branch, malformed JSON, bad UUID, bad `limit`); 404 for unknown ids and for another user's activity, simulation (GET) and route (GPX export), checked read-only with ids read through a service-role DB task; list/detail/preview/create shape and numbers-as-numbers (Run Mode contract); GPX export (content type, filename, no `<ele>`, XML-escaped name); GPX limits (100,000 points, 4 MB schema cap); CB-1 with a 1,500-row seeded stream (full distance); Bearer spot check on list and detail. Not covered: ai-strategy 200 path (calls Claude), the 413 body guard (needs a 5 MB body), successful map-directions and map-match calls (public OSRM server), PATCH/DELETE/ai-strategy on another user's real simulation or route (random UUIDs used; the `user_id` filter is reviewed in code). Validation on simulation create, preview and PATCH is still 422 (#849). The old Route Builder assertions for PATCH 500 and DELETE 200 on an unknown id were updated to 404, and the list test no longer expects `waypoints`.
 
 #### Manual Entry
 
@@ -349,7 +358,7 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **91** | **21** | **112** |
 
-**Running Total — API: 579 | UI: 0 | Total: 579** (no Running UI specs exist)
+**Running Total — API: 683 | UI: 0 | Total: 683** (no Running UI specs exist)
 
 > **Settings, Health & Strava (#845)** — `cypress/e2e/running/settings/settings-api.cy.js` (65 tests). Added health subjective/weight (auth, CRUD, 400 validation, malformed id 400, unknown uuid 404), Strava connect redirect and `strava_oauth_state` cookie, callback state rejection (no Strava call), not-connected sync/re-enrich/disconnect, seeded `needs_reconnect` (409) and disconnect, hr-zones read/validate/update+restore, threshold-pace-detect 422, profile 400, and the `DELETE /user/activities` confirmation guard only. The real-Strava callback test was removed (CB-4).
 > **Not covered:** IDOR on health `[id]` (no second-user credentials; the Cypress DB client is RLS-bound so it cannot seed another user row), `DELETE /user/activities` success path and `last_sync_at` reset (test account owns 13 real activities), threshold-pace-detect with seeded streams, `re-enrich-metrics`.

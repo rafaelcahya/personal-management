@@ -1,26 +1,25 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { deleteRoute } from '@/lib/services/running/routes/deleteRoute'
 import { updateRoute } from '@/lib/services/running/routes/updateRoute'
-import { updateRouteSchema } from '@/schemas/savedRoute'
+import { routeIdSchema, updateRouteSchema } from '@/schemas/savedRoute'
+import {
+  authenticate,
+  errorResponse,
+  invalidIdResponse,
+  readJsonBody,
+} from '@/lib/utils/running/routeHandlers'
 
 export async function PATCH(request, { params }) {
   try {
-    const supabase = await createClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const { supabase, user } = await authenticate()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const { id } = await params
-    if (!id) {
-      return NextResponse.json({ error: 'Missing route id' }, { status: 400 })
-    }
+    const id = routeIdSchema.safeParse((await params).id)
+    if (!id.success) return invalidIdResponse('route')
 
-    const body = await request.json()
+    const { body, response } = await readJsonBody(request)
+    if (response) return response
+
     const result = updateRouteSchema.safeParse(body)
     if (!result.success) {
       return NextResponse.json(
@@ -29,34 +28,26 @@ export async function PATCH(request, { params }) {
       )
     }
 
-    const data = await updateRoute(supabase, user.id, id, { name: result.data.name })
-    return NextResponse.json({ data }, { status: 200 })
+    const data = await updateRoute(supabase, user.id, id.data, { name: result.data.name })
+    if (!data) return NextResponse.json({ error: 'Route not found' }, { status: 404 })
+    return NextResponse.json({ data, message: 'Renamed' }, { status: 200 })
   } catch (err) {
-    console.error('[routes PATCH]', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return errorResponse(err, 'routes PATCH')
   }
 }
 
 export async function DELETE(_, { params }) {
   try {
-    const supabase = await createClient()
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const { supabase, user } = await authenticate()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const { id } = await params
-    if (!id) {
-      return NextResponse.json({ error: 'Missing route id' }, { status: 400 })
-    }
+    const id = routeIdSchema.safeParse((await params).id)
+    if (!id.success) return invalidIdResponse('route')
 
-    await deleteRoute(supabase, user.id, id)
+    const deleted = await deleteRoute(supabase, user.id, id.data)
+    if (!deleted) return NextResponse.json({ error: 'Route not found' }, { status: 404 })
     return NextResponse.json({ message: 'Deleted' }, { status: 200 })
   } catch (err) {
-    console.error('[routes DELETE]', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return errorResponse(err, 'routes DELETE')
   }
 }

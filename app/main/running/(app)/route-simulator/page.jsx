@@ -1,8 +1,18 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { toast } from 'sonner'
-import { Mountain, AlertCircle, Trash2, Eye, Pencil, Check, X as XIcon } from 'lucide-react'
+import {
+  Mountain,
+  AlertCircle,
+  Trash2,
+  Eye,
+  Pencil,
+  Check,
+  Loader2,
+  X as XIcon,
+} from 'lucide-react'
 import Card, {
   CardContent,
   CardHeader,
@@ -13,34 +23,28 @@ import Card, {
 } from '@/components/base/Card/Card'
 import Button from '@/components/base/Button/Button'
 import Input from '@/components/base/Input/Input'
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalDescription,
+  ModalFooter,
+  ModalClose,
+} from '@/components/base/Modal/Modal'
 import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import PageHeader from '@/app/main/components/PageHeader'
 import SimulatorInput from './components/SimulatorInput'
 import SimulationResult from './components/SimulationResult'
+import useRouteStrategy from './hooks/useRouteStrategy'
 import { fmtDuration } from '../dashboard/utils/format'
 import {
   fetchRouteSimulations,
-  fetchRouteSimulation,
   previewRouteSimulation,
   saveRouteSimulation,
   updateRouteSimulation,
   deleteRouteSimulation,
-  generateRouteStrategy,
 } from '@/lib/api/running'
-
-// numeric(...) columns can come back as strings from PostgREST — coerce the
-// top-level fields the result view does maths on.
-function normalize(row) {
-  return {
-    ...row,
-    total_distance_m: Number(row.total_distance_m),
-    total_elevation_gain_m: Number(row.total_elevation_gain_m),
-    total_elevation_loss_m: Number(row.total_elevation_loss_m),
-    effort_flat_pace_sec_per_km: Number(row.effort_flat_pace_sec_per_km),
-    predicted_time_sec: Number(row.predicted_time_sec),
-    suggested_time_sec: row.suggested_time_sec == null ? null : Number(row.suggested_time_sec),
-  }
-}
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -50,11 +54,22 @@ function formatDate(iso) {
   })
 }
 
-function SavedSimRow({ sim, onView, onRename, onDelete }) {
+function SavedSimRow({ sim, onRename, onDelete }) {
   const [editing, setEditing] = useState(false)
   const [editName, setEditName] = useState(sim.name)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+
+  async function handleConfirmDelete() {
+    setDeleting(true)
+    try {
+      await onDelete(sim.id)
+    } finally {
+      setDeleting(false)
+      setConfirmOpen(false)
+    }
+  }
 
   async function confirmEdit() {
     const trimmed = editName.trim()
@@ -76,6 +91,8 @@ function SavedSimRow({ sim, onView, onRename, onDelete }) {
       <div className="min-w-0 flex-1">
         {editing ? (
           <Input
+            id={`editSimNameInput_${sim.id}_routeSimulatorPage`}
+            aria-label={`New name for ${sim.name}`}
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
             onKeyDown={(e) => {
@@ -102,6 +119,7 @@ function SavedSimRow({ sim, onView, onRename, onDelete }) {
         {editing ? (
           <>
             <Button
+              id={`confirmRenameSimBtn_${sim.id}_routeSimulatorPage`}
               variant="ghost"
               size="xs"
               onClick={confirmEdit}
@@ -112,6 +130,7 @@ function SavedSimRow({ sim, onView, onRename, onDelete }) {
               <Check className="size-4" />
             </Button>
             <Button
+              id={`cancelRenameSimBtn_${sim.id}_routeSimulatorPage`}
               variant="ghost"
               size="xs"
               onClick={() => setEditing(false)}
@@ -124,14 +143,18 @@ function SavedSimRow({ sim, onView, onRename, onDelete }) {
         ) : (
           <>
             <Button
-              id={`viewSimBtn_${sim.id}_routeSimulatorPage`}
+              asChild
               variant="ghost"
               size="xs"
-              onClick={() => onView(sim.id)}
               className="text-slate-400 hover:bg-violet-50 hover:text-violet-600"
-              aria-label={`View ${sim.name}`}
             >
-              <Eye className="size-4" />
+              <Link
+                id={`viewSimBtn_${sim.id}_routeSimulatorPage`}
+                href={`/main/running/route-simulator/${sim.id}`}
+                aria-label={`View ${sim.name}`}
+              >
+                <Eye className="size-4" aria-hidden="true" />
+              </Link>
             </Button>
             <Button
               id={`renameSimBtn_${sim.id}_routeSimulatorPage`}
@@ -150,14 +173,7 @@ function SavedSimRow({ sim, onView, onRename, onDelete }) {
               id={`deleteSimBtn_${sim.id}_routeSimulatorPage`}
               variant="ghost"
               size="xs"
-              onClick={async () => {
-                setDeleting(true)
-                try {
-                  await onDelete(sim.id)
-                } finally {
-                  setDeleting(false)
-                }
-              }}
+              onClick={() => setConfirmOpen(true)}
               disabled={deleting}
               className="text-slate-400 hover:bg-red-50 hover:text-red-600"
               aria-label={`Delete ${sim.name}`}
@@ -167,6 +183,38 @@ function SavedSimRow({ sim, onView, onRename, onDelete }) {
           </>
         )}
       </div>
+
+      <Modal open={confirmOpen} onOpenChange={(open) => !deleting && setConfirmOpen(open)}>
+        <ModalContent id={`deleteSimModal_${sim.id}_routeSimulatorPage`} className="max-w-md">
+          <ModalHeader>
+            <ModalTitle>Delete simulation?</ModalTitle>
+            <ModalDescription className="text-sm">
+              This will remove <span className="font-medium text-violet-700">{sim.name}</span> and
+              its saved plan. This action cannot be undone.
+            </ModalDescription>
+          </ModalHeader>
+          <ModalFooter className="gap-2">
+            <ModalClose asChild>
+              <Button
+                id={`cancelDeleteSimBtn_${sim.id}_routeSimulatorPage`}
+                variant="secondary"
+                type="button"
+                disabled={deleting}
+              >
+                Cancel
+              </Button>
+            </ModalClose>
+            <Button
+              id={`confirmDeleteSimBtn_${sim.id}_routeSimulatorPage`}
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              disabled={deleting}
+            >
+              {deleting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Delete'}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   )
 }
@@ -174,13 +222,18 @@ function SavedSimRow({ sim, onView, onRename, onDelete }) {
 export default function RouteSimulatorPage() {
   const [result, setResult] = useState(null)
   const [simulationId, setSimulationId] = useState(null)
-  const [aiStrategy, setAiStrategy] = useState(null)
   const [pendingPayload, setPendingPayload] = useState(null)
 
   const [simulating, setSimulating] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [strategyLoading, setStrategyLoading] = useState(false)
-  const [strategyError, setStrategyError] = useState(null)
+  const {
+    aiStrategy,
+    setAiStrategy,
+    strategyLoading,
+    strategyError,
+    setStrategyError,
+    generateStrategy,
+  } = useRouteStrategy()
 
   const [sims, setSims] = useState(null)
   const [simsLoading, setSimsLoading] = useState(true)
@@ -231,33 +284,6 @@ export default function RouteSimulatorPage() {
       toast.error(err.message || 'Failed to save simulation')
     } finally {
       setSaving(false)
-    }
-  }
-
-  async function handleView(id) {
-    try {
-      const row = await fetchRouteSimulation(id)
-      setResult(normalize(row))
-      setSimulationId(row.id)
-      setAiStrategy(row.ai_strategy ?? null)
-      setStrategyError(null)
-      setPendingPayload(null)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    } catch (err) {
-      toast.error(err.message || 'Failed to open simulation')
-    }
-  }
-
-  async function handleGenerateStrategy() {
-    if (!simulationId) return
-    setStrategyLoading(true)
-    setStrategyError(null)
-    try {
-      setAiStrategy(await generateRouteStrategy(simulationId))
-    } catch (err) {
-      setStrategyError(err.message || 'Failed to generate strategy')
-    } finally {
-      setStrategyLoading(false)
     }
   }
 
@@ -317,7 +343,7 @@ export default function RouteSimulatorPage() {
               aiStrategy={aiStrategy}
               onSave={handleSave}
               saving={saving}
-              onGenerateStrategy={handleGenerateStrategy}
+              onGenerateStrategy={() => generateStrategy(simulationId)}
               strategyLoading={strategyLoading}
               strategyError={strategyError}
             />
@@ -357,7 +383,12 @@ export default function RouteSimulatorPage() {
             >
               <AlertCircle className="size-5 text-red-400" />
               <p className="text-sm text-slate-500">{simsError}</p>
-              <Button variant="ghost" onClick={loadSims} className="text-violet-600">
+              <Button
+                id="retrySavedSimulationsBtn_routeSimulatorPage"
+                variant="ghost"
+                onClick={loadSims}
+                className="text-violet-600"
+              >
                 Retry
               </Button>
             </div>
@@ -378,7 +409,6 @@ export default function RouteSimulatorPage() {
                 <SavedSimRow
                   key={sim.id}
                   sim={sim}
-                  onView={handleView}
                   onRename={handleRename}
                   onDelete={handleDelete}
                 />

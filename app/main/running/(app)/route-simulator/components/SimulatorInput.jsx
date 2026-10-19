@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { Upload } from 'lucide-react'
+import { Upload, AlertCircle } from 'lucide-react'
 import { RadioGroup, RadioGroupItem } from '@/components/base/RadioGroup/RadioGroup'
 import {
   Select,
@@ -14,6 +14,7 @@ import {
 import Input from '@/components/base/Input/Input'
 import Button from '@/components/base/Button/Button'
 import { Spinner } from '@/components/base/Spinner/Spinner'
+import { Skeleton } from '@/components/base/Skeleton/Skeleton'
 import { FieldLabel } from '@/components/base/Field/Field'
 import { fetchActivities } from '@/lib/api/running'
 
@@ -43,17 +44,32 @@ export default function SimulatorInput({ onSimulate, simulating }) {
   const [pace, setPace] = useState('5:00')
   const [time, setTime] = useState('50:00')
   const [activities, setActivities] = useState([])
+  const [activitiesLoading, setActivitiesLoading] = useState(true)
+  const [activitiesError, setActivitiesError] = useState(null)
   const [activityId, setActivityId] = useState('')
   const [file, setFile] = useState(null)
   const fileRef = useRef(null)
 
-  useEffect(() => {
-    fetchActivities({ limit: 50 })
-      .then(({ data }) => {
-        setActivities((data ?? []).filter((a) => a.elevation_gain_m > 0 && a.distance_m > 0))
-      })
-      .catch(() => {})
+  const loadActivities = useCallback(async () => {
+    setActivitiesLoading(true)
+    setActivitiesError(null)
+    try {
+      const { data } = await fetchActivities({ limit: 50 })
+      setActivities((data ?? []).filter((a) => a.elevation_gain_m > 0 && a.distance_m > 0))
+    } catch (err) {
+      if (err.message === 'UNAUTHORIZED') {
+        window.location.href = '/login'
+        return
+      }
+      setActivitiesError(err.message || 'Could not load your activities')
+    } finally {
+      setActivitiesLoading(false)
+    }
   }, [])
+
+  useEffect(() => {
+    loadActivities()
+  }, [loadActivities])
 
   async function handleSimulate() {
     const payload = { source, target_mode: targetMode }
@@ -122,37 +138,72 @@ export default function SimulatorInput({ onSimulate, simulating }) {
             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           />
           <Button
+            id="chooseGpxBtn_routeSimulatorPage"
             variant="outline"
             onClick={() => fileRef.current?.click()}
-            className="w-full justify-center border-dashed"
+            className="w-full min-w-0 justify-center border-dashed"
           >
-            <Upload className="size-4" />
-            {file ? file.name : 'Choose GPX file'}
+            <Upload className="size-4 shrink-0" aria-hidden="true" />
+            <span className="min-w-0 truncate" title={file?.name}>
+              {file ? file.name : 'Choose GPX file'}
+            </span>
           </Button>
         </div>
       ) : (
         <div>
-          <Select value={activityId} onValueChange={setActivityId}>
-            <SelectTrigger id="activitySelect_routeSimulatorPage" className={inputCls}>
-              <SelectValue placeholder="Select a past run with elevation" />
-            </SelectTrigger>
-            <SelectContent>
-              {activities.length === 0 && (
-                <div className="px-3 py-2 text-sm text-slate-400">
-                  No activities with elevation data
-                </div>
-              )}
-              {activities.map((a) => (
-                <SelectItem key={a.id} value={a.id}>
-                  {new Date(a.started_at).toLocaleDateString('en-US', {
-                    day: 'numeric',
-                    month: 'short',
-                  })}{' '}
-                  · {(a.distance_m / 1000).toFixed(1)} km · +{Math.round(a.elevation_gain_m)} m
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {activitiesLoading && (
+            <div id="activitiesLoading_routeSimulatorPage" role="status">
+              <Skeleton className="h-9 w-full rounded-md" />
+              <span className="sr-only">Loading activities</span>
+            </div>
+          )}
+
+          {!activitiesLoading && activitiesError && (
+            <div
+              id="activitiesError_routeSimulatorPage"
+              role="alert"
+              className="flex flex-col items-center gap-2 rounded-md border border-slate-200 px-3 py-4 text-center"
+            >
+              <AlertCircle className="size-5 text-red-400" aria-hidden="true" />
+              <p className="text-sm text-slate-500">{activitiesError}</p>
+              <Button
+                id="retryActivitiesBtn_routeSimulatorPage"
+                variant="ghost"
+                onClick={loadActivities}
+                className="text-violet-600"
+              >
+                Retry
+              </Button>
+            </div>
+          )}
+
+          {!activitiesLoading && !activitiesError && (
+            <Select value={activityId} onValueChange={setActivityId}>
+              <SelectTrigger
+                id="activitySelect_routeSimulatorPage"
+                className={inputCls}
+                aria-label="Past run to simulate"
+              >
+                <SelectValue placeholder="Select a past run with elevation" />
+              </SelectTrigger>
+              <SelectContent>
+                {activities.length === 0 && (
+                  <div className="px-3 py-2 text-sm text-slate-400">
+                    No activities with elevation data
+                  </div>
+                )}
+                {activities.map((a) => (
+                  <SelectItem key={a.id} value={a.id}>
+                    {new Date(a.started_at).toLocaleDateString('en-US', {
+                      day: 'numeric',
+                      month: 'short',
+                    })}{' '}
+                    · {(a.distance_m / 1000).toFixed(1)} km · +{Math.round(a.elevation_gain_m)} m
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
       )}
 
@@ -187,23 +238,33 @@ export default function SimulatorInput({ onSimulate, simulating }) {
       </div>
 
       {targetMode === 'pace' ? (
-        <Input
-          id="targetPaceInput_routeSimulatorPage"
-          value={pace}
-          onChange={(e) => setPace(e.target.value)}
-          placeholder="5:00"
-          inputMode="numeric"
-          className={inputCls}
-        />
+        <div>
+          <FieldLabel htmlFor="targetPaceInput_routeSimulatorPage" className="mb-2 block">
+            Target pace (mm:ss per km)
+          </FieldLabel>
+          <Input
+            id="targetPaceInput_routeSimulatorPage"
+            value={pace}
+            onChange={(e) => setPace(e.target.value)}
+            placeholder="5:00"
+            inputMode="numeric"
+            className={inputCls}
+          />
+        </div>
       ) : (
-        <Input
-          id="targetTimeInput_routeSimulatorPage"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          placeholder="50:00"
-          inputMode="numeric"
-          className={inputCls}
-        />
+        <div>
+          <FieldLabel htmlFor="targetTimeInput_routeSimulatorPage" className="mb-2 block">
+            Target finish time (h:mm:ss or mm:ss)
+          </FieldLabel>
+          <Input
+            id="targetTimeInput_routeSimulatorPage"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            placeholder="50:00"
+            inputMode="numeric"
+            className={inputCls}
+          />
+        </div>
       )}
 
       <Button

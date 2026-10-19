@@ -124,14 +124,14 @@ export default function RouteStats({
         </div>
       </div>
 
-      {/* Action buttons */}
+      {/* Below lg the map's own Undo control is the only one, so the button is not shown twice */}
       <div className="flex gap-2">
         <Button
           id="undoWaypointBtn_routeBuilderPage"
           variant="outline"
           onClick={onUndo}
           disabled={waypointCount === 0}
-          className="flex-1 text-sm"
+          className="flex-1 text-sm max-lg:hidden"
         >
           Undo
         </Button>

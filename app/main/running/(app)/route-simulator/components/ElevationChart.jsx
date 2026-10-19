@@ -51,8 +51,8 @@ export default function ElevationChart({ profile }) {
         <AreaChart data={profile} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
           <defs>
             <linearGradient id="eleFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#7c3aed" stopOpacity={0.35} />
-              <stop offset="100%" stopColor="#7c3aed" stopOpacity={0.03} />
+              <stop offset="0%" stopColor="var(--color-violet-600)" stopOpacity={0.35} />
+              <stop offset="100%" stopColor="var(--color-violet-600)" stopOpacity={0.03} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
@@ -72,7 +72,7 @@ export default function ElevationChart({ profile }) {
           <Area
             type="monotone"
             dataKey="ele_m"
-            stroke="#7c3aed"
+            stroke="var(--color-violet-600)"
             strokeWidth={2}
             fill="url(#eleFill)"
           />
