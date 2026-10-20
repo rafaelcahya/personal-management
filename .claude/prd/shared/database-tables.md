@@ -33,7 +33,16 @@
 | `trd_research_cache`             | Trading | Cached research data per ticker and endpoint           |
 | `trd_watchlist`                  | Trading | Watched tickers per user                               |
 | `trd_watchlist_fundamentals`     | Trading | Cached valuation data per ticker                       |
-| `settings`                       | Trading | Per-user settings (shared, renamed in a later phase)   |
+| `trd_settings`                   | Trading | Per-user trading settings (margin, risk-free rates)    |
+
+### Shared Tables
+
+| Table                          | Module | Description                                    |
+| ------------------------------ | ------ | ---------------------------------------------- |
+| `app_notifications`            | Shared | In-app notifications (Realtime-enabled)        |
+| `app_notification_preferences` | Shared | Push on/off per user and notification type     |
+| `app_push_subscriptions`       | Shared | One row per browser device registered for push |
+| `app_push_delivery_log`        | Shared | One row per push attempt (kept 30 days)        |
 
 ### Auth Tables
 

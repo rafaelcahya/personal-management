@@ -84,7 +84,7 @@ export async function POST(req) {
           .order('event_date', { ascending: false })
           .limit(50),
         supabase
-          .from('settings')
+          .from('trd_settings')
           .select('initial_margin,bi_risk_free_rate,personal_risk_free_rate,margin_of_error')
           .eq('user_id', user.id)
           .limit(1)

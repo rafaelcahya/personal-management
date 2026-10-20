@@ -1,4 +1,4 @@
-const TABLE_NAME = 'settings'
+const TABLE_NAME = 'trd_settings'
 
 /**
  * Get trade settings for a user from the database.
