@@ -10,7 +10,7 @@ export async function getEvents(supabase, userId, { page = 1, limit = 20, from }
   const start = (page - 1) * safeLimit
 
   const { count, error: countError } = await supabase
-    .from('event_list')
+    .from('trd_event_list')
     .select('id', { count: 'exact', head: true })
     .eq('user_id', userId)
   if (countError) throw new Error(countError.message)
@@ -21,7 +21,7 @@ export async function getEvents(supabase, userId, { page = 1, limit = 20, from }
   }
 
   let query = supabase
-    .from('event_list')
+    .from('trd_event_list')
     .select('id, title, event_date, impact_direction')
     .eq('user_id', userId)
     .order('event_date', { ascending: false })
@@ -70,11 +70,11 @@ if (error) throw new Error(error.message)
 return !!data
 ```
 
-## Soft delete (tables with `deleted_at`, e.g. `event_list`, `currency_investments`)
+## Soft delete (tables with `deleted_at`, e.g. `trd_event_list`, `trd_currency_investments`)
 
 ```js
 await supabase
-  .from('event_list')
+  .from('trd_event_list')
   .update({ deleted_at: new Date().toISOString() })
   .eq('id', itemId)
   .eq('user_id', userId)

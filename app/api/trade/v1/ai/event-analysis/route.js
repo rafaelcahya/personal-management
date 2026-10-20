@@ -10,8 +10,8 @@ import { streamEventAnalysis } from '@/lib/services/event/generateEventAnalysis'
 import { notify } from '@/lib/services/notifications/notify'
 
 const DAILY_CAP = 50
-const TABLE = 'event_ai_analysis'
-const EVENT_TABLE = 'event_list'
+const TABLE = 'trd_event_ai_analysis'
+const EVENT_TABLE = 'trd_event_list'
 
 async function checkDailyCap(adminClient, userId) {
   const startOfDay = new Date()

@@ -37,7 +37,7 @@ The Analyze button is disabled if the event has no description AND no additional
 
 **Persistence:**
 
-- Each analysis is saved to the `event_ai_analysis` table after the stream completes
+- Each analysis is saved to the `trd_event_ai_analysis` table after the stream completes
 - Before saving, the previous analysis for the same event (or same set of event IDs for multi) is soft-deleted
 - The event detail page shows the latest cached analysis inline, without needing to re-run it
 

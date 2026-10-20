@@ -45,9 +45,9 @@ export async function GET() {
     const from = todayStr()
     const to = futureStr(LOOK_AHEAD_DAYS)
 
-    // Fetch user's distinct tickers from trade_list
+    // Fetch user's distinct tickers from trd_trade_list
     const { data: trades } = await supabase
-      .from('trade_list')
+      .from('trd_trade_list')
       .select('ticker')
       .eq('user_id', user.id)
       .is('deleted_at', null)
