@@ -65,12 +65,12 @@ export const productTasks = (supabaseAdmin) => ({
     )
   },
 
-  // Insert a fully-denormalized product_history record for UI test seeding
+  // Insert a fully-denormalized inv_product_history record for UI test seeding
   async insertFullProductHistory(record) {
     return insertFullProductHistoryFromDb(supabaseAdmin, record)
   },
 
-  // Delete product_history rows by userId (and optionally by ids array)
+  // Delete inv_product_history rows by userId (and optionally by ids array)
   async deleteProductHistoryRows({ userId, ids = [] }) {
     return deleteProductHistoryFromDb(supabaseAdmin, userId, ids)
   },

@@ -12,7 +12,7 @@ export async function GET() {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
 
     const { data, error } = await supabase
-      .from('inventory_budget')
+      .from('inv_budget')
       .select('type, monthly_budget')
       .eq('user_id', user.id)
 
@@ -44,7 +44,7 @@ export async function POST(request) {
         { status: 400 }
       )
 
-    const { error } = await supabase.from('inventory_budget').upsert(
+    const { error } = await supabase.from('inv_budget').upsert(
       {
         user_id: user.id,
         type,

@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 
-let productListId // integer — the product_list row id used for detail endpoint
-let historyRowId // integer — the product_history row id used for update endpoint
+let productListId // integer — the inv_product_list row id used for detail endpoint
+let historyRowId // integer — the inv_product_history row id used for update endpoint
 
 before(() => {
   cy.setupApiAuthCookies()

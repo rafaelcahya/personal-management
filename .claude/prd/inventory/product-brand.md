@@ -1,6 +1,6 @@
 #### 3.1.2 Product Brand (`/main/inventory/product-brand`)
 
-**Description:** This is the master data page for product brands. Brands are used as a foreign key in `product_list`, so every brand needs to have a unique name per user. You also can't delete a brand while it's still being used by active products — that would break your product data.
+**Description:** This is the master data page for product brands. Brands are used as a foreign key in `inv_product_list`, so every brand needs to have a unique name per user. You also can't delete a brand while it's still being used by active products — that would break your product data.
 
 **Route:** `/main/inventory/product-brand`
 
@@ -31,7 +31,7 @@
 
 **A. Show Brand List**
 
-Each brand shows its name and how many active products are using it (`product_count`). The count comes from joining `product_brand` with `product_list`, counting only products where `deleted_at IS NULL`.
+Each brand shows its name and how many active products are using it (`product_count`). The count comes from joining `inv_product_brand` with `inv_product_list`, counting only products where `deleted_at IS NULL`.
 
 ```
 GIVEN the user opens /main/inventory/product-brand
@@ -145,7 +145,7 @@ THEN the brand disappears from the list and a success toast is shown
 
 - Auth: Required
 - What it does: Returns all brands for the user, each with a `product_count` (number of active products using that brand)
-- Implementation: `Promise.all` — fetch `product_brand` + `product_list` (active only) in parallel, then merge the results
+- Implementation: `Promise.all` — fetch `inv_product_brand` + `inv_product_list` (active only) in parallel, then merge the results
 - Response: `{ data: [{ id, brand, brand_status, product_count, ... }] }`
 
 `GET /api/inventory/v1/product-brand/[id]`
@@ -166,7 +166,7 @@ THEN the brand disappears from the list and a success toast is shown
 
 - Auth: Required
 - Body: `{ brand: string }`
-- Validation: uniqueness check — query `product_brand` where `brand ilike newName AND user_id = userId AND brand_status != 'deleted'`
+- Validation: uniqueness check — query `inv_product_brand` where `brand ilike newName AND user_id = userId AND brand_status != 'deleted'`
 - Success response: `{ data: {...}, message: "Brand created" }` (201)
 - Error response: HTTP 409 `{ error: "CONFLICT", message: "Brand name already exists" }` if duplicate
 
@@ -183,7 +183,7 @@ THEN the brand disappears from the list and a success toast is shown
 
 - Auth: Required
 - Param: `id` — integer, brand ID
-- Guard: query `product_list` where `brand_id = id AND user_id = userId AND deleted_at IS NULL` — if any records exist, throw 409
+- Guard: query `inv_product_list` where `brand_id = id AND user_id = userId AND deleted_at IS NULL` — if any records exist, throw 409
 - Implementation: soft-delete (set `brand_status = 'deleted'` or equivalent)
 - Success response: `{ message: "Brand deleted" }` (200)
 - Error response: HTTP 409 `{ error: "CONFLICT", message: "Brand is still used by X product(s) and cannot be deleted" }` if still in use
@@ -192,10 +192,10 @@ THEN the brand disappears from the list and a success toast is shown
 
 **Database Tables:**
 
-| Table           | Relevant columns                          | What it's used for                                  |
-| --------------- | ----------------------------------------- | --------------------------------------------------- |
-| `product_brand` | `id`, `user_id`, `brand`, `brand_status`  | Brand master data                                   |
-| `product_list`  | `id`, `brand_id`, `user_id`, `deleted_at` | Used to calculate `product_count` and guard deletes |
+| Table               | Relevant columns                          | What it's used for                                  |
+| ------------------- | ----------------------------------------- | --------------------------------------------------- |
+| `inv_product_brand` | `id`, `user_id`, `brand`, `brand_status`  | Brand master data                                   |
+| `inv_product_list`  | `id`, `brand_id`, `user_id`, `deleted_at` | Used to calculate `product_count` and guard deletes |
 
 ---
 

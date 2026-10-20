@@ -1,6 +1,6 @@
 #### 3.1.3 Product Name (`/main/inventory/product-name`)
 
-**Description:** This is the master data page for product names (types). Product names are used as a foreign key in `product_list`, so every name needs to be unique per user. You also can't delete a product name while it's still being used by active products — that would break your product data.
+**Description:** This is the master data page for product names (types). Product names are used as a foreign key in `inv_product_list`, so every name needs to be unique per user. You also can't delete a product name while it's still being used by active products — that would break your product data.
 
 **Route:** `/main/inventory/product-name`
 
@@ -31,7 +31,7 @@
 
 **A. Show Product Name List**
 
-Each product name shows its name and how many active products are using it (`product_count`). The count comes from joining `product_name` with `product_list`, counting only products where `deleted_at IS NULL`.
+Each product name shows its name and how many active products are using it (`product_count`). The count comes from joining `inv_product_name` with `inv_product_list`, counting only products where `deleted_at IS NULL`.
 
 ```
 GIVEN the user opens /main/inventory/product-name
@@ -145,14 +145,14 @@ THEN the product name disappears from the list and a success toast is shown
 
 - Auth: Required
 - What it does: Returns all product names for the user, each with a `product_count` (number of active products using that name)
-- Implementation: `Promise.all` — fetch `product_name` + `product_list` (active only, `deleted_at IS NULL`) in parallel, then merge the results
+- Implementation: `Promise.all` — fetch `inv_product_name` + `inv_product_list` (active only, `deleted_at IS NULL`) in parallel, then merge the results
 - Response: `{ data: [{ id, product_name, product_name_status, product_count, note, ... }] }`
 
 `POST /api/inventory/v1/product-name/create`
 
 - Auth: Required
 - Body: `{ product_name: string }`
-- Validation: uniqueness check — query `product_name` where `product_name ilike newName AND user_id = userId AND product_name_status != 'deleted'`
+- Validation: uniqueness check — query `inv_product_name` where `product_name ilike newName AND user_id = userId AND product_name_status != 'deleted'`
 - Success response: `{ success: true, productName: {...} }` (201)
 - Error response: HTTP 409 `{ error: "CONFLICT", message: "Product name already exists" }` if duplicate
 
@@ -169,7 +169,7 @@ THEN the product name disappears from the list and a success toast is shown
 
 - Auth: Required
 - Param: `id` — integer, product name ID
-- Guard: query `product_list` where `product_name_id = id AND user_id = userId AND deleted_at IS NULL` — if any records exist, throw 409
+- Guard: query `inv_product_list` where `product_name_id = id AND user_id = userId AND deleted_at IS NULL` — if any records exist, throw 409
 - Implementation: soft-delete (set `product_name_status = 'deleted'`, set `deleted_at`)
 - Success response: `{ success: true, data: {...} }` (200)
 - Error response: HTTP 409 `{ error: "CONFLICT", message: "Product name is still used by X product(s) and cannot be deleted" }` if still in use
@@ -191,10 +191,10 @@ THEN the product name disappears from the list and a success toast is shown
 
 **Database Tables:**
 
-| Table          | Relevant columns                                                             | What it's used for                                  |
-| -------------- | ---------------------------------------------------------------------------- | --------------------------------------------------- |
-| `product_name` | `id`, `user_id`, `product_name`, `product_name_status`, `note`, `deleted_at` | Product name master data                            |
-| `product_list` | `id`, `product_name_id`, `user_id`, `deleted_at`                             | Used to calculate `product_count` and guard deletes |
+| Table              | Relevant columns                                                             | What it's used for                                  |
+| ------------------ | ---------------------------------------------------------------------------- | --------------------------------------------------- |
+| `inv_product_name` | `id`, `user_id`, `product_name`, `product_name_status`, `note`, `deleted_at` | Product name master data                            |
+| `inv_product_list` | `id`, `product_name_id`, `user_id`, `deleted_at`                             | Used to calculate `product_count` and guard deletes |
 
 ---
 

@@ -177,8 +177,8 @@ describe('PUT Edit Product Stock API - /api/inventory/v1/product/stock/:id', () 
   })
 
   describe('Negative Stock Guard', () => {
-    // Note: under normal usage, product_list.quantity is always the sum of its
-    // product_quantity entries, so currentQty >= oldQty always holds for any single
+    // Note: under normal usage, inv_product_list.quantity is always the sum of its
+    // inv_product_quantity entries, so currentQty >= oldQty always holds for any single
     // entry being edited — the negative-projection branch (`current - old + new < 0`)
     // is only reachable if stock was independently reduced below an entry's own
     // contribution (e.g. concurrent writes or product usage consumption). That is

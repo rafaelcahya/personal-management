@@ -84,7 +84,7 @@ await supabase
 
 ```js
 const { data, error } = await supabase
-  .from('product_name')
+  .from('inv_product_name')
   .update({ status })
   .in('id', ids)
   .eq('user_id', userId)
