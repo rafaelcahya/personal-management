@@ -1,13 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import { getRateLimitTier, rateLimit, rateLimitResponse } from '@/lib/rate-limit'
-import {
-  AUTH_SOURCE_HEADER,
-  INVALID_BEARER,
-  NO_BEARER,
-  hasValidBearerClaims,
-  parseBearer,
-} from '@/lib/auth/bearer'
+import { AUTH_SOURCE_HEADER, INVALID_BEARER, NO_BEARER, parseBearer } from '@/lib/auth/bearer'
+import { acceptUserClaims, claimsSource } from '@/lib/auth/claims'
 import { isKnownKid } from '@/lib/auth/jwksKids'
 
 export async function middleware(request) {
@@ -98,8 +93,11 @@ export async function middleware(request) {
     try {
       const { data: claimsData } = await supabase.auth.getClaims(bearer.token ?? undefined)
       const claims = claimsData?.claims
-      const accepted = bearer.status === 'ok' ? hasValidBearerClaims(claims) : !!claims?.sub
-      if (accepted) user = { id: claims.sub }
+      // One `user` feeds both the 401/login gate and the /login bounce, so a session that fails the
+      // claims check lands on /login and is served there instead of being sent back.
+      if (acceptUserClaims(claims, claimsSource(bearer))) {
+        user = { id: claims.sub }
+      }
     } catch {
       user = null
     }
