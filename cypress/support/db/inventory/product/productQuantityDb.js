@@ -1,6 +1,6 @@
 export async function getLatestProductQuantityFromDb(supabase, productListId, userId) {
   const { data, error } = await supabase
-    .from('product_quantity')
+    .from('inv_product_quantity')
     .select('*')
     .eq('product_list_id', productListId)
     .eq('user_id', userId)
@@ -17,7 +17,7 @@ export async function getLatestProductQuantityFromDb(supabase, productListId, us
 
 export async function getProductQuantityByIdFromDb(supabase, entryId, userId) {
   const { data, error } = await supabase
-    .from('product_quantity')
+    .from('inv_product_quantity')
     .select('*')
     .eq('id', entryId)
     .eq('user_id', userId)
@@ -29,7 +29,7 @@ export async function getProductQuantityByIdFromDb(supabase, entryId, userId) {
 
 export async function getProductQuantityCountFromDb(supabase, productListId, userId) {
   const { count, error } = await supabase
-    .from('product_quantity')
+    .from('inv_product_quantity')
     .select('*', { count: 'exact', head: true })
     .eq('product_list_id', productListId)
     .eq('user_id', userId)
@@ -40,7 +40,7 @@ export async function getProductQuantityCountFromDb(supabase, productListId, use
 
 export async function getProductQuantityListFromDb(supabase, productListId, userId) {
   const { data, error } = await supabase
-    .from('product_quantity')
+    .from('inv_product_quantity')
     .select('*')
     .eq('product_list_id', productListId)
     .eq('user_id', userId)
@@ -52,7 +52,7 @@ export async function getProductQuantityListFromDb(supabase, productListId, user
 
 export async function getProductQuantityHistoryFromDb(supabase, productListId, userId) {
   const { data, error } = await supabase
-    .from('product_quantity')
+    .from('inv_product_quantity')
     .select('*')
     .eq('product_list_id', productListId)
     .eq('user_id', userId)
@@ -64,7 +64,7 @@ export async function getProductQuantityHistoryFromDb(supabase, productListId, u
 
 export async function getLastPurchasePriceFromDb(supabase, productListId, userId) {
   const { data, error } = await supabase
-    .from('product_quantity')
+    .from('inv_product_quantity')
     .select('price, purchase_date')
     .eq('product_list_id', productListId)
     .eq('user_id', userId)
@@ -78,7 +78,7 @@ export async function getLastPurchasePriceFromDb(supabase, productListId, userId
 
 export async function getActiveProductsWithHistoryFromDb(supabase, userId) {
   const { data: products, error: pError } = await supabase
-    .from('product_list')
+    .from('inv_product_list')
     .select('id, quantity')
     .eq('user_id', userId)
     .eq('product_status', 'active')
@@ -87,7 +87,7 @@ export async function getActiveProductsWithHistoryFromDb(supabase, userId) {
   if (pError) throw new Error(`DB query failed: ${pError.message}`)
 
   const { data: history, error: hError } = await supabase
-    .from('product_history')
+    .from('inv_product_history')
     .select('product_list_id, start_usage_date')
     .in(
       'product_list_id',

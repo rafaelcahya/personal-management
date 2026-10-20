@@ -13,7 +13,7 @@ Cypress.Commands.add('getTotalProductBrandsFromDb', () => {
   })
 })
 
-// Returns the count of active (non-deleted) products in product_list linked to a given brand ID
+// Returns the count of active (non-deleted) products in inv_product_list linked to a given brand ID
 Cypress.Commands.add('getActiveProductCountByBrandFromDb', (brandId) => {
   return cy.task('getActiveProductCountByBrandFromDb', { brandId })
 })

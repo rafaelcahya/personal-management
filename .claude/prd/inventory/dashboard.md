@@ -34,14 +34,14 @@
 
 **Description:** 6 summary cards giving a quick overview of the current inventory state. Each card is clickable and navigates to the Product List with a relevant filter applied.
 
-| Card           | Calculation                                            | Data Source    | Filter Applied to Product List |
-| -------------- | ------------------------------------------------------ | -------------- | ------------------------------ |
-| Total Products | Count of all products (active + inactive, not deleted) | `product_list` | All products                   |
-| Active         | Products where `product_status = 'active'`             | `product_list` | Filter: active                 |
-| Low Stock      | Products where `quantity ≤ 2` (from `lowStockAlerts`)  | Dashboard API  | Filter: low-stock              |
-| Total Stock    | SUM(`quantity`) across all products                    | `product_list` | All products                   |
-| In Use         | SUM(`usage_quantity`) across all products              | `product_list` | All products                   |
-| Favorites      | Products where `is_favorite = true`                    | `product_list` | Filter: favorites              |
+| Card           | Calculation                                            | Data Source        | Filter Applied to Product List |
+| -------------- | ------------------------------------------------------ | ------------------ | ------------------------------ |
+| Total Products | Count of all products (active + inactive, not deleted) | `inv_product_list` | All products                   |
+| Active         | Products where `product_status = 'active'`             | `inv_product_list` | Filter: active                 |
+| Low Stock      | Products where `quantity ≤ 2` (from `lowStockAlerts`)  | Dashboard API      | Filter: low-stock              |
+| Total Stock    | SUM(`quantity`) across all products                    | `inv_product_list` | All products                   |
+| In Use         | SUM(`usage_quantity`) across all products              | `inv_product_list` | All products                   |
+| Favorites      | Products where `is_favorite = true`                    | `inv_product_list` | Filter: favorites              |
 
 **Notes:**
 
@@ -93,8 +93,8 @@ THEN navigation happens the same as a mouse click
 
 **Calculation:**
 
-- `thisMonth.total` = SUM(`price`) from `product_quantity` in the current month (format YYYY-MM)
-- `lastMonth.total` = SUM(`price`) from `product_quantity` in the previous month
+- `thisMonth.total` = SUM(`price`) from `inv_product_quantity` in the current month (format YYYY-MM)
+- `lastMonth.total` = SUM(`price`) from `inv_product_quantity` in the previous month
 - `delta` = `thisMonth.total - lastMonth.total`
 - `deltaPercent` = `(delta / lastMonth.total) * 100` — null if `lastMonth.total = 0`
 
@@ -136,8 +136,8 @@ THEN show empty state "No purchase data yet 📋"
 
 **Calculation:**
 
-- `total_spent` = SUM(`price`) from `product_quantity` per product
-- `total_units` = current `quantity` + total units ever used (from `product_history.depleted_quantity`)
+- `total_spent` = SUM(`price`) from `inv_product_quantity` per product
+- `total_units` = current `quantity` + total units ever used (from `inv_product_history.depleted_quantity`)
 - `cost_per_use` = `total_spent` / `total_units`
 
 **Display:** Table with columns: No, Product (brand + name + type badge), Total Spent, Total Units, Cost/Use, Status
@@ -151,7 +151,7 @@ THEN show empty state "No purchase data yet 📋"
 **Acceptance Criteria:**
 
 ```
-GIVEN there are products with purchase data (product_quantity)
+GIVEN there are products with purchase data (inv_product_quantity)
 WHEN the Cost Per Use section loads
 THEN up to 5 products are shown sorted by cost per use descending
 
@@ -209,7 +209,7 @@ THEN show empty state "All good! Stock levels are healthy 🎉"
 
 **Description:** Shows which products the user restocks most often, helping identify the most-consumed products that need extra stock planning.
 
-**Data:** Count of records per product from `product_quantity` + date of last restock
+**Data:** Count of records per product from `inv_product_quantity` + date of last restock
 
 **Display:** Table with columns: No, Product (brand + name + type badge), Last Restock, Restocks (count badge)
 
@@ -222,7 +222,7 @@ THEN show empty state "All good! Stock levels are healthy 🎉"
 **Acceptance Criteria:**
 
 ```
-GIVEN there are products with multiple purchase records in product_quantity
+GIVEN there are products with multiple purchase records in inv_product_quantity
 WHEN the Most Restocked section loads
 THEN products are shown sorted by restock_count DESC
 
@@ -241,7 +241,7 @@ THEN show empty state "No restock history yet 📦"
 
 **Description:** Helps the user understand their spending patterns per product per month for better budget planning.
 
-**Data:** Join `product_quantity` (purchase records) with `product_list` (for `product`, `brand`, `type`)
+**Data:** Join `inv_product_quantity` (purchase records) with `inv_product_list` (for `product`, `brand`, `type`)
 
 **Period:** Last 6 months
 
@@ -315,11 +315,11 @@ THEN show empty state "No purchase data yet 📋"
 **Acceptance Criteria:**
 
 ```
-GIVEN a product has ≥ 2 product_history records
+GIVEN a product has ≥ 2 inv_product_history records
 WHEN the Avg Usage Duration section loads
 THEN avg duration is calculated from the average gap between consecutive start_usage_date values
 
-GIVEN a product has only 1 product_history record
+GIVEN a product has only 1 inv_product_history record
 WHEN the section loads
 THEN avg duration is calculated as (NOW - start_usage_date) in days
 
@@ -341,7 +341,7 @@ THEN show empty state "Not enough usage data yet 📊"
 **Calculation per data point:**
 
 - `cumulative_spent` = total cumulative spend for the product up to that purchase date
-- `total_units` = `current_quantity` + all `product_history.quantity` (units ever consumed)
+- `total_units` = `current_quantity` + all `inv_product_history.quantity` (units ever consumed)
 - `cost_per_use` = `cumulative_spent` / `total_units`
 - `delta` = `cost_per_use[i]` - `cost_per_use[i-1]` (change from the previous purchase)
 - `delta_percent` = `delta / cost_per_use[i-1] * 100`
@@ -441,7 +441,7 @@ THEN that product is not shown (cannot be predicted)
 **Data:**
 
 - Actual spend: aggregate `total_spent` for this month from `monthlySpendByType` per `type`
-- Budget settings: `inventory_budget` table (user-defined, persisted to Supabase)
+- Budget settings: `inv_budget` table (user-defined, persisted to Supabase)
 
 **Display:** List per type with:
 
@@ -503,7 +503,7 @@ THEN the progress bar is red and the percentage badge shows ≥ 100%
 
 **Description:** A daily purchase activity visualization for the last 12 months in a calendar heatmap format (GitHub-style). Helps the user identify spending patterns and seasonal trends.
 
-**Data:** Aggregate `SUM(price)` per day from `product_quantity`, over the last 12 months
+**Data:** Aggregate `SUM(price)` per day from `inv_product_quantity`, over the last 12 months
 
 **Display:**
 
@@ -712,11 +712,11 @@ THEN all sections show a skeleton loading state
 
 ##### Database Tables Used
 
-| Table              | Relevant Columns                                                                                                                       | Purpose                                                                                               |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `product_list`     | `id`, `user_id`, `product`, `brand`, `type`, `quantity`, `usage_quantity`, `product_status`, `is_favorite`, `usage_date`, `deleted_at` | Main product data                                                                                     |
-| `product_quantity` | `product_list_id`, `price`, `purchase_date`                                                                                            | Purchase/restock history for calculating total spent, monthly spend, heatmap, and restock predictions |
-| `product_history`  | `product_list_id`, `depleted_quantity`, `start_usage_date`                                                                             | Usage session history for calculating avg duration and lifecycle score                                |
-| `inventory_budget` | `id`, `user_id`, `type`, `monthly_budget`, `created_at`, `updated_at`                                                                  | Monthly budget per product category (user-defined, RLS enabled, UNIQUE per user+type)                 |
+| Table                  | Relevant Columns                                                                                                                       | Purpose                                                                                               |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `inv_product_list`     | `id`, `user_id`, `product`, `brand`, `type`, `quantity`, `usage_quantity`, `product_status`, `is_favorite`, `usage_date`, `deleted_at` | Main product data                                                                                     |
+| `inv_product_quantity` | `product_list_id`, `price`, `purchase_date`                                                                                            | Purchase/restock history for calculating total spent, monthly spend, heatmap, and restock predictions |
+| `inv_product_history`  | `product_list_id`, `depleted_quantity`, `start_usage_date`                                                                             | Usage session history for calculating avg duration and lifecycle score                                |
+| `inv_budget`           | `id`, `user_id`, `type`, `monthly_budget`, `created_at`, `updated_at`                                                                  | Monthly budget per product category (user-defined, RLS enabled, UNIQUE per user+type)                 |
 
 ---

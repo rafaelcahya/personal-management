@@ -23,13 +23,13 @@ const TOOLS = [
   {
     name: 'log_product_usage',
     description:
-      "Record that a product was used or ran out. Use when user says 'habis', 'abis', 'dipakai', 'used', 'ran out'. Logs to product_history and decrements quantity.",
+      "Record that a product was used or ran out. Use when user says 'habis', 'abis', 'dipakai', 'used', 'ran out'. Logs to inv_product_history and decrements quantity.",
     input_schema: {
       type: 'object',
       properties: {
         product_list_id: {
           type: 'string',
-          description: 'Product ID from product_list',
+          description: 'Product ID from inv_product_list',
         },
         usage_quantity: {
           type: 'number',
@@ -47,13 +47,13 @@ const TOOLS = [
   {
     name: 'add_product_stock',
     description:
-      "Add new stock to a product. Use when user says 'beli', 'tambah', 'bought', 'restocked'. Logs to product_quantity and increments quantity.",
+      "Add new stock to a product. Use when user says 'beli', 'tambah', 'bought', 'restocked'. Logs to inv_product_quantity and increments quantity.",
     input_schema: {
       type: 'object',
       properties: {
         product_list_id: {
           type: 'string',
-          description: 'Product ID from product_list',
+          description: 'Product ID from inv_product_list',
         },
         quantity_added: {
           type: 'number',
@@ -102,17 +102,17 @@ const TOOLS = [
   {
     name: 'create_product_entry',
     description:
-      'Create a new product entry in the inventory (product_list). Use after confirming or creating the brand and product name. The resulting ID can then be used with add_product_stock.',
+      'Create a new product entry in the inventory (inv_product_list). Use after confirming or creating the brand and product name. The resulting ID can then be used with add_product_stock.',
     input_schema: {
       type: 'object',
       properties: {
         product_id: {
           type: 'string',
-          description: 'ID from the product_name table',
+          description: 'ID from the inv_product_name table',
         },
         brand_id: {
           type: 'string',
-          description: 'ID from the product_brand table',
+          description: 'ID from the inv_product_brand table',
         },
         type: {
           type: 'string',
@@ -130,7 +130,7 @@ async function executeTool(name, input, userId) {
   const supabase = createAdminClient()
   if (name === 'search_product') {
     const { data, error } = await supabase
-      .from('product_list')
+      .from('inv_product_list')
       .select('id,product,brand,type,quantity,usage_quantity,product_status')
       .eq('user_id', userId)
       .is('deleted_at', null)
@@ -143,7 +143,7 @@ async function executeTool(name, input, userId) {
   if (name === 'log_product_usage') {
     const { product_list_id, usage_quantity, usage_date, note } = input
 
-    const { error: histError } = await supabase.from('product_history').insert({
+    const { error: histError } = await supabase.from('inv_product_history').insert({
       user_id: userId,
       product_list_id,
       usage_quantity,
@@ -153,7 +153,7 @@ async function executeTool(name, input, userId) {
     if (histError) return { error: histError.message }
 
     const { data: product } = await supabase
-      .from('product_list')
+      .from('inv_product_list')
       .select('quantity,product')
       .eq('id', product_list_id)
       .eq('user_id', userId)
@@ -162,7 +162,7 @@ async function executeTool(name, input, userId) {
     const newQty = Math.max(0, (product?.quantity ?? 0) - usage_quantity)
 
     const { error: updateError } = await supabase
-      .from('product_list')
+      .from('inv_product_list')
       .update({
         quantity: newQty,
         usage_quantity,
@@ -183,7 +183,7 @@ async function executeTool(name, input, userId) {
   if (name === 'add_product_stock') {
     const { product_list_id, quantity_added, price, purchase_date, note } = input
 
-    const { error: stockError } = await supabase.from('product_quantity').insert({
+    const { error: stockError } = await supabase.from('inv_product_quantity').insert({
       user_id: userId,
       product_list_id,
       quantity_added,
@@ -194,7 +194,7 @@ async function executeTool(name, input, userId) {
     if (stockError) return { error: stockError.message }
 
     const { data: product } = await supabase
-      .from('product_list')
+      .from('inv_product_list')
       .select('quantity,product')
       .eq('id', product_list_id)
       .eq('user_id', userId)
@@ -203,7 +203,7 @@ async function executeTool(name, input, userId) {
     const newQty = (product?.quantity ?? 0) + quantity_added
 
     const { error: updateError } = await supabase
-      .from('product_list')
+      .from('inv_product_list')
       .update({
         quantity: newQty,
         updated_at: new Date().toISOString(),
@@ -222,7 +222,7 @@ async function executeTool(name, input, userId) {
   if (name === 'create_product_brand') {
     const now = new Date().toISOString()
     const { data, error } = await supabase
-      .from('product_brand')
+      .from('inv_product_brand')
       .insert({
         user_id: userId,
         brand: input.brand,
@@ -239,7 +239,7 @@ async function executeTool(name, input, userId) {
   if (name === 'create_product_name') {
     const now = new Date().toISOString()
     const { data, error } = await supabase
-      .from('product_name')
+      .from('inv_product_name')
       .insert({
         user_id: userId,
         product_name: input.product_name,
@@ -257,14 +257,14 @@ async function executeTool(name, input, userId) {
     const { product_id, brand_id, type, note } = input
 
     const { data: pn } = await supabase
-      .from('product_name')
+      .from('inv_product_name')
       .select('product_name')
       .eq('id', product_id)
       .eq('user_id', userId)
       .single()
 
     const { data: pb } = await supabase
-      .from('product_brand')
+      .from('inv_product_brand')
       .select('brand')
       .eq('id', brand_id)
       .eq('user_id', userId)
@@ -274,7 +274,7 @@ async function executeTool(name, input, userId) {
 
     const now = new Date().toISOString()
     const { data, error } = await supabase
-      .from('product_list')
+      .from('inv_product_list')
       .insert({
         user_id: userId,
         product: pn.product_name,
@@ -333,7 +333,7 @@ export async function POST(req) {
     { data: productName },
   ] = await Promise.all([
     supabase
-      .from('product_list')
+      .from('inv_product_list')
       .select(
         'id,product,type,brand,product_status,quantity,usage_quantity,usage_date,note,is_favorite'
       )
@@ -342,20 +342,24 @@ export async function POST(req) {
       .order('created_at', { ascending: false })
       .limit(200),
     supabase
-      .from('product_quantity')
+      .from('inv_product_quantity')
       .select('product_list_id,quantity_added,price,purchase_date,note')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(200),
     supabase
-      .from('product_history')
+      .from('inv_product_history')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(50),
-    supabase.from('product_brand').select('id,brand,brand_status').eq('user_id', userId).limit(200),
     supabase
-      .from('product_name')
+      .from('inv_product_brand')
+      .select('id,brand,brand_status')
+      .eq('user_id', userId)
+      .limit(200),
+    supabase
+      .from('inv_product_name')
       .select('id,product_name,product_name_status')
       .eq('user_id', userId)
       .limit(200),
@@ -368,15 +372,15 @@ export async function POST(req) {
 Today's date: ${today}
 
 ## Your Tools:
-- **search_product**: Find a product in product_list by name → get its ID and current stock
+- **search_product**: Find a product in inv_product_list by name → get its ID and current stock
 - **log_product_usage**: Record usage when product is used/runs out → decrements stock
 - **add_product_stock**: Add new stock when product is bought → increments stock
 - **create_product_brand**: Create a new brand if it doesn't exist yet
 - **create_product_name**: Create a new product name/type if it doesn't exist yet
-- **create_product_entry**: Create a new product entry in the inventory (product_list)
+- **create_product_entry**: Create a new product entry in the inventory (inv_product_list)
 
 ## Decision flow for logging usage or adding stock:
-1. Call search_product to find the product in product_list
+1. Call search_product to find the product in inv_product_list
 2. If found → use log_product_usage or add_product_stock with its ID
 3. If NOT found → proceed to create it automatically (steps below)
 
@@ -384,7 +388,7 @@ Today's date: ${today}
 1. Check Available Brands list — if the brand doesn't exist, call create_product_brand
 2. Check Available Product Names list — if the name doesn't exist, call create_product_name
 3. Call create_product_entry with the brand_id and product_id (from existing or newly created records)
-4. Call add_product_stock with the new product_list ID to add initial stock
+4. Call add_product_stock with the new inv_product_list ID to add initial stock
 
 ## Language:
 - Respond in the same language the user uses (Indonesian or English)

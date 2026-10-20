@@ -2,14 +2,14 @@
 
 ### Inventory Tables
 
-| Table              | Module    | Description                                                                                                       |
-| ------------------ | --------- | ----------------------------------------------------------------------------------------------------------------- |
-| `product_list`     | Inventory | Product data                                                                                                      |
-| `product_brand`    | Inventory | Brand master data                                                                                                 |
-| `product_name`     | Inventory | Product type master data                                                                                          |
-| `product_quantity` | Inventory | Current stock per product                                                                                         |
-| `product_history`  | Inventory | Stock activity log                                                                                                |
-| `inventory_budget` | Inventory | Monthly budget per type — columns: `user_id`, `type`, `monthly_budget`, `updated_at`; unique on `(user_id, type)` |
+| Table                  | Module    | Description                                                                                                       |
+| ---------------------- | --------- | ----------------------------------------------------------------------------------------------------------------- |
+| `inv_product_list`     | Inventory | Product data                                                                                                      |
+| `inv_product_brand`    | Inventory | Brand master data                                                                                                 |
+| `inv_product_name`     | Inventory | Product type master data                                                                                          |
+| `inv_product_quantity` | Inventory | Current stock per product                                                                                         |
+| `inv_product_history`  | Inventory | Stock activity log                                                                                                |
+| `inv_budget`           | Inventory | Monthly budget per type — columns: `user_id`, `type`, `monthly_budget`, `updated_at`; unique on `(user_id, type)` |
 
 ### Trading Tables
 
