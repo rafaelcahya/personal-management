@@ -136,6 +136,11 @@ describe('Notifications API — GET list response shape (authenticated)', () => 
       'product_update',
       'pr_achieved',
       'gear_mileage',
+      'low_stock',
+      'strava_disconnected',
+      'restock_reminder',
+      'event_analysis_ready',
+      'weekly_summary',
     ]
     cy.getNotifications().then((res) => {
       const { items } = res.body.data
