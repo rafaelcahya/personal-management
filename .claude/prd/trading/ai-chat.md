@@ -8,12 +8,12 @@
 
 **AI Context Injected at Runtime:**
 
-| Data          | Source             | Limit           |
-| ------------- | ------------------ | --------------- |
-| Trade list    | `trade_list` table | Most recent 200 |
-| Fee list      | `fee_list` table   | Most recent 100 |
-| Event list    | `event_list` table | Most recent 50  |
-| User settings | `settings` table   | 1 row           |
+| Data          | Source                 | Limit           |
+| ------------- | ---------------------- | --------------- |
+| Trade list    | `trd_trade_list` table | Most recent 200 |
+| Fee list      | `trd_fee_list` table   | Most recent 100 |
+| Event list    | `trd_event_list` table | Most recent 50  |
+| User settings | `settings` table       | 1 row           |
 
 **AI Capabilities:**
 

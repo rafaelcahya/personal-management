@@ -7,7 +7,7 @@ export default async function ResearchPage() {
   const supabase = await createClient()
 
   const { data: trades } = await supabase
-    .from('trade_list')
+    .from('trd_trade_list')
     .select('ticker')
     .eq('user_id', user.id)
     .is('deleted_at', null)

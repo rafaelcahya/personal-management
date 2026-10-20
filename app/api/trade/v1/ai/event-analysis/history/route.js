@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-const TABLE = 'event_ai_analysis'
-const EVENT_TABLE = 'event_list'
+const TABLE = 'trd_event_ai_analysis'
+const EVENT_TABLE = 'trd_event_list'
 
 export async function GET() {
   try {

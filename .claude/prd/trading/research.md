@@ -21,7 +21,7 @@
 
 A single `Combobox` component in the page toolbar that serves two purposes:
 
-- **Default options:** All distinct tickers from the user's `trade_list` (loaded server-side on page load, sorted alphabetically)
+- **Default options:** All distinct tickers from the user's `trd_trade_list` (loaded server-side on page load, sorted alphabetically)
 - **Async search:** When the user types, a debounced (300ms) call to Finnhub `/search` returns matching symbols (filtered to Common Stock, ETF, ADR — max 10 results), displayed as `SYMBOL — COMPANY NAME`
 
 Selecting a ticker (from portfolio or search) triggers a parallel fetch of all three tabs' data. Clearing the selection via the `×` button shows an empty state.

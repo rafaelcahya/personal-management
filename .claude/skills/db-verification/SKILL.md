@@ -10,7 +10,7 @@ DB checks **supplement** API assertions — they never replace them. Create the 
 ## When to use
 
 - A POST/PATCH/DELETE must be proven against the stored row.
-- Soft delete: the row still exists with `deleted_at` set, but the API hides it (only tables that have the column — e.g. `event_list`, `currency_investments`; `rt_race_log` is a hard delete).
+- Soft delete: the row still exists with `deleted_at` set, but the API hides it (only tables that have the column — e.g. `trd_event_list`, `trd_currency_investments`; `rt_race_log` is a hard delete).
 - Seeding data that has no create endpoint (e.g. notifications, IDOR rows owned by another user).
 
 Don't use it for computed endpoints (dashboard, analytics, AI insights, sync, onboarding) or just to check a 200.

@@ -142,7 +142,7 @@ Weighted composite score (0–100) computed from individual metric signals. Show
 **Data Source & Caching:**
 
 - All market data fetched from Yahoo Finance via `yahoo-finance2` library
-- Cached in `trading_watchlist_fundamentals` table (Supabase) per ticker, TTL = 24 hours
+- Cached in `trd_watchlist_fundamentals` table (Supabase) per ticker, TTL = 24 hours
 - Cache miss or stale cache triggers a fresh Yahoo Finance fetch
 - Supabase "no rows" error (PGRST116) is treated as a cache miss, not an error
 - Ticker not found on Yahoo Finance → typed 404 error → API returns HTTP 404
@@ -219,10 +219,10 @@ Weighted composite score (0–100) computed from individual metric signals. Show
 
 **Database Tables:**
 
-| Table                            | Purpose                                                                    |
-| -------------------------------- | -------------------------------------------------------------------------- |
-| `trading_watchlist`              | Stores the user's list of watched tickers (user_id, ticker)                |
-| `trading_watchlist_fundamentals` | Cache store for valuation data per ticker (ticker, data JSONB, fetched_at) |
+| Table                        | Purpose                                                                    |
+| ---------------------------- | -------------------------------------------------------------------------- |
+| `trd_watchlist`              | Stores the user's list of watched tickers (user_id, ticker)                |
+| `trd_watchlist_fundamentals` | Cache store for valuation data per ticker (ticker, data JSONB, fetched_at) |
 
 ---
 
