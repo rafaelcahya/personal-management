@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { AuthSessionMissingError, type UserResponse } from '@supabase/supabase-js'
 import { getRequestBearer } from '@/lib/auth/getRequestBearer'
-import { hasValidBearerClaims } from '@/lib/auth/bearer'
+import { acceptUserClaims, claimsSource } from '@/lib/auth/claims'
 
 /**
  * Especially important if using Fluid compute: Don't put this client in a
@@ -69,8 +69,7 @@ export async function createClient() {
     } catch {
       // A malformed token can make getClaims() throw; treat it as not signed in (401), not a 500.
     }
-    // The cookie path keeps its current checks; the extra claim checks are for Bearer only.
-    if (bearer.status !== 'none' && !hasValidBearerClaims(claims)) claims = undefined
+    if (!acceptUserClaims(claims, claimsSource(bearer))) claims = undefined
     if (!claims?.sub) {
       return {
         data: { user: null },
