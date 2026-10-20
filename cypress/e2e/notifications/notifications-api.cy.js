@@ -18,7 +18,7 @@
 // IDOR test setup: the "PUT /read IDOR protection" suite needs a notification
 // row owned by a user other than CYPRESS_TEST_EMAIL. Seed one via Supabase
 // before running, then pass its id as an env var:
-//   insert into notifications (user_id, type, title, message, is_read)
+//   insert into app_notifications (user_id, type, title, message, is_read)
 //   values ('<some-other-auth-user-id>', 'product_update', 'IDOR test row', 'seed', false)
 //   returning id;
 // npx cypress run --config-file=cypress.config.js --headed --browser chrome \

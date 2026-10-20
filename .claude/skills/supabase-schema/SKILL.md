@@ -30,7 +30,7 @@ Before writing code that depends on a table, look at the real thing — don't tr
 
 ## Table conventions
 
-- Running tables use the `rt_` prefix (`rt_activities`, `rt_goals`), Inventory tables use `inv_` (`inv_product_list`, `inv_budget`) and Trading tables use `trd_` (`trd_trade_list`, `trd_event_list`). Shared tables still use plain names until their rename phase.
+- Running tables use the `rt_` prefix (`rt_activities`, `rt_goals`), Inventory tables use `inv_` (`inv_product_list`, `inv_budget`) and Trading tables use `trd_` (`trd_trade_list`, `trd_event_list`, `trd_settings`). Tables used by more than one module use `app_` (`app_notifications`, `app_push_subscriptions`). Names are snake_case.
 - Every user-owned table has `user_id uuid not null` referencing the user, plus `created_at timestamptz default now()`.
 - Soft delete via `deleted_at timestamptz` where the module already uses it (`trd_event_list`, `trd_currency_investments`).
 - Enum-like text columns get a `CHECK` constraint (see `notifications_type_check`) — adding a value needs a migration that drops and recreates the constraint.

@@ -13,7 +13,7 @@
 | Trade list    | `trd_trade_list` table | Most recent 200 |
 | Fee list      | `trd_fee_list` table   | Most recent 100 |
 | Event list    | `trd_event_list` table | Most recent 50  |
-| User settings | `settings` table       | 1 row           |
+| User settings | `trd_settings` table   | 1 row           |
 
 **AI Capabilities:**
 
