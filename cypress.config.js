@@ -47,6 +47,7 @@ export default defineConfig({
         TEST_PASSWORD: process.env.CYPRESS_TEST_PASSWORD,
         CYPRESS_AUTH_SECRET: process.env.CYPRESS_AUTH_SECRET,
         OTHER_USER_ACTIVITY_ID: process.env.CYPRESS_OTHER_USER_ACTIVITY_ID,
+        FOREIGN_NOTIFICATION_ID: process.env.CYPRESS_FOREIGN_NOTIFICATION_ID,
         grepFilterSpecs: true,
         grepOmitFiltered: true,
       }
