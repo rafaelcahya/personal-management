@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker'
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
 const newFeeRequest = () => ({
-  fee_date: faker.date.recent(),
+  fee_date: new Date().toISOString(),
   fee: faker.string.numeric(5),
   fee_name: faker.animal.snake(),
 })
