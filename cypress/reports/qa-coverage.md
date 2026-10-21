@@ -11,7 +11,7 @@
 | --------- | ------ | ---- |
 | API       | 1,953  | 54%  |
 | UI        | 594    | 25%  |
-| **Total** | **2,547** | 100% |
+| **Total** | **2,542** | 100% |
 
 > **UI reconciliation (2026-10-19, #850)** — counted with `npm run cy:coverage -- --it-counts` (it() per spec, UI = `*-ui.cy.js` or a `ui/` folder). Only 18 UI specs exist: Auth 107, Inventory 454, Landing 33 = 594 it(). The old Trading (254), Running (695) and Shared (8) UI numbers had no UI spec behind them and were removed. The Trading Fee/Trade detail tables below still show UI columns for `add-fee`, `summary-fee`, `add-trade` and the other fee/trade specs; those files are API-style specs (a few UI describes inside `add-fee`, `summary-fee`, `add-trade`), so their numbers are not split here. The script's raw API it() total is 2,054 (66 specs), which does not match the 1,810 above (it() inside loops, mixed specs); API numbers were NOT changed and need a separate reconcile.
 
@@ -23,13 +23,13 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth + User Settings | 74    | 107   | 181   |
 | Inventory Management | 728   | 454   | 1,182 |
-| Trading Management   | 374   | 0     | 374   |
+| Trading Management   | 369   | 0     | 369   |
 | Running Tracker      | 683   | 0     | 683   |
 | Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 0     | 0     |
-| **Total**            | **1,953** | **594** | **2,547** |
+| **Total**            | **1,948** | **594** | **2,542** |
 
 ---
 
@@ -138,7 +138,7 @@
 
 | Feature       | API | UI  | Total |
 | ------------- | --- | --- | ----- |
-| Auth Guard    | 29  | 0   | 29    |
+| Auth Guard    | 24  | 0   | 24    |
 | Add Trade     | 43  | 63  | 106   |
 | Delete Trade  | 0   | 6   | 6     |
 | List Trade    | 12  | 0   | 12    |
@@ -146,7 +146,7 @@
 | Trade Summary | 13  | 0   | 13    |
 | Trade Detail  | 0   | 15  | 15    |
 | Update Trade  | 0   | 32  | 32    |
-| **Subtotal**  | **97** | **123** | **220** |
+| **Subtotal**  | **92** | **123** | **215** |
 
 #### Fee
 
@@ -226,7 +226,7 @@
 | Highlights            | 11  | 0  | 11    |
 | **Subtotal**         | **81** | **0** | **81** |
 
-**Trading Total — API: 374 | UI: 0 | Total: 374** (see UI reconciliation note at the top)
+**Trading Total — API: 369 | UI: 0 | Total: 369** (see UI reconciliation note at the top)
 
 ---
 

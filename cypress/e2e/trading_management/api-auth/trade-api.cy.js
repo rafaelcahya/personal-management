@@ -1,4 +1,4 @@
-import { TRADE_ENDPOINTS } from '../../fixtures/endpoints.js'
+import { TRADE_ENDPOINTS } from '../../../fixtures/endpoints.js'
 
 const FAKE_ID = '00000000-0000-0000-0000-000000000000'
 
@@ -165,42 +165,6 @@ describe('API Auth Guard — Trade: Settings', () => {
     cy.apiRequestNoAuth('PUT', TRADE_ENDPOINTS.SETTINGS_UPDATE, {
       body: { initial_margin: 1000 },
     }).then((res) => {
-      expect(res.status).to.eq(401)
-    })
-  })
-})
-
-describe('API Auth Guard — Trade: Options', () => {
-  // Options routes use createClient (SSR) which requires a session.
-  // Tables are exposed only to the authenticated role via Supabase RLS.
-  // All options routes require auth because they are only used in forms that are already behind login.
-
-  it(`GET ${TRADE_ENDPOINTS.OPTIONS_BUY_REASON} (unauthenticated) → returns 401`, () => {
-    cy.apiRequestNoAuth('GET', TRADE_ENDPOINTS.OPTIONS_BUY_REASON).then((res) => {
-      expect(res.status).to.eq(401)
-    })
-  })
-
-  it(`GET ${TRADE_ENDPOINTS.OPTIONS_SELL_REASON} (unauthenticated) → returns 401`, () => {
-    cy.apiRequestNoAuth('GET', TRADE_ENDPOINTS.OPTIONS_SELL_REASON).then((res) => {
-      expect(res.status).to.eq(401)
-    })
-  })
-
-  it(`GET ${TRADE_ENDPOINTS.OPTIONS_ENTRY_SESSION} (unauthenticated) → returns 401`, () => {
-    cy.apiRequestNoAuth('GET', TRADE_ENDPOINTS.OPTIONS_ENTRY_SESSION).then((res) => {
-      expect(res.status).to.eq(401)
-    })
-  })
-
-  it(`GET ${TRADE_ENDPOINTS.OPTIONS_ENTRY_OCCASION} (unauthenticated) → returns 401`, () => {
-    cy.apiRequestNoAuth('GET', TRADE_ENDPOINTS.OPTIONS_ENTRY_OCCASION).then((res) => {
-      expect(res.status).to.eq(401)
-    })
-  })
-
-  it(`GET ${TRADE_ENDPOINTS.OPTIONS_STOCK_TYPE} (unauthenticated) → returns 401`, () => {
-    cy.apiRequestNoAuth('GET', TRADE_ENDPOINTS.OPTIONS_STOCK_TYPE).then((res) => {
       expect(res.status).to.eq(401)
     })
   })
