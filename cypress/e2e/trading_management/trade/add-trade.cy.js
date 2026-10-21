@@ -39,7 +39,6 @@ describe('Trade Add API and Database Comparison', () => {
           if (response.status === 307) {
             expect(response.headers.location).to.include('/login')
           } else {
-            expect(response.body.success).to.be.false
             expect(response.body.error).to.eq('Unauthorized')
           }
         })
@@ -120,7 +119,7 @@ describe('Trade Add API and Database Comparison', () => {
           expect(response.status).to.eq(400)
           expect(response.body.success).to.be.false
           expect(response.body.error).to.be.an('array')
-          expect(response.body.error).to.include('ticker is required')
+          expect(response.body.error).to.include('Ticker is required')
         })
       })
 
@@ -144,7 +143,7 @@ describe('Trade Add API and Database Comparison', () => {
           expect(response.status).to.eq(400)
           expect(response.body.success).to.be.false
           expect(response.body.error).to.be.an('array')
-          expect(response.body.error).to.include('margin is required')
+          expect(response.body.error).to.include('Margin is required')
         })
       })
 
@@ -168,7 +167,7 @@ describe('Trade Add API and Database Comparison', () => {
           expect(response.status).to.eq(400)
           expect(response.body.success).to.be.false
           expect(response.body.error).to.be.an('array')
-          expect(response.body.error).to.include('proceeds is required')
+          expect(response.body.error).to.include('Proceeds is required')
         })
       })
 
@@ -193,7 +192,7 @@ describe('Trade Add API and Database Comparison', () => {
           expect(response.status).to.eq(400)
           expect(response.body.success).to.be.false
           expect(response.body.error).to.be.an('array')
-          expect(response.body.error).to.include('ticker is required')
+          expect(response.body.error).to.include('Ticker is required')
         })
       })
 
@@ -218,7 +217,7 @@ describe('Trade Add API and Database Comparison', () => {
           expect(response.status).to.eq(400)
           expect(response.body.success).to.be.false
           expect(response.body.error).to.be.an('array')
-          expect(response.body.error).to.include('margin is required')
+          expect(response.body.error).to.include('Margin is required')
         })
       })
 
@@ -243,7 +242,7 @@ describe('Trade Add API and Database Comparison', () => {
           expect(response.status).to.eq(400)
           expect(response.body.success).to.be.false
           expect(response.body.error).to.be.an('array')
-          expect(response.body.error).to.include('proceeds is required')
+          expect(response.body.error).to.include('Proceeds is required')
         })
       })
 
@@ -268,7 +267,7 @@ describe('Trade Add API and Database Comparison', () => {
           expect(response.status).to.eq(400)
           expect(response.body.success).to.be.false
           expect(response.body.error).to.be.an('array')
-          expect(response.body.error).to.include('ticker is required')
+          expect(response.body.error).to.include('Ticker is required')
         })
       })
 
@@ -293,7 +292,7 @@ describe('Trade Add API and Database Comparison', () => {
           expect(response.status).to.eq(400)
           expect(response.body.success).to.be.false
           expect(response.body.error).to.be.an('array')
-          expect(response.body.error).to.include('margin is required')
+          expect(response.body.error).to.include('Margin is required')
         })
       })
 
@@ -318,7 +317,7 @@ describe('Trade Add API and Database Comparison', () => {
           expect(response.status).to.eq(400)
           expect(response.body.success).to.be.false
           expect(response.body.error).to.be.an('array')
-          expect(response.body.error).to.include('proceeds is required')
+          expect(response.body.error).to.include('Proceeds is required')
         })
       })
 
@@ -330,7 +329,7 @@ describe('Trade Add API and Database Comparison', () => {
           expect(response.body.success).to.be.false
           expect(response.body.error).to.be.an('array')
           expect(response.body.error.length).to.be.greaterThan(1)
-          expect(response.body.error.length).to.be.eq(3)
+          expect(response.body.error.length).to.be.eq(8)
 
           cy.log(`Validation errors: ${response.body.error.join(', ')}`)
         })

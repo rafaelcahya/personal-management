@@ -11,18 +11,18 @@ export const tradeSchema = z.object({
   buy_date: z.date({ required_error: 'Please select a buy date' }).nullable().optional(),
   sell_date: z.date({ required_error: 'Please select a sell date' }).nullable().optional(),
   ticker: z
-    .string()
+    .string({ error: 'Ticker is required' })
     .min(1, 'Ticker is required')
     .max(10, 'Ticker must not exceed 10 characters')
     .transform((val) => val.toUpperCase()),
   margin: z
-    .string()
+    .string({ error: 'Margin is required' })
     .min(1, 'Margin is required')
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
       message: 'Margin must be a positive number',
     }),
   proceeds: z
-    .string()
+    .string({ error: 'Proceeds is required' })
     .min(1, 'Proceeds is required')
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
       message: 'Proceeds must be a positive number',

@@ -32,6 +32,30 @@ const makeTickerPayload = (overrides = {}) => ({
   ...overrides,
 })
 
+// Nodes are capped at 500 per user, so anything this spec creates is removed afterwards.
+// Only nodes absent from the starting snapshot are deleted; existing data is left alone.
+let nodeIdsBeforeSpec = new Set()
+
+before(() => {
+  cy.setupApiAuthCookies()
+  cy.listInvestmentFlowNodes().then((res) => {
+    nodeIdsBeforeSpec = new Set((res.body?.data?.nodes ?? res.body?.data ?? []).map((n) => n.id))
+  })
+})
+
+after(() => {
+  cy.setupApiAuthCookies()
+  cy.listInvestmentFlowNodes().then((res) => {
+    const nodes = res.body?.data?.nodes ?? res.body?.data ?? []
+    const created = nodes.filter((n) => !nodeIdsBeforeSpec.has(n.id))
+    const createdIds = new Set(created.map((n) => n.id))
+    // Deleting a root removes its subtree, so skip nodes whose parent is also being removed
+    created
+      .filter((n) => !createdIds.has(n.parent_id))
+      .forEach((n) => cy.deleteInvestmentFlowNode(n.id))
+  })
+})
+
 // ─── GET /api/investment-flow/v1 ─────────────────────────────────────────────
 
 describe('Investment Flow API — GET /api/investment-flow/v1', () => {
