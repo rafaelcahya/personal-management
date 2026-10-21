@@ -302,13 +302,6 @@
       "summary": "/api/trade/v1/trade/summary",
       "options": "/api/trade/v1/trade/options"
     },
-    "trading_options": {
-      "buy_reason": "/api/trade/v1/options/buy-reason",
-      "entry_occasion": "/api/trade/v1/options/entry-occasion",
-      "entry_session": "/api/trade/v1/options/entry-session",
-      "sell_reason": "/api/trade/v1/options/sell-reason",
-      "stock_type": "/api/trade/v1/options/stock-type"
-    },
     "running_route_simulations": {
       "list": "/api/running/v1/route-simulations",
       "create": "/api/running/v1/route-simulations",

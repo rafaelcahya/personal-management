@@ -94,12 +94,6 @@ export const TRADE_ENDPOINTS = {
   SETTINGS: '/api/trade/v1/settings',
   SETTINGS_UPDATE: '/api/trade/v1/settings/update',
 
-  OPTIONS_BUY_REASON: '/api/trade/v1/options/buy-reason',
-  OPTIONS_SELL_REASON: '/api/trade/v1/options/sell-reason',
-  OPTIONS_ENTRY_SESSION: '/api/trade/v1/options/entry-session',
-  OPTIONS_ENTRY_OCCASION: '/api/trade/v1/options/entry-occasion',
-  OPTIONS_STOCK_TYPE: '/api/trade/v1/options/stock-type',
-
   LIST: '/api/trading/v1/list',
   EXECUTE: '/api/trading/v1/execute',
   CANCEL: '/api/trading/v1/cancel',
