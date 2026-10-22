@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-10-22 (Race log activity ownership #904 — 9 API tests, race-log-api 69/69)
-**Branch:** fix/issue-904-race-log-activity-ownership
+**Last Updated:** 2026-10-22 (Trade update validation #908 — update-trade 49/49: 2 tests from #899 and 15 new validation tests, counted in the Update Trade row)
+**Branch:** fix/issue-908-update-trade-validation
 
 ---
 
@@ -145,8 +145,8 @@
 | Option Trade  | 0   | 7   | 7     |
 | Trade Summary | 13  | 0   | 13    |
 | Trade Detail  | 0   | 15  | 15    |
-| Update Trade  | 0   | 32  | 32    |
-| **Subtotal**  | **92** | **123** | **215** |
+| Update Trade  | 0   | 49  | 49    |
+| **Subtotal**  | **92** | **140** | **232** |
 
 #### Fee
 
