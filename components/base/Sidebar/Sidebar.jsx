@@ -194,7 +194,7 @@ function SidebarGroup({ label, className, children, ...props }) {
       {label && (
         <div
           className={cn(
-            'px-1 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground overflow-hidden whitespace-nowrap',
+            'px-1 py-1.5 text-2xs font-semibold uppercase tracking-wider text-muted-foreground overflow-hidden whitespace-nowrap',
             collapseAnimation === 'slide' && 'transition-[opacity,height,padding] duration-200',
             collapsed ? 'opacity-0 h-0 py-0' : 'opacity-100 h-auto'
           )}
@@ -237,7 +237,7 @@ function SidebarItemBadge({ className, children, ...props }) {
   return (
     <span
       className={cn(
-        'ml-auto shrink-0 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-semibold bg-primary/10 text-primary overflow-hidden',
+        'ml-auto shrink-0 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-2xs font-semibold bg-primary/10 text-primary overflow-hidden',
         collapseAnimation === 'slide' &&
           'transition-[opacity,width,min-width,padding] duration-200',
         collapsed ? 'opacity-0 w-0 min-w-0 px-0 ml-0' : 'opacity-100',

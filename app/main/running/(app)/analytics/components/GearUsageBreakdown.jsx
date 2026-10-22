@@ -109,7 +109,7 @@ export default function GearUsageBreakdown({ gear, error }) {
                       {gearDisplayName(g)}
                     </span>
                     {g.retired && (
-                      <span className="text-[11px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full w-fit">
+                      <span className="text-2xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full w-fit">
                         Retired
                       </span>
                     )}

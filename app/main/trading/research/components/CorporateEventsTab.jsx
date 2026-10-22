@@ -53,16 +53,16 @@ function EarningsSection({ earnings }) {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-slate-100">
-            <th className="text-left text-[10px] font-semibold text-slate-400 uppercase tracking-wide pb-2 pr-3">
+            <th className="text-left text-2xs font-semibold text-slate-400 uppercase tracking-wide pb-2 pr-3">
               Period
             </th>
-            <th className="text-right text-[10px] font-semibold text-slate-400 uppercase tracking-wide pb-2 pr-3">
+            <th className="text-right text-2xs font-semibold text-slate-400 uppercase tracking-wide pb-2 pr-3">
               EPS Est.
             </th>
-            <th className="text-right text-[10px] font-semibold text-slate-400 uppercase tracking-wide pb-2 pr-3">
+            <th className="text-right text-2xs font-semibold text-slate-400 uppercase tracking-wide pb-2 pr-3">
               EPS Actual
             </th>
-            <th className="text-right text-[10px] font-semibold text-slate-400 uppercase tracking-wide pb-2">
+            <th className="text-right text-2xs font-semibold text-slate-400 uppercase tracking-wide pb-2">
               Surprise
             </th>
           </tr>
@@ -157,21 +157,21 @@ function DividendSection({ dividend }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       <div className="bg-slate-50 rounded-lg p-3">
-        <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">Amount</p>
+        <p className="text-2xs text-slate-400 uppercase tracking-wide mb-0.5">Amount</p>
         <p className="text-sm font-semibold text-slate-700">
           {dividend.amount != null ? `${dividend.currency} ${dividend.amount}` : '—'}
         </p>
       </div>
       <div className="bg-slate-50 rounded-lg p-3">
-        <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">Ex-Date</p>
+        <p className="text-2xs text-slate-400 uppercase tracking-wide mb-0.5">Ex-Date</p>
         <p className="text-sm font-semibold text-slate-700">{formatDate(dividend.date)}</p>
       </div>
       <div className="bg-slate-50 rounded-lg p-3">
-        <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">Pay Date</p>
+        <p className="text-2xs text-slate-400 uppercase tracking-wide mb-0.5">Pay Date</p>
         <p className="text-sm font-semibold text-slate-700">{formatDate(dividend.payDate)}</p>
       </div>
       <div className="bg-slate-50 rounded-lg p-3">
-        <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">Frequency</p>
+        <p className="text-2xs text-slate-400 uppercase tracking-wide mb-0.5">Frequency</p>
         <p className="text-sm font-semibold text-slate-700">
           {freqLabel[dividend.frequency] ?? '—'}
         </p>

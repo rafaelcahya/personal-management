@@ -379,7 +379,7 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
 
                             {!currenciesLoading && !currencySearch && (
                               <>
-                                <p className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                                <p className="px-3 pt-2 pb-1 text-2xs font-semibold uppercase tracking-wider text-slate-400">
                                   Popular
                                 </p>
                                 {PINNED_CURRENCIES.map((c) => (
@@ -406,14 +406,14 @@ export default function AddTransactionSheet({ open, onOpenChange, defaultCurrenc
                                   </Button>
                                 ))}
                                 <div className="mx-3 my-1 border-t border-slate-100" />
-                                <p className="px-3 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                                <p className="px-3 pt-1 pb-1 text-2xs font-semibold uppercase tracking-wider text-slate-400">
                                   All currencies
                                 </p>
                               </>
                             )}
 
                             {!currenciesLoading && currencySearch && (
-                              <p className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                              <p className="px-3 pt-2 pb-1 text-2xs font-semibold uppercase tracking-wider text-slate-400">
                                 Results
                               </p>
                             )}

@@ -168,12 +168,12 @@ export default function CostPerUseHistory({ items, loading }) {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
               <XAxis
                 dataKey="dateLabel"
-                tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+                tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+                tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}

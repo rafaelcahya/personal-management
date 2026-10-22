@@ -5,7 +5,7 @@ const sizeClasses = {
     root: 'gap-1 py-3',
     icon: 'size-5',
     title: 'text-xs font-medium',
-    description: 'text-[11px]',
+    description: 'text-2xs',
     actions: 'gap-1.5 mt-1',
   },
   sm: {

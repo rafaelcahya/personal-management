@@ -30,7 +30,7 @@ export default function TimeInput({ hours, minutes, seconds, onChange, idPrefix 
             placeholder="00"
             className={fieldClass}
           />
-          <span className="text-[10px] text-slate-400">HH</span>
+          <span className="text-2xs text-slate-400">HH</span>
         </div>
         <span className="text-slate-400 font-medium pb-3">:</span>
         <div className="flex flex-col items-center gap-0.5">
@@ -45,7 +45,7 @@ export default function TimeInput({ hours, minutes, seconds, onChange, idPrefix 
             placeholder="00"
             className={fieldClass}
           />
-          <span className="text-[10px] text-slate-400">MM</span>
+          <span className="text-2xs text-slate-400">MM</span>
         </div>
         <span className="text-slate-400 font-medium pb-3">:</span>
         <div className="flex flex-col items-center gap-0.5">
@@ -60,7 +60,7 @@ export default function TimeInput({ hours, minutes, seconds, onChange, idPrefix 
             placeholder="00"
             className={fieldClass}
           />
-          <span className="text-[10px] text-slate-400">SS</span>
+          <span className="text-2xs text-slate-400">SS</span>
         </div>
       </div>
       {parseInt(seconds, 10) >= 60 && (

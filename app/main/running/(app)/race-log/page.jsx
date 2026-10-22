@@ -376,7 +376,7 @@ export default function RaceLogPage() {
                                   {entry.title}
                                 </span>
                                 {entry.did_not_finish && (
-                                  <span className="px-1.5 py-0.5 rounded-full text-[11px] font-semibold bg-red-100 text-red-700 shrink-0">
+                                  <span className="px-1.5 py-0.5 rounded-full text-2xs font-semibold bg-red-100 text-red-700 shrink-0">
                                     DNF
                                   </span>
                                 )}
@@ -385,7 +385,7 @@ export default function RaceLogPage() {
                                     <span
                                       key={e.name}
                                       id={`pbRankChip_${e.name.replace(/\s/g, '')}_raceLogPage`}
-                                      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[11px] font-semibold leading-none shrink-0"
+                                      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-2xs font-semibold leading-none shrink-0"
                                     >
                                       <Trophy className="size-3" aria-hidden="true" />
                                       #1 {e.name}
@@ -394,7 +394,7 @@ export default function RaceLogPage() {
                                     <span
                                       key={e.name}
                                       id={`pbRankChip_${e.name.replace(/\s/g, '')}_raceLogPage`}
-                                      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px] font-semibold leading-none shrink-0"
+                                      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-2xs font-semibold leading-none shrink-0"
                                     >
                                       #{e.pr_rank} {e.name}
                                     </span>

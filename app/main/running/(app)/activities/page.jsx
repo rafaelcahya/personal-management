@@ -128,7 +128,7 @@ function getHrZone(avgHr, method, maxHr, restingHr, thresholdHr) {
 function ZoneBadge({ zone }) {
   if (!zone) return null
   return (
-    <Badge className={`inline-flex w-fit text-[10px] mt-0.5 ${zone.cls}`}>
+    <Badge className={`inline-flex w-fit text-2xs mt-0.5 ${zone.cls}`}>
       {zone.name} {zone.label}
     </Badge>
   )
@@ -205,17 +205,17 @@ const NULL_CELL = <span className="text-slate-400">—</span>
 
 const WORKOUT_BADGE = {
   1: (
-    <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-violet-100 text-violet-700 shrink-0">
+    <span className="px-1.5 py-0.5 rounded text-2xs font-medium bg-violet-100 text-violet-700 shrink-0">
       Race
     </span>
   ),
   2: (
-    <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-600 shrink-0">
+    <span className="px-1.5 py-0.5 rounded text-2xs font-medium bg-blue-50 text-blue-600 shrink-0">
       Long
     </span>
   ),
   3: (
-    <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-50 text-red-600 shrink-0">
+    <span className="px-1.5 py-0.5 rounded text-2xs font-medium bg-red-50 text-red-600 shrink-0">
       Interval
     </span>
   ),
@@ -590,7 +590,7 @@ function ActivitiesInner() {
                                 {name}
                               </span>
                               {a.pr_count > 0 && (
-                                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0">
+                                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-2xs font-semibold leading-none shrink-0">
                                   <Trophy className="size-3" aria-hidden="true" />
                                   {a.pr_count} PR
                                 </span>
@@ -600,7 +600,7 @@ function ActivitiesInner() {
                                   <span
                                     key={e.name}
                                     id={`pbRankChip_${e.name.replace(/\s/g, '')}_activitiesPage`}
-                                    className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-[10px] font-semibold leading-none shrink-0"
+                                    className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-amber-50 text-amber-600 text-2xs font-semibold leading-none shrink-0"
                                   >
                                     <Trophy className="size-3" aria-hidden="true" />
                                     #1 {e.name}
@@ -609,7 +609,7 @@ function ActivitiesInner() {
                                   <span
                                     key={e.name}
                                     id={`pbRankChip_${e.name.replace(/\s/g, '')}_activitiesPage`}
-                                    className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-semibold leading-none shrink-0"
+                                    className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-2xs font-semibold leading-none shrink-0"
                                   >
                                     #{e.pr_rank} {e.name}
                                   </span>

@@ -223,7 +223,7 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
                 <XAxis
                   type="number"
                   domain={domain}
-                  tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+                  tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
                   tickFormatter={(v) => {
                     if (metric === 'Pace' || metric === 'GAP') return fmtPace(Math.round(v))
                     if (metric === 'Time') return fmtDuration(Math.round(v))
@@ -236,7 +236,7 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
                 <YAxis
                   type="category"
                   dataKey="name"
-                  tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+                  tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
                   width={20}
                   axisLine={false}
                   tickLine={false}
@@ -269,7 +269,7 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
                         <text
                           x={px}
                           y={py}
-                          fontSize={10}
+                          fontSize={11}
                           fill="var(--color-violet-400)"
                           fontWeight={500}
                         >
@@ -342,7 +342,7 @@ export default function SplitsSection({ splits, pagePrefix = 'activityDetailPage
                       {s.pace_sec_per_km ? `${fmtPace(s.pace_sec_per_km)}/km` : '—'}
                     </span>
                     {s.elevation_gain_m > 0 && s.gap_sec_per_km != null && (
-                      <div className="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap">
+                      <div className="text-2xs text-slate-400 mt-0.5 whitespace-nowrap">
                         GAP {fmtPace(s.gap_sec_per_km)}/km{' '}
                         {(() => {
                           const diff = s.pace_sec_per_km - s.gap_sec_per_km

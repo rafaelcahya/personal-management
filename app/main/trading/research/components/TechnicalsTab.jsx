@@ -44,7 +44,7 @@ function RsiGauge({ value }) {
         <div className="absolute top-0 left-[30%] h-full w-px bg-slate-300" />
         <div className="absolute top-0 left-[70%] h-full w-px bg-slate-300" />
       </div>
-      <div className="flex justify-between text-[10px] text-slate-400">
+      <div className="flex justify-between text-2xs text-slate-400">
         <span>0</span>
         <span>30</span>
         <span>70</span>
@@ -84,11 +84,11 @@ function MacdSection({ macd }) {
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-slate-50 rounded-lg p-3">
-          <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">MACD Line</p>
+          <p className="text-2xs text-slate-400 uppercase tracking-wide mb-0.5">MACD Line</p>
           <p className="text-sm font-semibold text-slate-700">{macd.macd}</p>
         </div>
         <div className="bg-slate-50 rounded-lg p-3">
-          <p className="text-[10px] text-slate-400 uppercase tracking-wide mb-0.5">Signal Line</p>
+          <p className="text-2xs text-slate-400 uppercase tracking-wide mb-0.5">Signal Line</p>
           <p className="text-sm font-semibold text-slate-700">{macd.signal}</p>
         </div>
       </div>

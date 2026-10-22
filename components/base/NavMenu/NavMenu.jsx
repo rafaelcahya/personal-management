@@ -322,7 +322,7 @@ export function NavMenuGroupTitle({ children, className }) {
   return (
     <p
       className={cn(
-        'px-2 pt-1 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground select-none',
+        'px-2 pt-1 pb-1.5 text-2xs font-semibold uppercase tracking-wider text-muted-foreground select-none',
         className
       )}
     >

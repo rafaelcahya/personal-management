@@ -40,7 +40,7 @@ function StatRow({ label, pagi, sore }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-[1fr_auto_1fr] items-center gap-x-2 gap-y-0.5 py-2 border-b border-slate-100 last:border-0">
       <span className="text-xs text-slate-700 font-medium text-center sm:text-right">{pagi}</span>
-      <span className="order-first col-span-2 sm:order-none sm:col-span-1 text-[11px] text-slate-400 uppercase tracking-wide text-center sm:w-24 shrink-0">
+      <span className="order-first col-span-2 sm:order-none sm:col-span-1 text-2xs text-slate-400 uppercase tracking-wide text-center sm:w-24 shrink-0">
         {label}
       </span>
       <span className="text-xs text-slate-700 font-medium text-center sm:text-left">{sore}</span>
@@ -52,7 +52,7 @@ function SlotHeader({ label, count, colorClass }) {
   return (
     <div className={`text-center mb-1 ${colorClass}`}>
       <p className="text-xs font-bold uppercase tracking-wide">{label}</p>
-      <p className="text-[11px] text-slate-400">{count} runs</p>
+      <p className="text-2xs text-slate-400">{count} runs</p>
     </div>
   )
 }
@@ -63,8 +63,8 @@ function ThresholdBar({ label, count, threshold }) {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between">
-        <span className="text-[11px] text-slate-500 uppercase tracking-wide">{label}</span>
-        <span className={`text-[11px] font-medium ${met ? 'text-emerald-600' : 'text-slate-500'}`}>
+        <span className="text-2xs text-slate-500 uppercase tracking-wide">{label}</span>
+        <span className={`text-2xs font-medium ${met ? 'text-emerald-600' : 'text-slate-500'}`}>
           {count}/{threshold}
         </span>
       </div>
@@ -240,7 +240,7 @@ export default function SessionProfileSection({ data, loading, error, onRetry })
             <div className="flex flex-col gap-5">
               {/* Volume comparison */}
               <div>
-                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide mb-3">
+                <p className="text-2xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
                   Volume
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-[1fr_auto_1fr] mb-1">
@@ -276,14 +276,14 @@ export default function SessionProfileSection({ data, loading, error, onRetry })
 
               {/* Training load */}
               <div>
-                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide mb-3">
+                <p className="text-2xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
                   Training Load
                 </p>
 
                 <TrainingLoadChart pagi={data.pagi} sore={data.sore} />
 
                 {!bothThresholdMet && (
-                  <p className="text-[11px] text-amber-600 bg-amber-50 border border-amber-100 rounded-md px-3 py-2 mt-3">
+                  <p className="text-2xs text-amber-600 bg-amber-50 border border-amber-100 rounded-md px-3 py-2 mt-3">
                     Based on limited data — interpret with caution. Need ≥{data.threshold.value}{' '}
                     runs with relative effort per slot for accurate analysis.
                   </p>

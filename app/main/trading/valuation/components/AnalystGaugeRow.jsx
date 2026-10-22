@@ -29,14 +29,14 @@ function GaugeBar({ currentPrice, targetMean, targetHigh, targetLow }) {
         />
       </div>
 
-      <div className="flex justify-between mt-2.5 text-[10px] text-slate-400 font-mono px-1">
+      <div className="flex justify-between mt-2.5 text-2xs text-slate-400 font-mono px-1">
         <span>Rp {Math.round(targetLow).toLocaleString('id-ID')}</span>
         <span className="text-violet-500">
           ◆ Rp {Math.round(targetMean).toLocaleString('id-ID')}
         </span>
         <span>Rp {Math.round(targetHigh).toLocaleString('id-ID')}</span>
       </div>
-      <div className="flex justify-between text-[10px] text-slate-300 px-1">
+      <div className="flex justify-between text-2xs text-slate-300 px-1">
         <span>Target Low</span>
         <span className="text-slate-400">
           ● Rp {Math.round(currentPrice).toLocaleString('id-ID')} current

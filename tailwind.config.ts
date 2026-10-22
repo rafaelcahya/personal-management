@@ -12,6 +12,10 @@ export default {
     ],
     theme: {
         extend: {
+            fontSize: {
+                /* Smallest text in the app (labels, chart ticks); never go below this */
+                "2xs": "11px",
+            },
             colors: {
                 /* Surfaces */
                 background: "var(--background)",

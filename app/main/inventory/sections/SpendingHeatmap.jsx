@@ -102,7 +102,7 @@ export default function SpendingHeatmap({ items, loading }) {
                 {DAY_LABELS.map((d, i) => (
                   <div
                     key={d}
-                    className="h-[11px] text-[9px] text-slate-400 leading-none flex items-center"
+                    className="h-[11px] text-2xs text-slate-400 leading-none flex items-center"
                     style={{ visibility: i % 2 === 1 ? 'visible' : 'hidden' }}
                   >
                     {d}
@@ -117,7 +117,7 @@ export default function SpendingHeatmap({ items, loading }) {
                   {monthLabels.map(({ label, col }) => (
                     <span
                       key={`${label}-${col}`}
-                      className="absolute text-[10px] text-slate-500"
+                      className="absolute text-2xs text-slate-500"
                       style={{ left: col * 14 }}
                     >
                       {label}
@@ -172,11 +172,11 @@ export default function SpendingHeatmap({ items, loading }) {
         </div>
         {/* Legend */}
         <div className="px-5 pb-4 flex items-center gap-1.5">
-          <span className="text-[10px] text-slate-400">Less</span>
+          <span className="text-2xs text-slate-400">Less</span>
           {LEVELS.map((l, i) => (
             <div key={i} className={`w-[11px] h-[11px] rounded-[2px] ${l.bg}`} title={l.label} />
           ))}
-          <span className="text-[10px] text-slate-400">More</span>
+          <span className="text-2xs text-slate-400">More</span>
         </div>
       </CardContent>
     </Card>

@@ -201,7 +201,7 @@ function SummaryTable({ summary }) {
   ]
   return (
     <div>
-      <div className="grid grid-cols-[1.4fr_1fr_1fr] sm:grid-cols-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wide border-b border-slate-100 pb-1.5 mb-1">
+      <div className="grid grid-cols-[1.4fr_1fr_1fr] sm:grid-cols-3 text-2xs font-semibold text-slate-500 uppercase tracking-wide border-b border-slate-100 pb-1.5 mb-1">
         <span />
         <span className="text-center text-amber-600">Morning</span>
         <span className="text-center text-indigo-500">Evening</span>
@@ -216,7 +216,7 @@ function SummaryTable({ summary }) {
           <span className="text-center text-slate-700 font-medium">{r.evening}</span>
         </div>
       ))}
-      <p className="text-[11px] text-slate-400 mt-2">
+      <p className="text-2xs text-slate-400 mt-2">
         Differences not statistically significant (n={summary.hr_run_count})
       </p>
     </div>
@@ -309,13 +309,13 @@ export default function TemperatureEfficiencySection({ data, loading, error, onR
               {data.summary.overall_avg_ratio != null && (
                 <div className="flex items-center gap-3 px-4 py-3 bg-slate-50 border border-slate-100 rounded-lg w-fit">
                   <div>
-                    <p className="text-[11px] text-slate-400 uppercase tracking-wide">
+                    <p className="text-2xs text-slate-400 uppercase tracking-wide">
                       Avg efficiency ratio
                     </p>
                     <p className="text-xl font-bold text-slate-700">
                       {data.summary.overall_avg_ratio.toFixed(2)}
                     </p>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-2xs text-slate-400">
                       pace (sec/km) ÷ HR (bpm) — lower is better
                     </p>
                   </div>
@@ -396,16 +396,16 @@ export default function TemperatureEfficiencySection({ data, loading, error, onR
                   <div className="flex items-center gap-4 justify-center mt-1">
                     <div className="flex items-center gap-1.5">
                       <span className="inline-block w-2.5 h-2.5 rounded-full bg-amber-400" />
-                      <span className="text-[11px] text-slate-500">Morning (05–11)</span>
+                      <span className="text-2xs text-slate-500">Morning (05–11)</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="inline-block w-2.5 h-2.5 rounded-full bg-indigo-400" />
-                      <span className="text-[11px] text-slate-500">Evening (12–)</span>
+                      <span className="text-2xs text-slate-500">Evening (12–)</span>
                     </div>
                     {data.ref_band && (
                       <div className="flex items-center gap-1.5">
                         <span className="inline-block w-6 h-2 rounded bg-violet-200 border border-violet-300" />
-                        <span className="text-[11px] text-slate-500">Your efficiency zone</span>
+                        <span className="text-2xs text-slate-500">Your efficiency zone</span>
                       </div>
                     )}
                   </div>

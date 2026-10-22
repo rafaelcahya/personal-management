@@ -89,7 +89,7 @@ export default function PerceivedEffortSection({
         <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
           Perceived Effort
         </p>
-        <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">
+        <span className="text-2xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">
           Borg CR10
         </span>
         <Popover>

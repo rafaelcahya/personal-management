@@ -31,8 +31,8 @@ function SubSection({ icon: Icon, title, meta, children }) {
         <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{title}</h3>
         {meta && (
           <>
-            <span className="text-[11px] text-slate-300">·</span>
-            <span className="text-[11px] text-slate-400 uppercase tracking-wide">{meta}</span>
+            <span className="text-2xs text-slate-300">·</span>
+            <span className="text-2xs text-slate-400 uppercase tracking-wide">{meta}</span>
           </>
         )}
       </div>

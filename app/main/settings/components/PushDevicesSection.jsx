@@ -222,7 +222,7 @@ export default function PushDevicesSection() {
                           <p className="text-sm font-medium text-slate-800 flex flex-wrap items-center gap-2">
                             {describeDevice(device.user_agent)}
                             {isThis && (
-                              <span className="rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-700">
+                              <span className="rounded-full bg-violet-50 px-2 py-0.5 text-2xs font-medium text-violet-700">
                                 This device
                               </span>
                             )}

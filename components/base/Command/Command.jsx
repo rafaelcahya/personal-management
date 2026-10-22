@@ -84,16 +84,16 @@ export function CommandTrigger({ children, className, shortcutVariant = 'chip', 
           <span>Search…</span>
           {shortcutVariant === 'chip' && (
             <span className="ml-auto flex items-center gap-0.5">
-              <kbd className="text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded border border-border text-muted-foreground">
+              <kbd className="text-2xs font-mono bg-muted px-1.5 py-0.5 rounded border border-border text-muted-foreground">
                 ⌘
               </kbd>
-              <kbd className="text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded border border-border text-muted-foreground">
+              <kbd className="text-2xs font-mono bg-muted px-1.5 py-0.5 rounded border border-border text-muted-foreground">
                 K
               </kbd>
             </span>
           )}
           {shortcutVariant === 'text' && (
-            <span className="ml-auto text-[11px] font-mono text-muted-foreground tracking-[0.5em]">
+            <span className="ml-auto text-2xs font-mono text-muted-foreground tracking-[0.5em]">
               ⌘K
             </span>
           )}
@@ -239,7 +239,7 @@ export function CommandGroup({ label, children }) {
   return (
     <div style={{ display: hasVisible ? '' : 'none' }}>
       {label && (
-        <p className="px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground select-none">
+        <p className="px-4 py-1.5 text-2xs font-semibold uppercase tracking-wider text-muted-foreground select-none">
           {label}
         </p>
       )}
@@ -293,7 +293,7 @@ export function CommandItem({
             <kbd
               key={i}
               className={cn(
-                'inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono border rounded transition-colors',
+                'inline-flex items-center px-1.5 py-0.5 text-2xs font-mono border rounded transition-colors',
                 activeKey === k.toLowerCase()
                   ? 'bg-secondary border-primary/40 text-primary'
                   : 'bg-muted border-border text-muted-foreground'
@@ -313,7 +313,7 @@ export function CommandItem({
               <span
                 key={i}
                 className={cn(
-                  'text-[11px] font-mono transition-colors',
+                  'text-2xs font-mono transition-colors',
                   activeKey === char.toLowerCase() ? 'text-primary' : 'text-muted-foreground'
                 )}
               >

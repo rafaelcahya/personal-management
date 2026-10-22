@@ -56,7 +56,7 @@ export function TimeScrollColumn({ label, options, value, onChange }) {
 
   return (
     <div className="flex flex-col items-center px-1">
-      <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide text-center pb-1.5 w-full">
+      <div className="text-2xs font-semibold text-muted-foreground uppercase tracking-wide text-center pb-1.5 w-full">
         {label}
       </div>
       <div ref={listRef} className="overflow-y-auto h-44 w-12">

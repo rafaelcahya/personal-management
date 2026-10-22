@@ -128,7 +128,7 @@ function SidebarNav({ collapsed, onNavClick }) {
   return (
     <nav className="px-3 py-2 space-y-0.5">
       {!collapsed && (
-        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 pt-3 pb-1.5">
+        <p className="text-2xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pt-3 pb-1.5">
           Inventory
         </p>
       )}
@@ -140,7 +140,7 @@ function SidebarNav({ collapsed, onNavClick }) {
       <div className="border-t border-border pt-3" />
 
       {!collapsed && (
-        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-1.5">
+        <p className="text-2xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-1.5">
           Trading
         </p>
       )}
@@ -165,7 +165,7 @@ function SidebarNav({ collapsed, onNavClick }) {
       <div className="border-t border-border pt-3" />
 
       {!collapsed && (
-        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-1.5">
+        <p className="text-2xs font-semibold text-muted-foreground uppercase tracking-wider px-3 pb-1.5">
           Running
         </p>
       )}
@@ -280,7 +280,7 @@ export default function Sidebar() {
         </SidebarContent>
         <SidebarFooter>
           {!collapsed && (
-            <p id="appVersion_sidebar" className="text-[10px] text-muted-foreground pb-2 mt-2">
+            <p id="appVersion_sidebar" className="text-2xs text-muted-foreground pb-2 mt-2">
               v{packageJson.version}
             </p>
           )}
@@ -338,10 +338,7 @@ export default function Sidebar() {
               <SidebarNav collapsed={false} onNavClick={() => setMobileOpen(false)} />
             </SidebarContent>
             <SidebarFooter>
-              <p
-                id="appVersion_mobileDrawer"
-                className="text-[10px] text-muted-foreground pb-2 mt-2"
-              >
+              <p id="appVersion_mobileDrawer" className="text-2xs text-muted-foreground pb-2 mt-2">
                 v{packageJson.version}
               </p>
             </SidebarFooter>
