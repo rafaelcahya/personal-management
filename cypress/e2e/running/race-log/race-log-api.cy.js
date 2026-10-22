@@ -108,7 +108,7 @@ describe('Race Log API — GET detail (authenticated)', () => {
     })
   })
 
-  it('returns 404 for an id not belonging to the authenticated user', () => {
+  it('returns 404 for an id that does not exist', () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000'
     cy.getRaceLogDetail(nonExistentId).then((res) => {
       expect(res.status).to.eq(404)
@@ -306,7 +306,7 @@ describe('Race Log API — PATCH (authenticated)', () => {
     })
   })
 
-  it('returns 404 for an id not belonging to the authenticated user', () => {
+  it('returns 404 for an id that does not exist', () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000'
     cy.patchRaceLog(nonExistentId, { title: 'Should not update' }).then((res) => {
       expect(res.status).to.eq(404)
@@ -372,7 +372,7 @@ describe('Race Log API — DELETE (authenticated)', () => {
     })
   })
 
-  it('returns 404 for an id not belonging to the authenticated user', () => {
+  it('returns 404 for an id that does not exist', () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000'
     cy.deleteRaceLog(nonExistentId).then((res) => {
       expect(res.status).to.eq(404)
@@ -661,7 +661,7 @@ describe('Upcoming Races API — PATCH update (authenticated)', () => {
     })
   })
 
-  it('returns 404 for an ID that does not belong to the authenticated user', () => {
+  it('returns 404 for an ID that does not exist', () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000'
     cy.patchUpcomingRace(nonExistentId, { title: 'Should not update' }).then((res) => {
       expect(res.status).to.eq(404)
@@ -711,7 +711,7 @@ describe('Upcoming Races API — DELETE (authenticated)', () => {
     })
   })
 
-  it('returns 404 for an ID that does not belong to the authenticated user', () => {
+  it('returns 404 for an ID that does not exist', () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000'
     cy.deleteUpcomingRace(nonExistentId).then((res) => {
       expect(res.status).to.eq(404)
@@ -824,6 +824,51 @@ describe('Race Log API — Pagination, Search, and Filter', () => {
       expect(res.status).to.eq(200)
       expect(res.body.data.length).to.be.lte(3)
       expect(res.body.limit).to.eq(3)
+    })
+  })
+})
+
+// Read-only on purpose: the "other user" rows belong to a real account, so only GET is sent.
+describe('Race Log & Upcoming Races API — cross-user isolation (read-only)', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it("race log detail returns 404 for another user's race", function () {
+    cy.getForeignRaceLogIdFromDb().then((foreignId) => {
+      if (!foreignId) this.skip()
+      cy.getRaceLogDetail(foreignId).then((res) => {
+        expect(res.status).to.eq(404)
+      })
+    })
+  })
+
+  it("race log list never contains another user's race", function () {
+    cy.getForeignRaceLogIdFromDb().then((foreignId) => {
+      if (!foreignId) this.skip()
+      cy.getRaceLog({ limit: 100 }).then((res) => {
+        expect(res.status).to.eq(200)
+        expect(res.body.data.some((r) => r.id === foreignId)).to.be.false
+      })
+    })
+  })
+
+  it("upcoming race detail returns 404 for another user's race", function () {
+    cy.getForeignUpcomingRaceIdFromDb().then((foreignId) => {
+      if (!foreignId) this.skip()
+      cy.getUpcomingRaceDetail(foreignId).then((res) => {
+        expect(res.status).to.eq(404)
+      })
+    })
+  })
+
+  it("upcoming races list never contains another user's race", function () {
+    cy.getForeignUpcomingRaceIdFromDb().then((foreignId) => {
+      if (!foreignId) this.skip()
+      cy.getUpcomingRaces().then((res) => {
+        expect(res.status).to.eq(200)
+        expect(res.body.data.some((r) => r.id === foreignId)).to.be.false
+      })
     })
   })
 })
