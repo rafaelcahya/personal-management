@@ -70,6 +70,14 @@ export async function POST(request) {
     }
 
     const entry = await createRaceLog(supabase, user.id, parsed.data)
+
+    if (entry?.error === 'activity_not_found') {
+      return NextResponse.json(
+        { error: 'Not found', message: 'Activity not found' },
+        { status: 404 }
+      )
+    }
+
     return NextResponse.json({ data: entry, message: 'Race log created' }, { status: 201 })
   } catch (err) {
     console.error('[running/race-log POST]', err)

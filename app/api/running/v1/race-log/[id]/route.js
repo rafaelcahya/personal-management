@@ -59,6 +59,13 @@ export async function PATCH(request, { params }) {
 
     const entry = await updateRaceLog(supabase, user.id, id, parsed.data)
 
+    if (entry?.error === 'activity_not_found') {
+      return NextResponse.json(
+        { error: 'Not found', message: 'Activity not found' },
+        { status: 404 }
+      )
+    }
+
     if (!entry) {
       return NextResponse.json(
         { error: 'Not found', message: 'Race log entry not found' },
