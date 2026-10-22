@@ -29,9 +29,7 @@ import { formatRupiah } from '@/lib/utils/currencyFormatter'
 
 const cashCategorySchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name must not exceed 100 characters'),
-  nominal: z
-    .number({ invalid_type_error: 'Nominal is required' })
-    .nonnegative('Nominal cannot be negative'),
+  nominal: z.number({ error: 'Nominal is required' }).nonnegative('Nominal cannot be negative'),
 })
 
 const fieldClass =

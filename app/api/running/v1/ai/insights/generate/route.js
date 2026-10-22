@@ -63,11 +63,11 @@ async function handlePostActivity(supabase, userId, body) {
   const { activity_id, focus = 'general', perceived_effort, user_note } = body
 
   if (!activity_id) {
-    return NextResponse.json({ error: 'activity_id required' }, { status: 422 })
+    return NextResponse.json({ error: 'activity_id required' }, { status: 400 })
   }
 
   if (!VALID_FOCUS.includes(focus)) {
-    return NextResponse.json({ error: 'Invalid focus value' }, { status: 422 })
+    return NextResponse.json({ error: 'Invalid focus value' }, { status: 400 })
   }
 
   if (
@@ -76,7 +76,7 @@ async function handlePostActivity(supabase, userId, body) {
   ) {
     return NextResponse.json(
       { error: 'perceived_effort must be an integer between 1 and 10' },
-      { status: 422 }
+      { status: 400 }
     )
   }
 

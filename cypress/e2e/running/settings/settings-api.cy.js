@@ -98,16 +98,16 @@ describe('User Settings API — PATCH notify_race_reminder (authenticated)', () 
     })
   })
 
-  it('returns 422 when notify_race_reminder is not a boolean', () => {
+  it('returns 400 when notify_race_reminder is not a boolean', () => {
     cy.patchUserSettings({ notify_race_reminder: 'yes' }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
       expect(res.body).to.have.property('issues')
     })
   })
 
-  it('returns 422 when hr_zones_method is invalid', () => {
+  it('returns 400 when hr_zones_method is invalid', () => {
     cy.patchUserSettings({ hr_zones_method: 'invalid_method' }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
       expect(res.body).to.have.property('issues')
     })
   })

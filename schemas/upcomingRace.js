@@ -9,13 +9,13 @@ export const createUpcomingRaceSchema = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'Race date must be in YYYY-MM-DD format')
     .refine((d) => d >= today(), { message: 'Race date must be today or in the future' }),
   distance_m: z
-    .number({ invalid_type_error: 'Distance must be a number' })
+    .number({ error: 'Distance must be a number' })
     .positive('Distance must be greater than 0')
     .max(1000000, 'Distance is too large'),
   location: z.string().max(300, 'Location is too long').optional().nullable(),
   notes: z.string().max(5000).optional().nullable(),
   target_time_sec: z
-    .number({ invalid_type_error: 'Target time must be a number' })
+    .number({ error: 'Target time must be a number' })
     .int('Target time must be a whole number of seconds')
     .positive('Target time must be greater than 0')
     .optional()
@@ -30,14 +30,14 @@ export const updateUpcomingRaceSchema = z
       .regex(/^\d{4}-\d{2}-\d{2}$/, 'Race date must be in YYYY-MM-DD format')
       .optional(),
     distance_m: z
-      .number({ invalid_type_error: 'Distance must be a number' })
+      .number({ error: 'Distance must be a number' })
       .positive('Distance must be greater than 0')
       .max(1000000, 'Distance is too large')
       .optional(),
     location: z.string().max(300, 'Location is too long').optional().nullable(),
     notes: z.string().max(5000).optional().nullable(),
     target_time_sec: z
-      .number({ invalid_type_error: 'Target time must be a number' })
+      .number({ error: 'Target time must be a number' })
       .int('Target time must be a whole number of seconds')
       .positive('Target time must be greater than 0')
       .optional()

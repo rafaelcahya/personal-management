@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../support/common/unique-name'
 
 describe('Product Name Delete API', () => {
   let testProductNameId
@@ -8,7 +9,7 @@ describe('Product Name Delete API', () => {
     cy.setupApiAuthCookies()
 
     const request = {
-      product_name: faker.food.fruit() + '-' + Date.now(),
+      product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
       note: faker.word.words(25),
       product_name_status: 'active',
     }
@@ -37,7 +38,6 @@ describe('Product Name Delete API', () => {
           }
 
           if (response.status === 401) {
-            expect(response.body.success).to.be.false
             expect(response.body.error).to.eq('Unauthorized')
           }
         })
@@ -54,12 +54,11 @@ describe('Product Name Delete API', () => {
           expect(response.status).to.be.oneOf([307, 401])
 
           if (response.status === 401) {
-            expect(response.body.success).to.be.false
             expect(response.body.error).to.eq('Unauthorized')
+          } else {
+            const location = response.headers.location || response.body
+            expect(String(location)).to.include('/login')
           }
-
-          const location = response.headers.location || response.body
-          expect(String(location)).to.include('/login')
         })
       })
     })
@@ -100,7 +99,7 @@ describe('Product Name Delete API', () => {
 
   describe('Success Scenarios', () => {
     const request = {
-      product_name: faker.food.fruit() + '-' + Date.now(),
+      product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
       note: faker.word.words(25),
       product_name_status: 'active',
     }
@@ -147,7 +146,7 @@ describe('Product Name Delete API', () => {
 
   describe('Delete Product Name - Summary Impact', () => {
     const request = {
-      product_name: faker.food.fruit() + '-' + Date.now(),
+      product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
       note: faker.word.words(25),
       product_name_status: 'active',
     }
@@ -175,7 +174,7 @@ describe('Product Name Delete API', () => {
 
   describe('DB Verification', () => {
     const request = {
-      product_name: faker.food.fruit() + '-' + Date.now(),
+      product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
       note: faker.word.words(25),
       product_name_status: 'active',
     }

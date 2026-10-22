@@ -1,4 +1,4 @@
-import { INVENTORY_ENDPOINTS } from '../../fixtures/endpoints.js'
+import { INVENTORY_ENDPOINTS } from '../../../fixtures/endpoints.js'
 
 const FAKE_ID = '00000000-0000-0000-0000-000000000000'
 

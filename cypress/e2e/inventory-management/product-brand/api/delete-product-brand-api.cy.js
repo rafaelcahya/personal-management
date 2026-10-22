@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../support/common/unique-name'
 
 describe('Product Brand Delete API', () => {
   let testProductBrandId
@@ -8,7 +9,7 @@ describe('Product Brand Delete API', () => {
     cy.setupApiAuthCookies()
 
     const request = {
-      brand_status: faker.food.fruit(),
+      brand_status: 'active',
       note: faker.word.words(25),
       brand: faker.string.alphanumeric(10),
     }
@@ -100,7 +101,7 @@ describe('Product Brand Delete API', () => {
 
   describe('Success Scenarios', () => {
     const request = {
-      brand_status: faker.food.fruit(),
+      brand_status: 'active',
       note: faker.word.words(25),
       brand: faker.string.alphanumeric(10),
     }
@@ -147,7 +148,7 @@ describe('Product Brand Delete API', () => {
 
   describe('Delete Product Brand - Summary Impact', () => {
     const request = {
-      brand_status: faker.food.fruit(),
+      brand_status: 'active',
       note: faker.word.words(25),
       brand: faker.string.alphanumeric(10),
     }
@@ -175,7 +176,7 @@ describe('Product Brand Delete API', () => {
 
   describe('DB Verification', () => {
     const request = {
-      brand_status: faker.food.fruit(),
+      brand_status: 'active',
       note: faker.word.words(25),
       brand: faker.string.alphanumeric(10),
     }
@@ -210,7 +211,7 @@ describe('Product Brand Delete API', () => {
 
       // Create a brand specifically for the guard tests
       cy.AddProductBrand({
-        brand: faker.food.fruit() + '-guard-' + Date.now(),
+        brand: uniqueName(faker.food.fruit()) + '-guard-' + Date.now(),
         brand_status: 'active',
         note: faker.word.words(5),
       }).then((brandRes) => {
@@ -221,7 +222,7 @@ describe('Product Brand Delete API', () => {
 
       // Create a product name to satisfy the FK requirement
       cy.AddProductName({
-        product_name: faker.food.ingredient() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.ingredient()) + '-' + Date.now(),
       }).then((nameRes) => {
         expect(nameRes.status).to.eq(201)
         guardProductNameId = nameRes.body.productName.id
@@ -271,7 +272,7 @@ describe('Product Brand Delete API', () => {
     it('should return 200 when brand has no active products', () => {
       // Create a fresh brand with no products linked
       cy.AddProductBrand({
-        brand: faker.food.fruit() + '-empty-' + Date.now(),
+        brand: uniqueName(faker.food.fruit()) + '-empty-' + Date.now(),
         brand_status: 'active',
         note: faker.word.words(5),
       }).then((brandRes) => {

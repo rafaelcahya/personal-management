@@ -1,11 +1,12 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../support/common/unique-name'
 
 describe('Product Brand List API', () => {
   let testUserId
   let testProductBrandsData = []
 
   const request = () => ({
-    brand_status: faker.food.fruit(),
+    brand_status: 'active',
     note: faker.word.words(25),
     brand: faker.string.alphanumeric(10),
   })
@@ -41,9 +42,10 @@ describe('Product Brand List API', () => {
   })
 
   it("should return only authenticated user's product brand", () => {
+    // The list does not expose user_id, so compare the total with the user's own rows in the DB
     cy.GetListProductBrand().then((response) => {
-      response.body.data.forEach((productBrand) => {
-        expect(productBrand.user_id).to.eq(testUserId)
+      cy.getTotalProductBrandsFromDb().then((dbTotal) => {
+        expect(response.body.total).to.eq(dbTotal)
       })
     })
   })
@@ -76,7 +78,6 @@ describe('Product Brand List API', () => {
         expect(found.brand).to.eq(created.brand)
         expect(found.brand_status).to.eq(created.brand_status)
         expect(found.note).to.eq(created.note)
-        expect(found.user_id).to.eq(created.user_id)
       })
     })
   })
@@ -110,7 +111,6 @@ describe('Product Brand List API', () => {
           'brand_status',
           'note',
           'updated_at',
-          'user_id',
           'uuid',
           'product_count',
         ])
@@ -152,7 +152,7 @@ describe('Product Brand List API', () => {
       cy.clearLocalStorage()
       cy.setupApiAuthCookies()
 
-      countBrandName = faker.food.fruit() + '-cnt-' + Date.now()
+      countBrandName = uniqueName(faker.food.fruit()) + '-cnt-' + Date.now()
 
       cy.AddProductBrand({
         brand: countBrandName,
@@ -165,7 +165,7 @@ describe('Product Brand List API', () => {
       })
 
       cy.AddProductName({
-        product_name: faker.food.ingredient() + '-cnt-' + Date.now(),
+        product_name: uniqueName(faker.food.ingredient()) + '-cnt-' + Date.now(),
       }).then((res) => {
         expect(res.status).to.eq(201)
         countProductNameId = res.body.productName.id
@@ -204,7 +204,7 @@ describe('Product Brand List API', () => {
     })
 
     it('should return 0 for brands with no active products', () => {
-      const zeroBrandName = faker.food.fruit() + '-zero-' + Date.now()
+      const zeroBrandName = uniqueName(faker.food.fruit()) + '-zero-' + Date.now()
 
       cy.AddProductBrand({
         brand: zeroBrandName,

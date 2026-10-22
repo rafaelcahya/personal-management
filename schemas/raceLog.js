@@ -10,7 +10,7 @@ export const createRaceLogSchema = z
       .regex(/^\d{4}-\d{2}-\d{2}$/, 'Race date must be in YYYY-MM-DD format')
       .refine((d) => d <= today(), { message: 'Race date cannot be in the future' }),
     distance_m: z
-      .number({ invalid_type_error: 'Distance must be a number' })
+      .number({ error: 'Distance must be a number' })
       .positive('Distance must be greater than 0')
       .max(1000000, 'Distance is too large'),
     finish_time_sec: z
@@ -50,7 +50,7 @@ export const updateRaceLogSchema = z
       .refine((d) => d <= today(), { message: 'Race date cannot be in the future' })
       .optional(),
     distance_m: z
-      .number({ invalid_type_error: 'Distance must be a number' })
+      .number({ error: 'Distance must be a number' })
       .positive('Distance must be greater than 0')
       .max(1000000, 'Distance is too large')
       .optional(),

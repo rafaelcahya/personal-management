@@ -199,6 +199,15 @@ describe('Investment Flow API — POST /api/investment-flow/v1 (create)', () => 
     })
   })
 
+  it('returns 400 with the custom type message when nominal is not a number', () => {
+    cy.createInvestmentFlowNode(makeTickerPayload({ nominal: 'abc' })).then((res) => {
+      expect(res.status).to.eq(400)
+      expect(res.body.error).to.eq('Validation failed')
+      const messages = res.body.details.map((d) => d.message)
+      expect(messages).to.include('Nominal must be a number')
+    })
+  })
+
   it('returns 201 when creating a nested ticker under a ticker (leaf with children)', () => {
     // Parent ticker's own nominal is superseded once it gains a child —
     // createNode.js clears parent.nominal/notes in this case.

@@ -8,8 +8,8 @@ export const tradeListQuerySchema = z.object({
 
 export const tradeSchema = z.object({
   // z.date() for browser form use (DatePicker returns Date objects)
-  buy_date: z.date({ required_error: 'Please select a buy date' }).nullable().optional(),
-  sell_date: z.date({ required_error: 'Please select a sell date' }).nullable().optional(),
+  buy_date: z.date({ error: 'Please select a buy date' }).nullable().optional(),
+  sell_date: z.date({ error: 'Please select a sell date' }).nullable().optional(),
   ticker: z
     .string({ error: 'Ticker is required' })
     .min(1, 'Ticker is required')

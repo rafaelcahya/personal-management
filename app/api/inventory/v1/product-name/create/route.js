@@ -40,6 +40,13 @@ export async function POST(req) {
       }
     })
 
+    if (
+      body.product_name_status &&
+      !['active', 'inactive', 'deleted'].includes(body.product_name_status)
+    ) {
+      validationErrors.push('product name status must be active, inactive or deleted')
+    }
+
     if (body.product_name_status === 'deleted') {
       if (!body.deleted_at) {
         body.deleted_at = new Date().toISOString()

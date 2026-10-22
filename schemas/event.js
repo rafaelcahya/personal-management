@@ -29,11 +29,11 @@ export const eventSchema = z.object({
     .optional()
     .or(z.literal('')),
   impact_direction: z.enum(['UP', 'DOWN'], {
-    required_error: 'Please select an impact direction',
+    error: 'Please select an impact direction',
   }),
   actual_outcome: z.enum(['UP', 'DOWN']).nullable().optional(),
   event_date: z.date({
-    required_error: 'Please select an event date',
+    error: 'Please select an event date',
   }),
   tags: z
     .array(z.string().max(30, 'Each tag must not exceed 30 characters'))

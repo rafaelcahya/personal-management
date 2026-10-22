@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getProductBrandList } from '@/lib/services/inventory/product_brand/getProductBrandList'
+import { getProductBrandSummary } from '@/lib/services/inventory/product_brand/getProductBrandSummary'
 
 export async function GET() {
   try {
@@ -15,23 +15,9 @@ export async function GET() {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: productBrands } = await getProductBrandList(user.id)
+    const data = await getProductBrandSummary(user.id)
 
-    const totalProductBrands = Array.isArray(productBrands) ? productBrands.length : 0
-
-    const totalStatus = (productBrands || []).reduce((acc, brand) => {
-      const status = brand.brand_status
-      acc[status] = (acc[status] || 0) + 1
-      return acc
-    }, {})
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        totalProductBrands,
-        totalStatus,
-      },
-    })
+    return NextResponse.json({ success: true, data })
   } catch (err) {
     console.error('GET /api/inventory/v1/product-brand/summary error:', err)
     return NextResponse.json({ success: false, error: 'Something went wrong' }, { status: 500 })

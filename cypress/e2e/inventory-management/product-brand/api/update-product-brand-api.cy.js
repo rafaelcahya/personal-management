@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../support/common/unique-name'
 
 describe('Product Brand Update API', () => {
   let testProductBrandId
@@ -10,7 +11,7 @@ describe('Product Brand Update API', () => {
     cy.setupApiAuthCookies()
 
     const request = {
-      brand_status: faker.food.fruit(),
+      brand_status: 'active',
       note: faker.word.words(25),
       brand: faker.string.alphanumeric(10),
     }
@@ -29,7 +30,7 @@ describe('Product Brand Update API', () => {
   describe('Authentication & Authorization', () => {
     it('should update product brand successfully (200)', () => {
       const request = {
-        brand_status: faker.food.fruit(),
+        brand_status: 'active',
         note: faker.word.words(25),
         brand: faker.string.alphanumeric(10),
       }
@@ -88,7 +89,7 @@ describe('Product Brand Update API', () => {
   describe('Product Brand Object Structure Scenarios', () => {
     it('should update product brand with all required fields', () => {
       const request = {
-        brand_status: faker.food.fruit(),
+        brand_status: 'active',
         note: faker.word.words(25),
         brand: faker.string.alphanumeric(10),
       }
@@ -109,7 +110,7 @@ describe('Product Brand Update API', () => {
 
     it('should return complete updated product brand object', () => {
       const request = {
-        brand_status: faker.food.fruit(),
+        brand_status: 'active',
         note: faker.word.words(25),
         brand: faker.string.alphanumeric(10),
       }
@@ -132,7 +133,7 @@ describe('Product Brand Update API', () => {
 
     it('should return correct success response structure', () => {
       const request = {
-        brand_status: faker.food.fruit(),
+        brand_status: 'active',
         note: faker.word.words(25),
         brand: faker.string.alphanumeric(10),
       }
@@ -158,7 +159,7 @@ describe('Product Brand Update API', () => {
   describe('Success Scenario', () => {
     it('should update product brand successfully (200)', () => {
       const request = {
-        brand_status: faker.food.fruit(),
+        brand_status: 'active',
         note: faker.word.words(25),
         brand: faker.string.alphanumeric(10),
       }
@@ -178,7 +179,7 @@ describe('Product Brand Update API', () => {
 
     it('should assign user_id from authenticated user', () => {
       const request = {
-        brand_status: faker.food.fruit(),
+        brand_status: 'active',
         note: faker.word.words(25),
         brand: faker.string.alphanumeric(10),
       }
@@ -197,7 +198,7 @@ describe('Product Brand Update API', () => {
 
     it('should generate timestamps (created_at, updated_at)', () => {
       const request = {
-        brand_status: faker.food.fruit(),
+        brand_status: 'active',
         note: faker.word.words(25),
         brand: faker.string.alphanumeric(10),
       }
@@ -240,7 +241,7 @@ describe('Product Brand Update API', () => {
   describe('Data Integrity - API vs Database Comparison', () => {
     beforeEach(() => {
       const request = {
-        brand_status: faker.food.fruit(),
+        brand_status: 'active',
         note: faker.word.words(25),
         brand: faker.string.alphanumeric(10),
       }
@@ -426,7 +427,7 @@ describe('Product Brand Update API', () => {
 
   describe('Uniqueness Validation', () => {
     it('should return 409 when updating to a name that already exists', () => {
-      const conflictingName = faker.food.fruit() + '-conflict-' + Date.now()
+      const conflictingName = uniqueName(faker.food.fruit()) + '-conflict-' + Date.now()
 
       cy.AddProductBrand({
         brand: conflictingName,
@@ -450,7 +451,7 @@ describe('Product Brand Update API', () => {
     })
 
     it('should return 409 when updating to same name as another brand (case-insensitive)', () => {
-      const conflictingName = faker.food.fruit() + '-ci-upd-' + Date.now()
+      const conflictingName = uniqueName(faker.food.fruit()) + '-ci-upd-' + Date.now()
 
       cy.AddProductBrand({
         brand: conflictingName.toLowerCase(),
@@ -497,7 +498,7 @@ describe('Product Brand Update API', () => {
     })
 
     it('should return correct 409 response structure', () => {
-      const conflictingName = faker.food.fruit() + '-struct-upd-' + Date.now()
+      const conflictingName = uniqueName(faker.food.fruit()) + '-struct-upd-' + Date.now()
 
       cy.AddProductBrand({
         brand: conflictingName,

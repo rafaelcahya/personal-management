@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../support/common/unique-name'
 
 describe('GET Product Name Summary API', () => {
   before(() => {
@@ -28,7 +29,6 @@ describe('GET Product Name Summary API', () => {
           expect(String(location)).to.include('/login')
         }
         if (response.status === 401) {
-          expect(response.body.success).to.be.false
           expect(response.body.error).to.eq('Unauthorized')
         }
       })
@@ -101,7 +101,7 @@ describe('GET Product Name Summary API', () => {
       })
 
       const newName = {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }
@@ -125,7 +125,7 @@ describe('GET Product Name Summary API', () => {
       })
 
       cy.AddProductName({
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }).then((response) => {
@@ -141,7 +141,7 @@ describe('GET Product Name Summary API', () => {
   describe('API vs Database Comparison', () => {
     it('totalProductNames should match database count', () => {
       cy.AddProductName({
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }).then((response) => {

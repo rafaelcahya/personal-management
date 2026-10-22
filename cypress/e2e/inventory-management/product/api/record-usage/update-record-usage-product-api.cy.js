@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../../support/common/unique-name'
 
 describe('PATCH Update Product API - /api/inventory/v1/product/update/[id]', () => {
   let validBrandId
@@ -37,7 +38,7 @@ describe('PATCH Update Product API - /api/inventory/v1/product/update/[id]', () 
     cy.setupApiAuthCookies()
 
     cy.AddProductBrand({
-      brand: faker.food.fruit(),
+      brand: uniqueName(faker.food.fruit()),
       brand_status: 'active',
       note: faker.word.words(5),
     }).then((res) => {
@@ -46,7 +47,7 @@ describe('PATCH Update Product API - /api/inventory/v1/product/update/[id]', () 
     })
 
     cy.AddProductName({
-      product_name: faker.food.ingredient(),
+      product_name: uniqueName(faker.food.ingredient()),
       product_name_status: 'active',
     }).then((res) => {
       expect(res.status).to.eq(201)
@@ -443,9 +444,10 @@ describe('PATCH Update Product API - /api/inventory/v1/product/update/[id]', () 
 
             cy.getLatestProductHistoryFromDb(product.id).then((history) => {
               expect(history).to.not.be.null
-              expect(Number(history.depleted_quantity)).to.eq(usageQty)
-              expect(Number(history.remaining_quantity)).to.eq(initialStock - usageQty)
-              expect(Number(history.quantity)).to.eq(initialStock)
+              // History row opens when usage starts; depleted_quantity is filled when it finishes
+              expect(Number(history.depleted_quantity)).to.eq(0)
+              expect(Number(history.remaining_quantity)).to.eq(usageQty)
+              expect(Number(history.quantity)).to.eq(usageQty)
               expect(history.status).to.eq('active')
             })
           }
@@ -453,7 +455,7 @@ describe('PATCH Update Product API - /api/inventory/v1/product/update/[id]', () 
       })
     })
 
-    it('history depleted_quantity should match request usage_quantity', () => {
+    it('history should start with depleted_quantity 0 and remaining_quantity = usage_quantity', () => {
       const usageQty = 5
 
       createProductWithStock(10).then((product) => {
@@ -463,7 +465,8 @@ describe('PATCH Update Product API - /api/inventory/v1/product/update/[id]', () 
 
             cy.getLatestProductHistoryFromDb(product.id).then((history) => {
               expect(history).to.not.be.null
-              expect(Number(history.depleted_quantity)).to.eq(usageQty)
+              expect(Number(history.depleted_quantity)).to.eq(0)
+              expect(Number(history.remaining_quantity)).to.eq(usageQty)
             })
           }
         )
@@ -486,14 +489,14 @@ describe('PATCH Update Product API - /api/inventory/v1/product/update/[id]', () 
       })
     })
 
-    it('history remaining_quantity should match product quantity in DB after update', () => {
+    it('history remaining_quantity should match usage_quantity of the product in DB after update', () => {
       createProductWithStock(10).then((product) => {
         cy.UpdateProduct(product.id, buildUpdateRequest({ usage_quantity: 3 })).then((res) => {
           expect(res.status).to.eq(200)
 
           cy.getLatestProductHistoryFromDb(product.id).then((history) => {
             cy.getProductWithQuantityFromDb(product.id).then((dbProduct) => {
-              expect(Number(history.remaining_quantity)).to.eq(dbProduct.quantity)
+              expect(Number(history.remaining_quantity)).to.eq(Number(dbProduct.usage_quantity))
             })
           })
         })

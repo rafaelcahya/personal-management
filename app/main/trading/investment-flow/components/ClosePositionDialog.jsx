@@ -36,9 +36,7 @@ import { formatRupiah } from '@/lib/utils/currencyFormatter'
 import { cn } from '@/lib/utils'
 
 const closeFormSchema = z.object({
-  proceeds: z
-    .number({ invalid_type_error: 'Proceeds is required' })
-    .nonnegative('Proceeds cannot be negative'),
+  proceeds: z.number({ error: 'Proceeds is required' }).nonnegative('Proceeds cannot be negative'),
   cash_category_id: z.string().uuid('Select a cash pool to receive the proceeds'),
 })
 

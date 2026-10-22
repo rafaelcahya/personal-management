@@ -40,7 +40,7 @@ export async function PATCH(request, { params }) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
-        { status: 422 }
+        { status: 400 }
       )
     }
 
