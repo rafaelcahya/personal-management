@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-10-22 (Race Log review #847 — 4 cross-user isolation API tests, race-log-api 60/60)
-**Branch:** chore/issue-847-race-log-review
+**Last Updated:** 2026-10-22 (Summary counts #900 — 1 test each for Brand and Name summary, both specs 14/14)
+**Branch:** fix/issue-900-summary-counts
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,957  | 54%  |
+| API       | 1,959  | 54%  |
 | UI        | 594    | 25%  |
-| **Total** | **2,546** | 100% |
+| **Total** | **2,548** | 100% |
 
 > **UI reconciliation (2026-10-19, #850)** — counted with `npm run cy:coverage -- --it-counts` (it() per spec, UI = `*-ui.cy.js` or a `ui/` folder). Only 18 UI specs exist: Auth 107, Inventory 454, Landing 33 = 594 it(). The old Trading (254), Running (695) and Shared (8) UI numbers had no UI spec behind them and were removed. The Trading Fee/Trade detail tables below still show UI columns for `add-fee`, `summary-fee`, `add-trade` and the other fee/trade specs; those files are API-style specs (a few UI describes inside `add-fee`, `summary-fee`, `add-trade`), so their numbers are not split here. The script's raw API it() total is 2,054 (66 specs), which does not match the 1,810 above (it() inside loops, mixed specs); API numbers were NOT changed and need a separate reconcile.
 
@@ -22,14 +22,14 @@
 | Module               | API   | UI    | Total |
 | -------------------- | ----- | ----- | ----- |
 | Auth + User Settings | 74    | 107   | 181   |
-| Inventory Management | 728   | 454   | 1,182 |
+| Inventory Management | 730   | 454   | 1,184 |
 | Trading Management   | 369   | 0     | 369   |
 | Running Tracker      | 687   | 0     | 687   |
 | Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 0     | 0     |
-| **Total**            | **1,952** | **594** | **2,546** |
+| **Total**            | **1,954** | **594** | **2,548** |
 
 ---
 
@@ -96,9 +96,9 @@
 | Delete Brand     | 17  | 0  | 17    |
 | List Brand       | 14  | 26 | 40    |
 | Brand Detail     | 20  | 0  | 20    |
-| Brand Summary    | 13  | 0  | 13    |
+| Brand Summary    | 14  | 0  | 14    |
 | Update Brand     | 30  | 13 | 43    |
-| **Subtotal**     | **118** | **62** | **180** |
+| **Subtotal**     | **119** | **62** | **181** |
 
 #### Product History
 
@@ -116,11 +116,11 @@
 | Delete Name      | 15  | 0  | 15    |
 | List Name        | 18  | 15 | 33    |
 | Name Detail      | 20  | 0  | 20    |
-| Name Summary     | 13  | 0  | 13    |
+| Name Summary     | 14  | 0  | 14    |
 | Update Name      | 29  | 14 | 43    |
-| **Subtotal**     | **124** | **58** | **182** |
+| **Subtotal**     | **125** | **58** | **183** |
 
-**Inventory Total — API: 728 | UI: 454 | Total: 1,182**
+**Inventory Total — API: 730 | UI: 454 | Total: 1,184**
 
 ---
 
@@ -436,7 +436,7 @@
 | Module               | API   | UI    | Total |
 | -------------------- | ----- | ----- | ----- |
 | Auth + User Settings | 35    | 107   | 142   |
-| Inventory Management | 728   | 454   | 1,182 |
+| Inventory Management | 730   | 454   | 1,184 |
 | Trading Management   | 374   | 254   | 628   |
 | Running Tracker      | 579   | 695   | 1,274 |
 | Notifications        | 72    | 0     | 72    |

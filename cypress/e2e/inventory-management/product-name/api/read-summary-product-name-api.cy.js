@@ -161,6 +161,32 @@ describe('GET Product Name Summary API', () => {
     })
   })
 
+  describe('Totals are not capped at one page', () => {
+    const LIST_PAGE_SIZE = 15
+
+    // The summary used to count the rows of the first list page, so it never went above 15.
+    // Make sure the table is bigger than one page, then compare the summary with the list total.
+    it('totalProductNames should be above the list page size and equal the list total', () => {
+      cy.GetListProductName({ page: 1, limit: 1 }).then((listRes) => {
+        const missing = Math.max(0, LIST_PAGE_SIZE + 1 - listRes.body.total)
+        Cypress._.times(missing, () => {
+          cy.AddProductName({
+            product_name: uniqueName(faker.food.ingredient()),
+            product_name_status: 'active',
+            note: faker.word.words(3),
+          }).then((res) => expect(res.status).to.eq(201))
+        })
+      })
+
+      cy.GetListProductName({ page: 1, limit: 1 }).then((listRes) => {
+        cy.GetProductNameSummary().then((sumRes) => {
+          expect(sumRes.body.data.totalProductNames).to.be.greaterThan(LIST_PAGE_SIZE)
+          expect(sumRes.body.data.totalProductNames).to.eq(listRes.body.total)
+        })
+      })
+    })
+  })
+
   describe('Performance', () => {
     it('should respond within 2000ms', () => {
       const start = Date.now()
