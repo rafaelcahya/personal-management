@@ -420,3 +420,47 @@ describe('Product Name Add — Uniqueness Check (409 Conflict)', () => {
     })
   })
 })
+
+describe('Product Name Status Validation on create (#901)', () => {
+  const newName = () => 'st' + faker.string.alphanumeric(12)
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  ;['apple', 'ACTIVE', 'pending'].forEach((status) => {
+    it(`returns 400 for product_name_status "${status}" and stores nothing`, () => {
+      const name = newName()
+      cy.AddProductName({ product_name: name, product_name_status: status }).then((response) => {
+        expect(response.status).to.eq(400)
+        expect(response.body.success).to.be.false
+        expect(response.body.error).to.include(
+          'product name status must be active, inactive or deleted'
+        )
+      })
+      cy.GetListProductName({ search: name }).then((response) => {
+        expect(response.body.data).to.have.length(0)
+      })
+    })
+  })
+
+  it('returns 400 when product_name_status is not a string', () => {
+    cy.AddProductName({ product_name: newName(), product_name_status: 123 }).then((response) => {
+      expect(response.status).to.eq(400)
+      expect(response.body.error).to.include(
+        'product name status must be active, inactive or deleted'
+      )
+    })
+  })
+
+  ;['active', 'inactive', 'deleted'].forEach((status) => {
+    it(`accepts product_name_status "${status}"`, () => {
+      cy.AddProductName({ product_name: newName(), product_name_status: status }).then(
+        (response) => {
+          expect(response.status).to.eq(201)
+          expect(response.body.productName.product_name_status).to.eq(status)
+        }
+      )
+    })
+  })
+})

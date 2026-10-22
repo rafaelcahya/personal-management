@@ -536,3 +536,52 @@ describe('Product Brand Update API', () => {
     })
   })
 })
+
+describe('Product Brand Status Validation on update (#901)', () => {
+  let targetId
+  let targetName
+
+  before(() => {
+    cy.setupApiAuthCookies()
+    targetName = 'st' + faker.string.alphanumeric(12)
+    cy.AddProductBrand({ brand: targetName, brand_status: 'active' }).then((response) => {
+      expect(response.status).to.eq(201)
+      targetId = response.body.productBrand.id
+    })
+  })
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  ;['apple', 'ACTIVE', 'pending'].forEach((status) => {
+    it(`returns 400 for brand_status "${status}" and leaves the row unchanged`, () => {
+      cy.UpdateProductBrand(targetId, { brand: targetName, brand_status: status }).then(
+        (response) => {
+          expect(response.status).to.eq(400)
+          expect(response.body.success).to.be.false
+          expect(response.body.error).to.include('brand status must be active, inactive or deleted')
+        }
+      )
+      cy.getSingleProductBrandFromDb(targetId.toString()).then((rows) => {
+        expect(rows[0].brand_status).to.eq('active')
+      })
+    })
+  })
+
+  it('returns 400 when brand_status is not a string', () => {
+    cy.UpdateProductBrand(targetId, { brand: targetName, brand_status: 123 }).then((response) => {
+      expect(response.status).to.eq(400)
+      expect(response.body.error).to.include('brand status must be active, inactive or deleted')
+    })
+  })
+
+  it('accepts a valid brand_status (inactive) and stores it', () => {
+    cy.UpdateProductBrand(targetId, { brand: targetName, brand_status: 'inactive' }).then(
+      (response) => {
+        expect(response.status).to.eq(200)
+        expect(response.body.productBrand.brand_status).to.eq('inactive')
+      }
+    )
+  })
+})
