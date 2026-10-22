@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../support/common/unique-name'
 
 // ─── Product Name List API ────────────────────────────────────────────────────
 
@@ -8,7 +9,8 @@ describe('Product name List API', () => {
   let testProductNamesData = []
 
   const request = () => ({
-    product_name: faker.food.fruit() + '-' + Date.now() + '-' + faker.string.alphanumeric(6),
+    product_name:
+      uniqueName(faker.food.fruit()) + '-' + Date.now() + '-' + faker.string.alphanumeric(6),
     note: faker.word.words(25),
     product_name_status: 'active',
   })

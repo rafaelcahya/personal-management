@@ -115,32 +115,32 @@ describe('PUT Edit Product Stock API - /api/inventory/v1/product/stock/:id', () 
   })
 
   describe('quantity_added Validation', () => {
-    it('should return 422 when quantity_added is float', () => {
+    it('should return 400 when quantity_added is float', () => {
       cy.UpdateProductStock(entryId, buildRequest({ quantity_added: 1.5 })).then((response) => {
-        expect(response.status).to.eq(422)
+        expect(response.status).to.eq(400)
         expect(response.body.error).to.include('Quantity added must be a positive whole number')
       })
     })
 
-    it('should return 422 when quantity_added is zero', () => {
+    it('should return 400 when quantity_added is zero', () => {
       cy.UpdateProductStock(entryId, buildRequest({ quantity_added: 0 })).then((response) => {
-        expect(response.status).to.eq(422)
+        expect(response.status).to.eq(400)
         expect(response.body.error).to.include('Quantity added must be a positive whole number')
       })
     })
 
-    it('should return 422 when quantity_added is negative', () => {
+    it('should return 400 when quantity_added is negative', () => {
       cy.UpdateProductStock(entryId, buildRequest({ quantity_added: -1 })).then((response) => {
-        expect(response.status).to.eq(422)
+        expect(response.status).to.eq(400)
         expect(response.body.error).to.include('Quantity added must be a positive whole number')
       })
     })
   })
 
   describe('price Validation', () => {
-    it('should return 422 when price is negative', () => {
+    it('should return 400 when price is negative', () => {
       cy.UpdateProductStock(entryId, buildRequest({ price: -1 })).then((response) => {
-        expect(response.status).to.eq(422)
+        expect(response.status).to.eq(400)
         expect(response.body.error).to.include('Price must be a non-negative number')
       })
     })
@@ -156,10 +156,10 @@ describe('PUT Edit Product Stock API - /api/inventory/v1/product/stock/:id', () 
   })
 
   describe('purchase_date Validation', () => {
-    it('should return 422 when purchase_date is invalid format', () => {
+    it('should return 400 when purchase_date is invalid format', () => {
       cy.UpdateProductStock(entryId, buildRequest({ purchase_date: 'not-a-date' })).then(
         (response) => {
-          expect(response.status).to.eq(422)
+          expect(response.status).to.eq(400)
           expect(response.body.error).to.include('Purchase date must be a valid date')
         }
       )

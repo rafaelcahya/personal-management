@@ -30,7 +30,7 @@ export async function GET(request) {
     const section = searchParams.get('section')
 
     if (section && !VALID_SECTIONS.includes(section)) {
-      return NextResponse.json({ error: 'Invalid section value' }, { status: 422 })
+      return NextResponse.json({ error: 'Invalid section value' }, { status: 400 })
     }
 
     const [latestActivityRes, latestInsightRes] = await Promise.all([

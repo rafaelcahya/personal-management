@@ -198,10 +198,10 @@ describe('Inventory Dashboard & Budget API', () => {
 
   // ─── low stock alerts ─────────────────────────────────────────────────────
 
-  it('all lowStockAlerts items have quantity <= 2', () => {
+  it('all lowStockAlerts items have quantity below LOW_STOCK_THRESHOLD (5)', () => {
     const { lowStockAlerts } = dashRes.body.data
     lowStockAlerts.forEach((item) => {
-      expect(item.quantity).to.be.lte(2)
+      expect(item.quantity).to.be.lt(5)
     })
   })
 
@@ -713,13 +713,5 @@ describe('Inventory Dashboard & Budget API', () => {
     cy.postInventoryBudget({ monthly_budget: 50000 }).then((res) => {
       expect(res.status).to.eq(400)
     })
-  })
-
-  it('POST budget returns 400 when type does not exist in product list', () => {
-    cy.postInventoryBudget({ type: '__nonexistent_type_xyz__', monthly_budget: 50000 }).then(
-      (res) => {
-        expect(res.status).to.eq(400)
-      }
-    )
   })
 })

@@ -385,32 +385,32 @@ describe('Activity Detail API — PATCH (validation errors)', () => {
     cy.setupApiAuthCookies()
   })
 
-  it('returns 422 when body is empty (at-least-one-field refinement)', function () {
+  it('returns 400 when body is empty (at-least-one-field refinement)', function () {
     if (!activityId) this.skip()
     cy.patchActivity(activityId, {}).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
       expect(res.body).to.have.property('error')
     })
   })
 
-  it('returns 422 when activity_type is an unrecognised enum value', function () {
+  it('returns 400 when activity_type is an unrecognised enum value', function () {
     if (!activityId) this.skip()
     cy.patchActivity(activityId, { activity_type: 'ultra' }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when notes exceeds 2000 characters', function () {
+  it('returns 400 when notes exceeds 2000 characters', function () {
     if (!activityId) this.skip()
     cy.patchActivity(activityId, { notes: 'x'.repeat(2001) }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when perceived_exertion is out of range (> 10)', function () {
+  it('returns 400 when perceived_exertion is out of range (> 10)', function () {
     if (!activityId) this.skip()
     cy.patchActivity(activityId, { perceived_exertion: 11 }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 })
@@ -472,48 +472,48 @@ describe('Activities API — POST create (authenticated)', () => {
     })
   })
 
-  it('returns 422 when started_at is missing', () => {
+  it('returns 400 when started_at is missing', () => {
     cy.postActivity({ duration_sec: 1800, distance_m: 5000 }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when duration_sec is missing', () => {
+  it('returns 400 when duration_sec is missing', () => {
     cy.postActivity({
       started_at: '2025-01-01T06:00:00.000Z',
       distance_m: 5000,
     }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when distance_m is missing', () => {
+  it('returns 400 when distance_m is missing', () => {
     cy.postActivity({
       started_at: '2025-01-01T06:00:00.000Z',
       duration_sec: 1800,
     }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when duration_sec is negative', () => {
+  it('returns 400 when duration_sec is negative', () => {
     cy.postActivity({
       started_at: '2025-01-01T06:00:00.000Z',
       duration_sec: -100,
       distance_m: 5000,
     }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when activity_type is invalid enum value', () => {
+  it('returns 400 when activity_type is invalid enum value', () => {
     cy.postActivity({
       started_at: '2025-01-01T06:00:00.000Z',
       duration_sec: 1800,
       distance_m: 5000,
       activity_type: 'Run',
     }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 })

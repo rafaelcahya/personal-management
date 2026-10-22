@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../../support/common/unique-name'
 
 describe('DELETE Product API - /api/inventory/v1/product/delete/[id]', () => {
   let validBrandId
@@ -25,7 +26,7 @@ describe('DELETE Product API - /api/inventory/v1/product/delete/[id]', () => {
     cy.setupApiAuthCookies()
 
     cy.AddProductBrand({
-      brand: faker.food.fruit(),
+      brand: uniqueName(faker.food.fruit()),
       brand_status: 'active',
       note: faker.word.words(5),
     }).then((res) => {
@@ -34,7 +35,7 @@ describe('DELETE Product API - /api/inventory/v1/product/delete/[id]', () => {
     })
 
     cy.AddProductName({
-      product_name: faker.food.ingredient(),
+      product_name: uniqueName(faker.food.ingredient()),
       product_name_status: 'active',
     }).then((res) => {
       expect(res.status).to.eq(201)

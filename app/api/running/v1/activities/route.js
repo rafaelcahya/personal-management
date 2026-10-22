@@ -80,7 +80,7 @@ export async function POST(request) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', issues: parsed.error.issues },
-        { status: 422 }
+        { status: 400 }
       )
     }
 

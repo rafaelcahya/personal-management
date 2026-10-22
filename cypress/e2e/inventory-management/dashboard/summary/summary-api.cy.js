@@ -23,9 +23,8 @@ describe('GET Product Summary API - /api/inventory/v1/product/summary', () => {
 
         if (response.status === 401) {
           // Middleware returns { error: "Unauthorized", message: "..." }
-          // Route handler returns { success: false, error: "Unauthorized" }
           const body = response.body
-          const isUnauth = body?.success === false || body?.error === 'UNAUTHORIZED'
+          const isUnauth = body?.error === 'Unauthorized'
           expect(isUnauth).to.be.true
         }
 

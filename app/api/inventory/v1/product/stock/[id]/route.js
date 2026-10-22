@@ -65,7 +65,7 @@ export async function PUT(req, context) {
     }
 
     if (validationErrors.length > 0) {
-      return NextResponse.json({ success: false, error: validationErrors }, { status: 422 })
+      return NextResponse.json({ success: false, error: validationErrors }, { status: 400 })
     }
 
     const updated = await updateQuantityEntry(user.id, entryId, body)

@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../support/common/unique-name'
 
 describe('Product Name Add API and Database Comparison', () => {
   beforeEach(() => {
@@ -13,7 +14,7 @@ describe('Product Name Add API and Database Comparison', () => {
         cy.clearApiAuth()
 
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -22,18 +23,17 @@ describe('Product Name Add API and Database Comparison', () => {
           expect(response.status).to.be.oneOf([307, 401])
 
           if (response.status === 401) {
-            expect(response.body.success).to.be.false
             expect(response.body.error).to.eq('Unauthorized')
+          } else {
+            const location = response.headers.location || response.body
+            expect(String(location)).to.include('/login')
           }
-
-          const location = response.headers.location || response.body
-          expect(String(location)).to.include('/login')
         })
       })
 
       it('should return 201 when user is authenticated', () => {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -136,7 +136,7 @@ describe('Product Name Add API and Database Comparison', () => {
     describe('Product name Object Structure Scenarios', () => {
       it('should create product name with all required fields', () => {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -151,7 +151,7 @@ describe('Product Name Add API and Database Comparison', () => {
 
       it('should return correct success response structure', () => {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -177,7 +177,7 @@ describe('Product Name Add API and Database Comparison', () => {
     describe('Success Scenarios', () => {
       it('should create product name with all required fields', () => {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -189,9 +189,9 @@ describe('Product Name Add API and Database Comparison', () => {
         })
       })
 
-      it('should assign user_id from authenticated user', () => {
+      it('should not expose user_id in the response', () => {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -200,15 +200,13 @@ describe('Product Name Add API and Database Comparison', () => {
           expect(response.status).to.eq(201)
 
           const productName = response.body.productName
-          expect(productName.user_id).to.exist
-          expect(productName.user_id).to.be.a('string')
-          expect(productName.user_id.length).to.be.greaterThan(0)
+          expect(productName).to.not.have.property('user_id')
         })
       })
 
       it('should generate timestamps (created_at, updated_at)', () => {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -231,7 +229,7 @@ describe('Product Name Add API and Database Comparison', () => {
 
     beforeEach(() => {
       const request = {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }
@@ -318,7 +316,7 @@ describe('Product Name Add API and Database Comparison', () => {
         })
 
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -335,7 +333,7 @@ describe('Product Name Add API and Database Comparison', () => {
 
       it('should match totalProductNames with database count', function () {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }

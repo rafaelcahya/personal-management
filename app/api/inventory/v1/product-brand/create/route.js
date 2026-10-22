@@ -40,6 +40,10 @@ export async function POST(req) {
       }
     })
 
+    if (body.brand_status && !['active', 'inactive', 'deleted'].includes(body.brand_status)) {
+      validationErrors.push('brand status must be active, inactive or deleted')
+    }
+
     if (body.brand_status === 'deleted') {
       if (!body.deleted_at) {
         body.deleted_at = new Date().toISOString()

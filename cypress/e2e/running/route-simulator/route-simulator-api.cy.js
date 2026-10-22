@@ -3,7 +3,7 @@
 // :id/ai-strategy).
 //
 // ai-strategy: only the free paths (401, 400, 404) are sent. The 200 path calls Claude and is
-// never exercised. Validation on create, preview and PATCH is still 422 (owned by #849); the
+// never exercised. Validation on create, preview and PATCH returns 400; the
 // assertions follow what the routes return today.
 //
 // Cross-user ownership of simulations is covered by the user_id filter in the services (reviewed
@@ -206,31 +206,31 @@ describe('Route Simulator API — create and preview validation', () => {
 
   describe('POST create', () => {
     inputCases.forEach(([label, overrides, field]) => {
-      it(`returns 422 for ${label}`, () => {
+      it(`returns 400 for ${label}`, () => {
         cy.postRouteSimulation(createInput(overrides)).then((res) => {
-          expect(res.status).to.eq(422)
+          expect(res.status).to.eq(400)
           expect(res.body.error).to.eq('Validation failed')
           expect(res.body.details.fieldErrors, 'field errors').to.have.property(field)
         })
       })
     })
 
-    it('returns 422 when name is missing', () => {
+    it('returns 400 when name is missing', () => {
       cy.postRouteSimulation(createInput({ name: undefined })).then((res) => {
-        expect(res.status).to.eq(422)
+        expect(res.status).to.eq(400)
         expect(res.body.details.fieldErrors).to.have.property('name')
       })
     })
 
-    it('returns 422 when name is blank after trimming', () => {
+    it('returns 400 when name is blank after trimming', () => {
       cy.postRouteSimulation(createInput({ name: '   ' })).then((res) => {
-        expect(res.status).to.eq(422)
+        expect(res.status).to.eq(400)
       })
     })
 
-    it('returns 422 when name exceeds 100 characters', () => {
+    it('returns 400 when name exceeds 100 characters', () => {
       cy.postRouteSimulation(createInput({ name: 'a'.repeat(101) })).then((res) => {
-        expect(res.status).to.eq(422)
+        expect(res.status).to.eq(400)
       })
     })
 
@@ -244,9 +244,9 @@ describe('Route Simulator API — create and preview validation', () => {
 
   describe('POST preview', () => {
     inputCases.forEach(([label, overrides, field]) => {
-      it(`returns 422 for ${label}`, () => {
+      it(`returns 400 for ${label}`, () => {
         cy.previewRouteSimulation(paceInput(overrides)).then((res) => {
-          expect(res.status).to.eq(422)
+          expect(res.status).to.eq(400)
           expect(res.body.error).to.eq('Validation failed')
           expect(res.body.details.fieldErrors, 'field errors').to.have.property(field)
         })
@@ -293,10 +293,10 @@ describe('Route Simulator API — create and preview validation', () => {
       })
     })
 
-    it('returns 422 when the GPX text is over the 4 MB schema cap', () => {
+    it('returns 400 when the GPX text is over the 4 MB schema cap', () => {
       const gpx = 'x'.repeat(4_000_001)
       cy.previewRouteSimulation(paceInput({ gpx })).then((res) => {
-        expect(res.status).to.eq(422)
+        expect(res.status).to.eq(400)
         expect(res.body.details.fieldErrors).to.have.property('gpx')
       })
     })
@@ -566,9 +566,9 @@ describe('Route Simulator API — [id] errors and IDOR', () => {
     })
   })
 
-  it('PATCH returns 422 for an empty name (validation is still 422, tracked in #849)', () => {
+  it('PATCH returns 400 for an empty name', () => {
     cy.patchRouteSimulation(crypto.randomUUID(), { name: '' }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 

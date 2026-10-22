@@ -2,11 +2,9 @@ import { z } from 'zod'
 
 export const createCurrencyInvestmentSchema = z.object({
   currency: z.string().length(3, 'Currency must be exactly 3 characters').toUpperCase(),
-  type: z.enum(['buy', 'sell'], { required_error: 'Type must be buy or sell' }),
-  idr_amount: z
-    .number({ required_error: 'IDR amount is required' })
-    .positive('IDR amount must be positive'),
-  rate: z.number({ required_error: 'Rate is required' }).positive('Rate must be positive'),
+  type: z.enum(['buy', 'sell'], { error: 'Type must be buy or sell' }),
+  idr_amount: z.number({ error: 'IDR amount is required' }).positive('IDR amount must be positive'),
+  rate: z.number({ error: 'Rate is required' }).positive('Rate must be positive'),
   transacted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
   notes: z.string().max(500, 'Notes must not exceed 500 characters').optional(),
 })

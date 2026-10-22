@@ -90,41 +90,41 @@ describe('Route Builder API — POST save (authenticated)', () => {
     })
   })
 
-  it('returns 422 when name is missing', () => {
+  it('returns 400 when name is missing', () => {
     const { name, ...body } = validRoute()
     cy.postRoute(body).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when name is an empty string', () => {
+  it('returns 400 when name is an empty string', () => {
     cy.postRoute({ ...validRoute(), name: '' }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when waypoints has fewer than 2 points', () => {
+  it('returns 400 when waypoints has fewer than 2 points', () => {
     cy.postRoute({ ...validRoute(), waypoints: [[-6.2088, 106.8456]] }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when encoded_polyline is missing', () => {
+  it('returns 400 when encoded_polyline is missing', () => {
     const { encoded_polyline, ...body } = validRoute()
     cy.postRoute(body).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when distance_m is 0', () => {
+  it('returns 400 when distance_m is 0', () => {
     cy.postRoute({ ...validRoute(), distance_m: 0 }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when name exceeds 100 characters', () => {
+  it('returns 400 when name exceeds 100 characters', () => {
     cy.postRoute({ ...validRoute(), name: 'a'.repeat(101) }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 })
