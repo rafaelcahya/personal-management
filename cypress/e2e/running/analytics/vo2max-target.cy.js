@@ -78,6 +78,15 @@ describe('VO2max Target API — PUT validation', () => {
     cy.setupApiAuthCookies()
   })
 
+  it('returns 400 with the issues and the custom type message for a non-number', () => {
+    cy.putVo2maxTarget({ vo2max_target: 'abc' }).then((res) => {
+      expect(res.status).to.eq(400)
+      expect(res.body.error).to.eq('Validation failed')
+      expect(res.body.details).to.be.an('array').that.is.not.empty
+      expect(res.body.details.map((d) => d.message)).to.include('VO2max target must be a number')
+    })
+  })
+
   it('returns 400 for malformed JSON body', () => {
     cy.getCookie('sb-access-token').then((cookie) => {
       cy.request({
