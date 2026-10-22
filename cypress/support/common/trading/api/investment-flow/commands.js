@@ -2,9 +2,16 @@ import constants from '../../../../../fixtures/app-constants.json'
 
 const BASE = constants.endpoints.investment_flow.list
 const MOVE_BASE = constants.endpoints.investment_flow.move
+const CLOSE_BASE = constants.endpoints.investment_flow.close
 const UNINVESTED_CASH_BASE = constants.endpoints.investment_flow.uninvested_cash
 const CASH_CATEGORIES_BASE = constants.endpoints.investment_flow.uninvested_cash_categories
 const HIGHLIGHTS_BASE = constants.endpoints.investment_flow.highlights
+
+// ─── close position ──────────────────────
+
+Cypress.Commands.add('closeInvestmentFlowPosition', (body = {}) => {
+  return cy.apiRequestWithSession('POST', CLOSE_BASE, { body })
+})
 
 // ─── list ─────────────────────────────────────────────────────────────────────
 

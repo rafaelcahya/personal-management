@@ -1,7 +1,7 @@
 # QA Coverage Report
 
-**Last Updated:** 2026-10-22 (Status validation #901 — 24 API tests: brand and name create 7 each, update 5 each)
-**Branch:** fix/issue-901-invalid-status
+**Last Updated:** 2026-10-22 (Zod 4 leftovers #902 — 11 API tests: validation details on 10 routes, node_type enum message, VO2max type message; investment-flow-api 92/92)
+**Branch:** fix/issue-902-zod4-leftovers
 
 ---
 
@@ -9,9 +9,9 @@
 
 | Type      | Tests  | %    |
 | --------- | ------ | ---- |
-| API       | 1,983  | 54%  |
+| API       | 1,995  | 54%  |
 | UI        | 594    | 25%  |
-| **Total** | **2,572** | 100% |
+| **Total** | **2,584** | 100% |
 
 > **UI reconciliation (2026-10-19, #850)** — counted with `npm run cy:coverage -- --it-counts` (it() per spec, UI = `*-ui.cy.js` or a `ui/` folder). Only 18 UI specs exist: Auth 107, Inventory 454, Landing 33 = 594 it(). The old Trading (254), Running (695) and Shared (8) UI numbers had no UI spec behind them and were removed. The Trading Fee/Trade detail tables below still show UI columns for `add-fee`, `summary-fee`, `add-trade` and the other fee/trade specs; those files are API-style specs (a few UI describes inside `add-fee`, `summary-fee`, `add-trade`), so their numbers are not split here. The script's raw API it() total is 2,054 (66 specs), which does not match the 1,810 above (it() inside loops, mixed specs); API numbers were NOT changed and need a separate reconcile.
 
@@ -23,13 +23,13 @@
 | -------------------- | ----- | ----- | ----- |
 | Auth + User Settings | 74    | 107   | 181   |
 | Inventory Management | 754   | 454   | 1,208 |
-| Trading Management   | 369   | 0     | 369   |
-| Running Tracker      | 687   | 0     | 687   |
+| Trading Management   | 380   | 0     | 380   |
+| Running Tracker      | 688   | 0     | 688   |
 | Notifications        | 72    | 0     | 72    |
 | Home (cross-domain)  | 22    | 0     | 22    |
 | Landing Page         | 0     | 33    | 33    |
 | Shared               | 0     | 0     | 0     |
-| **Total**            | **1,978** | **594** | **2,572** |
+| **Total**            | **1,990** | **594** | **2,584** |
 
 ---
 
@@ -219,14 +219,15 @@
 
 | Feature              | API | UI | Total |
 | -------------------- | --- | -- | ----- |
-| List/Create/Update/Delete Node | 35 | 0 | 35 |
+| List/Create/Update/Delete Node | 36 | 0 | 36 |
 | Move Node             | 7   | 0  | 7     |
 | Uninvested Cash       | 11  | 0  | 11    |
 | Cash Categories       | 17  | 0  | 17    |
 | Highlights            | 11  | 0  | 11    |
-| **Subtotal**         | **81** | **0** | **81** |
+| Validation details (#902) | 10 | 0 | 10 |
+| **Subtotal**         | **92** | **0** | **92** |
 
-**Trading Total — API: 369 | UI: 0 | Total: 369** (see UI reconciliation note at the top)
+**Trading Total — API: 380 | UI: 0 | Total: 380** (see UI reconciliation note at the top)
 
 ---
 
@@ -295,9 +296,9 @@
 | Session Profile        | 18  | 0  | 18    |
 | Temperature Efficiency | 24  | 0  | 24    |
 | VO2Max Target Effort   | 4   | 31 | 35    |
-| VO2max Target (personal) | 14 | 0  | 14    |
+| VO2max Target (personal) | 15 | 0  | 15    |
 | Zone Analytics         | 24  | 0  | 24    |
-| **Subtotal**           | **161** | **87** | **248** |
+| **Subtotal**           | **162** | **87** | **249** |
 
 #### Injury AI
 
@@ -358,7 +359,7 @@
 | Threshold Pace Detect    | 6   | 0  | 6     |
 | **Subtotal**             | **91** | **21** | **112** |
 
-**Running Total — API: 687 | UI: 0 | Total: 687** (no Running UI specs exist)
+**Running Total — API: 688 | UI: 0 | Total: 688** (no Running UI specs exist)
 
 > **Settings, Health & Strava (#845)** — `cypress/e2e/running/settings/settings-api.cy.js` (65 tests). Added health subjective/weight (auth, CRUD, 400 validation, malformed id 400, unknown uuid 404), Strava connect redirect and `strava_oauth_state` cookie, callback state rejection (no Strava call), not-connected sync/re-enrich/disconnect, seeded `needs_reconnect` (409) and disconnect, hr-zones read/validate/update+restore, threshold-pace-detect 422, profile 400, and the `DELETE /user/activities` confirmation guard only. The real-Strava callback test was removed (CB-4).
 > **Not covered:** IDOR on health `[id]` (no second-user credentials; the Cypress DB client is RLS-bound so it cannot seed another user row), `DELETE /user/activities` success path and `last_sync_at` reset (test account owns 13 real activities), threshold-pace-detect with seeded streams, `re-enrich-metrics`.
