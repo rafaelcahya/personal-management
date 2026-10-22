@@ -1053,6 +1053,13 @@ describe('Trade Update API - PUT /api/trade/v1/trade/update/{id}', () => {
   })
 
   describe('Update Trade - partial updates and ignored columns (#899)', () => {
+    const fixtureIds = []
+
+    after(() => {
+      cy.setupApiAuthCookies()
+      fixtureIds.forEach((id) => cy.DeleteTrade(id))
+    })
+
     const createFixtureTrade = () =>
       cy
         .AddTrade({
@@ -1072,6 +1079,7 @@ describe('Trade Update API - PUT /api/trade/v1/trade/update/{id}', () => {
         })
         .then((response) => {
           expect(response.status).to.eq(201)
+          fixtureIds.push(response.body.trade.id)
           return response.body.trade
         })
 
@@ -1120,6 +1128,121 @@ describe('Trade Update API - PUT /api/trade/v1/trade/update/{id}', () => {
             expect(new Date(row.created_at).getTime()).to.eq(new Date(trade.created_at).getTime())
           })
         })
+      })
+    })
+  })
+
+  describe('Update Trade - value validation (#908)', () => {
+    let trade
+
+    after(() => {
+      cy.setupApiAuthCookies()
+      if (trade) cy.DeleteTrade(trade.id)
+    })
+
+    before(() => {
+      cy.setupApiAuthCookies()
+      cy.AddTrade({
+        buy_date: '2026-01-05',
+        sell_date: '2026-01-06',
+        ticker: 'ZZVALID',
+        margin: '1000',
+        proceeds: '2000',
+        return_percent: '100',
+        realized_gain: '1000',
+        stock_type_option: 'Normal',
+        entry_session_option: 'Morning',
+        entry_occasion_option: 'Breakout',
+        buy_reason_option: 'Trend',
+        sell_reason_option: 'Target',
+        notes: 'original notes',
+      }).then((response) => {
+        expect(response.status).to.eq(201)
+        trade = response.body.trade
+      })
+    })
+
+    const invalid = [
+      ['a negative margin', { margin: '-5' }, 'Margin must be a positive number'],
+      ['a zero margin', { margin: '0' }, 'Margin must be a positive number'],
+      ['a non-numeric margin', { margin: 'abc' }, 'Margin must be a positive number'],
+      ['a negative proceeds', { proceeds: '-1' }, 'Proceeds must be a positive number'],
+      ['a non-numeric proceeds', { proceeds: 'abc' }, 'Proceeds must be a positive number'],
+      ['a non-numeric realized_gain', { realized_gain: 'abc' }, 'Realized gain must be a number'],
+      [
+        'a ticker over 10 characters',
+        { ticker: 'X'.repeat(11) },
+        'Ticker must not exceed 10 characters',
+      ],
+      [
+        'a ticker of 5000 characters',
+        { ticker: 'X'.repeat(5000) },
+        'Ticker must not exceed 10 characters',
+      ],
+      [
+        'a buy_date that is not YYYY-MM-DD',
+        { buy_date: 'not-a-date' },
+        'Invalid date format (expected YYYY-MM-DD)',
+      ],
+      [
+        'a sell_date with a time part',
+        { sell_date: '2026-01-06T10:00:00Z' },
+        'Invalid date format (expected YYYY-MM-DD)',
+      ],
+      ['an empty required option', { stock_type_option: '' }, 'Stock type is required'],
+      [
+        'notes over 2000 characters',
+        { notes: 'n'.repeat(2001) },
+        'Notes must not exceed 2000 characters',
+      ],
+    ]
+
+    invalid.forEach(([label, body, message]) => {
+      it(`returns 400 for ${label} and leaves the row unchanged`, () => {
+        cy.setupApiAuthCookies()
+        cy.UpdateTrade(trade.id, body).then((response) => {
+          expect(response.status).to.eq(400)
+          expect(response.body.success).to.be.false
+          expect(response.body.error).to.be.an('array').that.includes(message)
+        })
+
+        cy.getSingleTradeFromDb(trade.id).then((rows) => {
+          const row = rows[0]
+          expect(row.ticker).to.eq(trade.ticker)
+          expect(Number(row.margin)).to.eq(Number(trade.margin))
+          expect(Number(row.proceeds)).to.eq(Number(trade.proceeds))
+          expect(row.notes).to.eq(trade.notes)
+          expect(row.buy_date).to.eq(trade.buy_date)
+          expect(row.sell_date).to.eq(trade.sell_date)
+        })
+      })
+    })
+
+    it('reports every invalid field at once', () => {
+      cy.setupApiAuthCookies()
+      cy.UpdateTrade(trade.id, { margin: '-5', ticker: 'X'.repeat(11) }).then((response) => {
+        expect(response.status).to.eq(400)
+        expect(response.body.error).to.include.members([
+          'Margin must be a positive number',
+          'Ticker must not exceed 10 characters',
+        ])
+      })
+    })
+
+    it('still accepts a valid partial update and stores the ticker in uppercase like create', () => {
+      cy.setupApiAuthCookies()
+      cy.UpdateTrade(trade.id, { ticker: 'zzlow', margin: '1500' }).then((response) => {
+        expect(response.status).to.eq(200)
+        expect(response.body.trade.ticker).to.eq('ZZLOW')
+        expect(Number(response.body.trade.margin)).to.eq(1500)
+      })
+    })
+
+    it('accepts null dates (clearing a date)', () => {
+      cy.setupApiAuthCookies()
+      cy.UpdateTrade(trade.id, { sell_date: null }).then((response) => {
+        expect(response.status).to.eq(200)
+        expect(response.body.trade.sell_date).to.be.null
       })
     })
   })

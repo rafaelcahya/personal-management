@@ -54,6 +54,10 @@ export const createTradeServerSchema = tradeSchema.extend({
   sell_date: dateString,
 })
 
+// Update takes any subset of the create fields; a field that is sent is checked like on create.
+// Unknown keys (user_id, id, ...) are dropped by the schema.
+export const updateTradeServerSchema = createTradeServerSchema.partial()
+
 export const dailyPnlQuerySchema = z.object({
   year: z.coerce
     .number()
