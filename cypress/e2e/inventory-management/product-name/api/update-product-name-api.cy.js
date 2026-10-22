@@ -504,3 +504,62 @@ describe('Product Name Update — Uniqueness Check: 409 Conflict', () => {
     })
   })
 })
+
+describe('Product Name Status Validation on update (#901)', () => {
+  let targetId
+  let targetName
+
+  before(() => {
+    cy.setupApiAuthCookies()
+    targetName = 'st' + faker.string.alphanumeric(12)
+    cy.AddProductName({ product_name: targetName, product_name_status: 'active' }).then(
+      (response) => {
+        expect(response.status).to.eq(201)
+        targetId = response.body.productName.id
+      }
+    )
+  })
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  ;['apple', 'ACTIVE', 'pending'].forEach((status) => {
+    it(`returns 400 for product_name_status "${status}" and leaves the row unchanged`, () => {
+      cy.UpdateProductName(targetId, {
+        product_name: targetName,
+        product_name_status: status,
+      }).then((response) => {
+        expect(response.status).to.eq(400)
+        expect(response.body.success).to.be.false
+        expect(response.body.error).to.include(
+          'product name status must be active, inactive or deleted'
+        )
+      })
+      cy.getSingleProductNameFromDb(targetId.toString()).then((rows) => {
+        expect(rows[0].product_name_status).to.eq('active')
+      })
+    })
+  })
+
+  it('returns 400 when product_name_status is not a string', () => {
+    cy.UpdateProductName(targetId, { product_name: targetName, product_name_status: 123 }).then(
+      (response) => {
+        expect(response.status).to.eq(400)
+        expect(response.body.error).to.include(
+          'product name status must be active, inactive or deleted'
+        )
+      }
+    )
+  })
+
+  it('accepts a valid product_name_status (inactive) and stores it', () => {
+    cy.UpdateProductName(targetId, {
+      product_name: targetName,
+      product_name_status: 'inactive',
+    }).then((response) => {
+      expect(response.status).to.eq(200)
+      expect(response.body.productName.product_name_status).to.eq('inactive')
+    })
+  })
+})

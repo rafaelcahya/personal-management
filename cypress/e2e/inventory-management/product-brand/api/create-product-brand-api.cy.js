@@ -455,3 +455,41 @@ describe('Product Brand Add API and Database Comparison', () => {
     })
   })
 })
+
+describe('Product Brand Status Validation on create (#901)', () => {
+  const newName = () => 'st' + faker.string.alphanumeric(12)
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  ;['apple', 'ACTIVE', 'pending'].forEach((status) => {
+    it(`returns 400 for brand_status "${status}" and stores nothing`, () => {
+      const name = newName()
+      cy.AddProductBrand({ brand: name, brand_status: status }).then((response) => {
+        expect(response.status).to.eq(400)
+        expect(response.body.success).to.be.false
+        expect(response.body.error).to.include('brand status must be active, inactive or deleted')
+      })
+      cy.GetListProductBrand({ search: name }).then((response) => {
+        expect(response.body.data).to.have.length(0)
+      })
+    })
+  })
+
+  it('returns 400 when brand_status is not a string', () => {
+    cy.AddProductBrand({ brand: newName(), brand_status: 123 }).then((response) => {
+      expect(response.status).to.eq(400)
+      expect(response.body.error).to.include('brand status must be active, inactive or deleted')
+    })
+  })
+
+  ;['active', 'inactive', 'deleted'].forEach((status) => {
+    it(`accepts brand_status "${status}"`, () => {
+      cy.AddProductBrand({ brand: newName(), brand_status: status }).then((response) => {
+        expect(response.status).to.eq(201)
+        expect(response.body.productBrand.brand_status).to.eq(status)
+      })
+    })
+  })
+})
