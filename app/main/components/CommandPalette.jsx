@@ -220,7 +220,7 @@ export default function CommandPalette({ open, onOpenChange }) {
 
           {visibleGroups.map((group) => (
             <li key={group.module} role="presentation">
-              <p className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              <p className="px-3 pb-1 pt-2 text-2xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {group.module}
               </p>
               <ul role="presentation">

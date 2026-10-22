@@ -293,7 +293,7 @@ function DropdownMenuItem({
             <kbd
               key={i}
               className={cn(
-                'inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono border rounded transition-colors',
+                'inline-flex items-center px-1.5 py-0.5 text-2xs font-mono border rounded transition-colors',
                 activeKey === k.toLowerCase()
                   ? 'bg-secondary border-primary/40 text-primary'
                   : 'bg-muted border-border text-muted-foreground'
@@ -313,7 +313,7 @@ function DropdownMenuItem({
               <span
                 key={i}
                 className={cn(
-                  'text-[11px] font-mono transition-colors',
+                  'text-2xs font-mono transition-colors',
                   activeKey === char.toLowerCase() ? 'text-primary' : 'text-muted-foreground'
                 )}
               >
@@ -364,7 +364,7 @@ function DropdownMenuGroup({ label, children, className }) {
   return (
     <div role="group" aria-label={label} className={className}>
       {label && (
-        <p className="px-3 py-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+        <p className="px-3 py-1 text-2xs font-semibold text-muted-foreground uppercase tracking-wider">
           {label}
         </p>
       )}

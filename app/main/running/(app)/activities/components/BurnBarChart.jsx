@@ -105,7 +105,7 @@ export default function BurnBarChart({ burnBar, pagePrefix = 'activityDetailPage
           <XAxis
             type="number"
             domain={xDomain}
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             tickFormatter={(v) => (isPace ? fmtPace(Math.round(v)) : Math.round(v))}
             axisLine={false}
             tickLine={false}
@@ -114,7 +114,7 @@ export default function BurnBarChart({ burnBar, pagePrefix = 'activityDetailPage
             type="category"
             dataKey="split"
             tickFormatter={(v) => `#${v}`}
-            tick={{ fontSize: 10, fill: 'var(--color-muted-foreground)' }}
+            tick={{ fontSize: 11, fill: 'var(--color-muted-foreground)' }}
             width={28}
             axisLine={false}
             tickLine={false}
@@ -167,7 +167,7 @@ export default function BurnBarChart({ burnBar, pagePrefix = 'activityDetailPage
                 const py = Number(y) + Number(height) / 2 + 4
                 if (!isFinite(px) || !isFinite(py)) return null
                 return (
-                  <text x={px} y={py} fontSize={10} fontWeight={600} fill={chipFill(chip)}>
+                  <text x={px} y={py} fontSize={11} fontWeight={600} fill={chipFill(chip)}>
                     {chip.label}
                   </text>
                 )

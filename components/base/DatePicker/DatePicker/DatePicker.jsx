@@ -115,7 +115,7 @@ function CalendarPopup({ selected, onSelect, fromDate, toDate, disabledDates }) 
           {WEEKDAYS.map((d) => (
             <div
               key={d}
-              className="size-8 flex items-center justify-center text-[11px] font-medium text-muted-foreground"
+              className="size-8 flex items-center justify-center text-2xs font-medium text-muted-foreground"
             >
               {d}
             </div>

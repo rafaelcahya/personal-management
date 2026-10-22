@@ -136,7 +136,7 @@ function getHrZone(avgHr, method, maxHr, restingHr, thresholdHr) {
 function ZoneBadge({ zone }) {
   if (!zone) return null
   return (
-    <Badge className={`inline-flex w-fit text-[10px] rounded-full mt-0.5 ${zone.cls}`}>
+    <Badge className={`inline-flex w-fit text-2xs rounded-full mt-0.5 ${zone.cls}`}>
       {zone.name} {zone.label}
     </Badge>
   )
@@ -570,7 +570,7 @@ export default function ActivityDetailPage() {
                           }
                           footer={
                             activity.fuel_mode === 'avg_hr' ? (
-                              <span className="text-[10px] text-slate-400">avg HR estimate</span>
+                              <span className="text-2xs text-slate-400">avg HR estimate</span>
                             ) : null
                           }
                         />
@@ -691,7 +691,7 @@ export default function ActivityDetailPage() {
                                 footer={
                                   avg != null ? (
                                     <span
-                                      className={`inline-flex w-fit text-[10px] font-medium px-1.5 py-0.5 rounded-full mt-0.5 ${
+                                      className={`inline-flex w-fit text-2xs font-medium px-1.5 py-0.5 rounded-full mt-0.5 ${
                                         ef > avg
                                           ? 'bg-green-50 text-green-600'
                                           : ef < avg

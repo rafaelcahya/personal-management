@@ -62,7 +62,7 @@ export default function RateHistoryChart({ data, avgBuyRate }) {
             y={avgBuyRate}
             stroke="#f59e0b"
             strokeDasharray="4 4"
-            label={{ value: 'Avg Buy', position: 'insideTopRight', fontSize: 10, fill: '#92400e' }}
+            label={{ value: 'Avg Buy', position: 'insideTopRight', fontSize: 11, fill: '#92400e' }}
           />
         )}
         <Line

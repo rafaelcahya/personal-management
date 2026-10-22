@@ -41,7 +41,7 @@ export default function Navbar({ user }) {
         >
           <Search className="size-4 shrink-0" aria-hidden="true" />
           <span className="hidden text-sm sm:inline">Search…</span>
-          <kbd className="ml-auto hidden items-center gap-0.5 rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-medium sm:inline-flex">
+          <kbd className="ml-auto hidden items-center gap-0.5 rounded border border-border bg-muted px-1.5 py-0.5 text-2xs font-medium sm:inline-flex">
             <span className="text-xs">⌘</span>K
           </kbd>
         </button>

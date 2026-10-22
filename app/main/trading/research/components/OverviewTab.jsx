@@ -113,7 +113,7 @@ function PriceTargetSection({ data }) {
           <span>High ${data.high?.toFixed(2)}</span>
         </div>
       </div>
-      {data.lastUpdated && <p className="text-[11px] text-slate-400">Updated {data.lastUpdated}</p>}
+      {data.lastUpdated && <p className="text-2xs text-slate-400">Updated {data.lastUpdated}</p>}
     </div>
   )
 }

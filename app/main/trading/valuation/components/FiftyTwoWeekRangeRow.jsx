@@ -27,12 +27,12 @@ function RangeBar({ currentPrice, week52Low, week52High }) {
         />
       </div>
 
-      <div className="flex justify-between mt-2.5 text-[10px] font-mono px-1">
+      <div className="flex justify-between mt-2.5 text-2xs font-mono px-1">
         <span className="text-slate-400">Rp {Math.round(week52Low).toLocaleString('id-ID')}</span>
         <span className="text-violet-500 font-medium">{pct.toFixed(0)}% of range</span>
         <span className="text-slate-400">Rp {Math.round(week52High).toLocaleString('id-ID')}</span>
       </div>
-      <div className="flex justify-between text-[10px] text-slate-300 px-1">
+      <div className="flex justify-between text-2xs text-slate-300 px-1">
         <span>52W Low</span>
         <span className="text-slate-400">
           ● Rp {Math.round(currentPrice).toLocaleString('id-ID')} current

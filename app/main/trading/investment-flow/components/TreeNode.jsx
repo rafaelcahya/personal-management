@@ -63,7 +63,7 @@ function HighlightPicker({ nodeId, highlightColor, onHighlight }) {
         </Button>
       </PopoverTrigger>
       <PopoverContent side="bottom" align="end" sideOffset={4} className="p-2 w-auto">
-        <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wide mb-2">
+        <p className="text-2xs font-medium text-slate-500 uppercase tracking-wide mb-2">
           Highlight
         </p>
         <div className="flex items-center gap-1.5">

@@ -18,8 +18,8 @@ const shapeMap = {
 }
 
 const fallbackTextSizeMap = {
-  xs: 'text-[9px]',
-  sm: 'text-[11px]',
+  xs: 'text-2xs',
+  sm: 'text-2xs',
   default: 'text-sm',
   lg: 'text-base',
   xl: 'text-lg',
@@ -52,8 +52,8 @@ const overlapMap = {
 }
 
 const overflowTextSizeMap = {
-  xs: 'text-[8px]',
-  sm: 'text-[10px]',
+  xs: 'text-2xs',
+  sm: 'text-2xs',
   default: 'text-xs',
   lg: 'text-sm',
   xl: 'text-base',

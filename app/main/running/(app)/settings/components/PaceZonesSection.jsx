@@ -202,7 +202,7 @@ export default function PaceZonesSection({ profile, loading, error: loadError })
                     </div>
                     {detectActivities && detectActivities.length > 0 && (
                       <div className="rounded-md border border-slate-100 bg-slate-50 px-3 py-2 flex flex-col gap-1">
-                        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-0.5">
+                        <p className="text-2xs font-semibold text-slate-400 uppercase tracking-wide mb-0.5">
                           Activities analysed ({detectActivities.length})
                         </p>
                         {detectActivities.map((a) => (

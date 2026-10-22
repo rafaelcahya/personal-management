@@ -31,9 +31,7 @@ function SectionLabel({ children }) {
 
 function SubLabel({ children }) {
   return (
-    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">
-      {children}
-    </p>
+    <p className="text-2xs font-semibold text-slate-400 uppercase tracking-wide mb-1">{children}</p>
   )
 }
 
@@ -62,7 +60,7 @@ const SPEED_FLOOR_KMH = 5
 const CADENCE_FLOOR_SPM = 100
 
 const AXIS_PROPS = {
-  tick: { fontSize: 10, fill: 'var(--color-muted-foreground)' },
+  tick: { fontSize: 11, fill: 'var(--color-muted-foreground)' },
   tickLine: false,
   axisLine: false,
 }
@@ -194,7 +192,7 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
     <div>
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-1.5">
-          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+          <p className="text-2xs font-semibold text-slate-400 uppercase tracking-wide">
             {isSpeed ? 'Speed' : 'Pace'}
           </p>
           <Popover>
@@ -278,7 +276,7 @@ function PaceChart({ data, thresholdPaceSec = null, paceZoneTimes = null }) {
       </div>
       {!isSpeed && mergedPaceZones && (
         <div className="mt-3">
-          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+          <p className="text-2xs font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
             Pace Zone
           </p>
           <ZoneBarChart
@@ -427,12 +425,12 @@ function ZoneTick({ x, y, payload, zones }) {
         {zone.name}
       </text>
       {hasRange && (
-        <text x={-6} textAnchor="end" fontSize={10} fill="var(--color-muted-foreground)" dy={7}>
+        <text x={-6} textAnchor="end" fontSize={11} fill="var(--color-muted-foreground)" dy={7}>
           {zone.min}–{zone.max}
         </text>
       )}
       {hasLabel && (
-        <text x={-6} textAnchor="end" fontSize={10} fill="var(--color-muted-foreground)" dy={7}>
+        <text x={-6} textAnchor="end" fontSize={11} fill="var(--color-muted-foreground)" dy={7}>
           {zone.label}
         </text>
       )}
@@ -615,7 +613,7 @@ function HrStreamChart({
                 label={{
                   value: `All-time ${historicalAvgHr}`,
                   position: 'insideBottomRight',
-                  fontSize: 9,
+                  fontSize: 11,
                   fill: 'var(--color-muted-foreground)',
                 }}
               />
@@ -630,7 +628,7 @@ function HrStreamChart({
                 label={{
                   value: `Avg ${avgHr}`,
                   position: 'insideTopRight',
-                  fontSize: 9,
+                  fontSize: 11,
                   fill: '#ef4444',
                 }}
               />
@@ -647,7 +645,7 @@ function HrStreamChart({
                 label={{
                   value: `${peakPoint.hr}`,
                   position: 'top',
-                  fontSize: 9,
+                  fontSize: 11,
                   fill: '#ef4444',
                 }}
               />
@@ -669,19 +667,19 @@ function HrStreamChart({
       {!showHistoricalLine && historicalAvgHr != null && (
         <p
           id={`hrHistoricalAvgFallback_${pagePrefix}`}
-          className="mt-1 text-[10px] text-slate-400 tabular-nums text-right"
+          className="mt-1 text-2xs text-slate-400 tabular-nums text-right"
         >
           All-time avg: {historicalAvgHr} bpm
         </p>
       )}
 
       {bandZones.length > 0 && zoneSourceLabel && (
-        <p className="mt-1 text-[10px] text-slate-300 tabular-nums">{zoneSourceLabel}</p>
+        <p className="mt-1 text-2xs text-slate-300 tabular-nums">{zoneSourceLabel}</p>
       )}
 
       {bandZones.length > 0 && (
         <div className="mt-3" id={`hrZonesSection_${pagePrefix}`}>
-          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+          <p className="text-2xs font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
             Heart Rate Zone
           </p>
           <ZoneBarChart
@@ -787,7 +785,7 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
   return (
     <div>
       <div className="flex items-center gap-2 mb-1">
-        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">Cadence</p>
+        <p className="text-2xs font-semibold text-slate-400 uppercase tracking-wide">Cadence</p>
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -811,14 +809,14 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
         {stabilityScore != null && (
           <span
             id={`cadenceStabilityScore_${pagePrefix}`}
-            className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500"
+            className="text-2xs font-semibold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500"
             title="Cadence stability score: 100 = perfectly consistent form"
           >
             Stability: {stabilityScore}
           </span>
         )}
       </div>
-      <p className="text-[10px] text-slate-300 leading-snug mb-1.5">
+      <p className="text-2xs text-slate-300 leading-snug mb-1.5">
         Stability score: how consistent your cadence was throughout the run. 100 = perfectly even.
         Below 80 = noticeable variation.
       </p>
@@ -853,7 +851,7 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
                 label={{
                   value: `Fatigue drop −${fatigueDrop} spm`,
                   position: 'insideTopRight',
-                  fontSize: 8,
+                  fontSize: 11,
                   fill: '#f97316',
                 }}
               />
@@ -869,7 +867,7 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
                 label={{
                   value: `Your avg: ${historicalAvgCadence} spm`,
                   position: 'insideTopRight',
-                  fontSize: 9,
+                  fontSize: 11,
                   fill: '#6366f1',
                 }}
               />
@@ -892,7 +890,7 @@ function CadenceChart({ data, historicalAvgCadence, pagePrefix, rawCadenceBandTi
 
       {cadenceBandZones.length > 0 && (
         <div className="mt-3" id={`cadenceZonesSection_${pagePrefix}`}>
-          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+          <p className="text-2xs font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
             Time in Cadence Band
           </p>
           <ZoneBarChart mergedZones={cadenceBandZones} pagePrefix={`${pagePrefix}_cadence`} />

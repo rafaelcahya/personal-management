@@ -47,6 +47,8 @@ Native `<textarea>` without the base component: `focus:outline-none focus:ring-2
 
 ## Charts and SVG
 
+Chart axis ticks and SVG text: `fontSize: 11` at the least (Recharts `tick={{ fontSize: 11 }}`, SVG `fontSize={11}`), the same floor as `text-2xs`.
+
 Use CSS variables, never hex: `var(--color-violet-600)`, `var(--color-border)`, `var(--color-muted-foreground)`, `var(--color-success)`, `var(--color-destructive)`, `var(--chart-1)`.
 
 ## Spacing and type
@@ -55,6 +57,7 @@ Use CSS variables, never hex: `var(--color-violet-600)`, `var(--color-border)`, 
 - Page title `text-2xl font-semibold md:text-3xl`; section title via `CardTitle`; metadata `text-xs text-slate-400` or `text-sm text-muted-foreground`.
 - Numbers, prices, paces, IDs: `tabular-nums` (and `font-mono` where columns must align).
 - Table headers: `uppercase tracking-wide text-xs`.
+- Smallest text is `text-2xs` (11px): tiny labels, badges, chart captions. Never write `text-[10px]`, `text-[9px]` or any arbitrary size under 11px. It is readable on a phone; smaller is not.
 
 ## Rules
 

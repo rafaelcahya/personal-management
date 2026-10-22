@@ -59,7 +59,7 @@ export default function ProductHistoryFilterDropdown({
           <span className="hidden sm:inline">Filter & Sort</span>
           <span className="sm:hidden">Filter</span>
           {activeCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center size-4 rounded-full bg-violet-600 text-white text-[10px] font-bold leading-none">
+            <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center size-4 rounded-full bg-violet-600 text-white text-2xs font-bold leading-none">
               {activeCount}
             </span>
           )}

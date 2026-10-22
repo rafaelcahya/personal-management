@@ -239,12 +239,12 @@ function GearCard({ gear, onUpdate }) {
 
         <div className="flex items-center gap-1.5 shrink-0">
           {gear.category && !gear.retired && (
-            <span className="px-2 py-0.5 rounded-full bg-violet-50 text-violet-600 text-[10px] font-medium capitalize">
+            <span className="px-2 py-0.5 rounded-full bg-violet-50 text-violet-600 text-2xs font-medium capitalize">
               {gear.category}
             </span>
           )}
           {gear.retired && (
-            <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-medium">
+            <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 text-2xs font-medium">
               Retired
             </span>
           )}
@@ -279,7 +279,7 @@ function GearCard({ gear, onUpdate }) {
                 variant="ghost"
                 size="xs"
                 onClick={() => setLimitTab('strava')}
-                className={`rounded-l-full rounded-r-none border text-[10px] ${limitTab === 'strava' ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-slate-400 border-slate-200 hover:border-violet-400 hover:text-violet-600'}`}
+                className={`rounded-l-full rounded-r-none border text-2xs ${limitTab === 'strava' ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-slate-400 border-slate-200 hover:border-violet-400 hover:text-violet-600'}`}
                 aria-pressed={limitTab === 'strava'}
               >
                 Strava{stravaLimitKm != null ? ` · ${stravaLimitKm.toFixed(2)} km` : ' · —'}
@@ -288,7 +288,7 @@ function GearCard({ gear, onUpdate }) {
                 variant="ghost"
                 size="xs"
                 onClick={() => setLimitTab('manual')}
-                className={`rounded-r-full rounded-l-none border-t border-b border-r text-[10px] ${limitTab === 'manual' ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-slate-400 border-slate-200 hover:border-violet-400 hover:text-violet-600'}`}
+                className={`rounded-r-full rounded-l-none border-t border-b border-r text-2xs ${limitTab === 'manual' ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-slate-400 border-slate-200 hover:border-violet-400 hover:text-violet-600'}`}
                 aria-pressed={limitTab === 'manual'}
               >
                 Manual{manualLimitKm != null ? ` · ${Number(manualLimitKm).toFixed(2)} km` : ' · —'}

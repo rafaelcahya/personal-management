@@ -324,7 +324,7 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
                       className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-center"
                       aria-label="Hours"
                     />
-                    <span className="text-[11px] text-slate-400 text-center">hrs</span>
+                    <span className="text-2xs text-slate-400 text-center">hrs</span>
                   </div>
                   <span className="text-slate-400 font-medium mb-3">:</span>
                   <div className="flex flex-col gap-0.5 flex-1">
@@ -339,7 +339,7 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
                       className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-center"
                       aria-label="Minutes"
                     />
-                    <span className="text-[11px] text-slate-400 text-center">min</span>
+                    <span className="text-2xs text-slate-400 text-center">min</span>
                   </div>
                   <span className="text-slate-400 font-medium mb-3">:</span>
                   <div className="flex flex-col gap-0.5 flex-1">
@@ -354,7 +354,7 @@ export default function UpcomingRaceFormModal({ open, onClose, onSaved, race }) 
                       className="text-sm font-medium focus-visible:ring-violet-200 focus-visible:border-violet-600 selection:bg-violet-500 text-center"
                       aria-label="Seconds"
                     />
-                    <span className="text-[11px] text-slate-400 text-center">sec</span>
+                    <span className="text-2xs text-slate-400 text-center">sec</span>
                   </div>
                 </div>
                 <FieldDescription className="text-xs text-slate-400">
