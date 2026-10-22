@@ -34,16 +34,17 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <head>
+            <body
+                className={`${geist.className} antialiased relative min-h-screen`}
+            >
+                {/* Sets the color scheme class on <html> before the body is painted. A plain script
+                    here runs synchronously; a hand-written <head> with this script did not match
+                    the server HTML and broke hydration (#905). */}
                 <script
                     dangerouslySetInnerHTML={{
                         __html: `(function(){try{var s=localStorage.getItem('color-scheme');var e=document.documentElement;if(s==='glass')e.classList.add('theme-glass');else if(s!=='default')e.classList.add('violet')}catch(e){}})()`,
                     }}
                 />
-            </head>
-            <body
-                className={`${geist.className} antialiased relative min-h-screen`}
-            >
                 {/* Main Content */}
                 <div className="relative z-10">
                     <ThemeProvider
