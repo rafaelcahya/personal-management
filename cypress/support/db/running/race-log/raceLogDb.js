@@ -44,3 +44,26 @@ export async function getSingleRaceLogIncludeDeletedFromDb(supabase, raceLogId, 
   if (error) throw new Error(`DB query failed: ${error.message}`)
   return data
 }
+
+// Read-only: one row owned by someone other than userId, for cross-user (IDOR) checks.
+export async function getForeignRaceLogIdFromDb(supabase, userId) {
+  const { data, error } = await supabase
+    .from('rt_race_log')
+    .select('id')
+    .neq('user_id', userId)
+    .limit(1)
+    .maybeSingle()
+  if (error) throw new Error(`DB query failed: ${error.message}`)
+  return data?.id ?? null
+}
+
+export async function getForeignUpcomingRaceIdFromDb(supabase, userId) {
+  const { data, error } = await supabase
+    .from('rt_upcoming_races')
+    .select('id')
+    .neq('user_id', userId)
+    .limit(1)
+    .maybeSingle()
+  if (error) throw new Error(`DB query failed: ${error.message}`)
+  return data?.id ?? null
+}

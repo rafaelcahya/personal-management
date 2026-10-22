@@ -352,7 +352,7 @@ export default function ActivitySection({
                     footer={
                       avg != null ? (
                         <span
-                          className={`inline-flex w-fit text-[10px] font-medium px-1.5 py-0.5 rounded-full mt-0.5 ${
+                          className={`inline-flex w-fit text-[11px] font-medium px-1.5 py-0.5 rounded-full mt-0.5 ${
                             ef > avg
                               ? 'bg-green-50 text-green-600'
                               : ef < avg

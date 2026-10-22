@@ -101,7 +101,7 @@ export default function RacingWeightSection({ entry, profile, pageId = 'raceDeta
             aria-label={`Current weight ${weight_kg} kg`}
           />
         </div>
-        <div className="flex justify-between text-[10px] text-slate-400">
+        <div className="flex justify-between text-[11px] text-slate-400">
           <span>{Math.round(rangeMin)} kg</span>
           <span>
             Optimal: {Math.round(optimalMinKg)}–{Math.round(optimalMaxKg)} kg (BMI {optimal.min}–

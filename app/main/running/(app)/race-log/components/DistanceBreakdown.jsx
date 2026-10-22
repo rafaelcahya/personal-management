@@ -115,21 +115,21 @@ export default function DistanceBreakdown({
         {/* Official segment */}
         <Card className="bg-violet-50 border-violet-100/60 shadow-none">
           <CardContent className="flex flex-col gap-3 p-3">
-            <span className="text-[10px] font-semibold text-violet-500 uppercase tracking-wide">
+            <span className="text-[11px] font-semibold text-violet-500 uppercase tracking-wide">
               Official · {fmtDistance(officialDistM)} km
             </span>
             <div className="flex flex-col gap-0.5">
               <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
                 {fmtDuration(officialTimeSec)}
               </span>
-              <span className="text-[10px] text-slate-400 uppercase tracking-wide">Total time</span>
+              <span className="text-[11px] text-slate-400 uppercase tracking-wide">Total time</span>
             </div>
             <div className="flex flex-col gap-0.5">
               <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
                 {fmtPace(officialPaceSec)}
                 <span className="text-xs font-normal text-slate-400">/km</span>
               </span>
-              <span className="text-[10px] text-slate-400 uppercase tracking-wide">Avg pace</span>
+              <span className="text-[11px] text-slate-400 uppercase tracking-wide">Avg pace</span>
             </div>
           </CardContent>
         </Card>
@@ -137,14 +137,14 @@ export default function DistanceBreakdown({
         {/* Excess segment */}
         <Card className="bg-amber-50 border-amber-100/60 shadow-none">
           <CardContent className="flex flex-col gap-3 p-3">
-            <span className="text-[10px] font-semibold text-amber-600 uppercase tracking-wide">
+            <span className="text-[11px] font-semibold text-amber-600 uppercase tracking-wide">
               Excess · +{fmtDistance(excessDistM)} km
             </span>
             <div className="flex flex-col gap-0.5">
               <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
                 {excessTimeSec > 0 ? fmtDuration(excessTimeSec) : '—'}
               </span>
-              <span className="text-[10px] text-slate-400 uppercase tracking-wide">Total time</span>
+              <span className="text-[11px] text-slate-400 uppercase tracking-wide">Total time</span>
             </div>
             <div className="flex flex-col gap-0.5">
               <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
@@ -157,7 +157,7 @@ export default function DistanceBreakdown({
                   '—'
                 )}
               </span>
-              <span className="text-[10px] text-slate-400 uppercase tracking-wide">Avg pace</span>
+              <span className="text-[11px] text-slate-400 uppercase tracking-wide">Avg pace</span>
             </div>
           </CardContent>
         </Card>
@@ -166,7 +166,7 @@ export default function DistanceBreakdown({
       {/* Per-km pace from splits */}
       {splitPills && splitPills.length > 0 && (
         <div className="mb-3">
-          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-2">
+          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-2">
             Pace per km
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -179,7 +179,7 @@ export default function DistanceBreakdown({
                     : 'bg-violet-50 text-violet-700 border-violet-100'
                 }`}
               >
-                <span className="text-[10px] font-sans font-semibold opacity-60">{pill.label}</span>
+                <span className="text-[11px] font-sans font-semibold opacity-60">{pill.label}</span>
                 {pill.pace != null ? `${fmtPace(pill.pace)}/km` : '—'}
               </span>
             ))}
@@ -189,14 +189,14 @@ export default function DistanceBreakdown({
 
       {/* Difference row */}
       <div className="flex flex-wrap gap-x-5 gap-y-2 px-3 py-3 bg-slate-50 rounded-lg">
-        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide w-full">
+        <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide w-full">
           Difference
         </span>
         <div className="flex flex-col gap-0.5">
           <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
             +{fmtDistance(rawExcessDistM)} km
           </span>
-          <span className="text-[10px] text-slate-400 uppercase tracking-wide">
+          <span className="text-[11px] text-slate-400 uppercase tracking-wide">
             Extra dist (+{overPct}%)
           </span>
         </div>
@@ -204,7 +204,7 @@ export default function DistanceBreakdown({
           <span className="font-mono tabular-nums text-sm font-bold text-slate-800">
             {excessTimeSec > 0 ? `+${fmtDuration(excessTimeSec)}` : '—'}
           </span>
-          <span className="text-[10px] text-slate-400 uppercase tracking-wide">Extra time</span>
+          <span className="text-[11px] text-slate-400 uppercase tracking-wide">Extra time</span>
         </div>
         {paceDiffSec != null && (
           <div className="flex flex-col gap-0.5">
@@ -218,7 +218,7 @@ export default function DistanceBreakdown({
                 {fmtPace(Math.abs(paceDiffSec))}/km
               </span>
             )}
-            <span className="text-[10px] text-slate-400 uppercase tracking-wide">
+            <span className="text-[11px] text-slate-400 uppercase tracking-wide">
               {paceDiffSec > 0 ? 'Slower pace' : paceDiffSec < 0 ? 'Faster pace' : 'Same pace'}
             </span>
           </div>

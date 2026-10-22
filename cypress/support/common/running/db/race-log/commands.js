@@ -21,3 +21,15 @@ Cypress.Commands.add('getSingleRaceLogIncludeDeletedFromDb', (raceLogId) => {
     return cy.task('getSingleRaceLogIncludeDeletedFromDb', { raceLogId, userId })
   })
 })
+
+Cypress.Commands.add('getForeignRaceLogIdFromDb', () => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('getForeignRaceLogIdFromDb', { userId })
+  })
+})
+
+Cypress.Commands.add('getForeignUpcomingRaceIdFromDb', () => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('getForeignUpcomingRaceIdFromDb', { userId })
+  })
+})
