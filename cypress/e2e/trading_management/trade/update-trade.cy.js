@@ -1052,6 +1052,78 @@ describe('Trade Update API - PUT /api/trade/v1/trade/update/{id}', () => {
     })
   })
 
+  describe('Update Trade - partial updates and ignored columns (#899)', () => {
+    const createFixtureTrade = () =>
+      cy
+        .AddTrade({
+          buy_date: '2026-01-05',
+          sell_date: '2026-01-06',
+          ticker: 'ZZPART',
+          margin: '1000',
+          proceeds: '2000',
+          return_percent: '100',
+          realized_gain: '1000',
+          stock_type_option: 'Normal',
+          entry_session_option: 'Morning',
+          entry_occasion_option: 'Breakout',
+          buy_reason_option: 'Trend',
+          sell_reason_option: 'Target',
+          notes: 'original notes',
+        })
+        .then((response) => {
+          expect(response.status).to.eq(201)
+          return response.body.trade
+        })
+
+    it('should update only the sent field and leave the others untouched', () => {
+      createFixtureTrade().then((trade) => {
+        cy.UpdateTrade(trade.id, { notes: 'only notes changed' }).then((response) => {
+          expect(response.status).to.eq(200)
+
+          cy.getSingleTradeFromDb(trade.id).then((rows) => {
+            const row = rows[0]
+            expect(row.notes).to.eq('only notes changed')
+            ;['ticker', 'buy_date', 'sell_date', 'return_percent', 'stock_type_option'].forEach(
+              (field) => {
+                expect(row[field], field).to.eq(trade[field])
+              }
+            )
+            ;['margin', 'proceeds', 'realized_gain'].forEach((field) => {
+              expect(Number(row[field]), field).to.eq(Number(trade[field]))
+            })
+          })
+        })
+      })
+    })
+
+    it('should ignore user_id, id, created_at and unknown keys in the body', () => {
+      createFixtureTrade().then((trade) => {
+        const foreignUserId = '00000000-0000-4000-8000-000000000999'
+
+        cy.UpdateTrade(trade.id, {
+          notes: 'valid field next to ignored ones',
+          user_id: foreignUserId,
+          id: 1,
+          created_at: '2000-01-01T00:00:00.000Z',
+          not_a_column: 'x',
+        }).then((response) => {
+          expect(response.status).to.eq(200)
+          expect(response.body.trade.user_id).to.eq(trade.user_id)
+
+          cy.getSingleTradeFromDb(trade.id).then((rows) => {
+            expect(rows, 'row still owned by the test user').to.have.length(1)
+            const row = rows[0]
+            expect(row.notes).to.eq('valid field next to ignored ones')
+            expect(row.id).to.eq(trade.id)
+            expect(row.user_id).to.eq(trade.user_id)
+            expect(row.user_id).to.not.eq(foreignUserId)
+            expect(new Date(row.created_at).getTime()).to.eq(new Date(trade.created_at).getTime())
+          })
+        })
+      })
+    })
+  })
+
   describe('Update Trade Performance', () => {
     it('should update within 2s', () => {
       const start = Date.now()
