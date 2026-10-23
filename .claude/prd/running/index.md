@@ -19,6 +19,7 @@
 | [encryption.md](./encryption.md)                           | 17. Encryption Strategy                                | 3 KB  |
 | [gear.md](./gear.md)                                       | 12. Gear Management (Shoe Rotation)                    | 10 KB |
 | [injury-coach.md](./injury-coach.md)                       | 10.11 Injury & Sports Medicine AI Coach                | 14 KB |
+| [live-pace-guidance.md](./live-pace-guidance.md)           | 25. Live Pace Guidance (Run Mode, mobile app, #875)    | 12 KB |
 | [metrics-formulas.md](./metrics-formulas.md)               | 14. Computed Metrics Formulas                          | 1 KB  |
 | [nfr.md](./nfr.md)                                         | 18. Non-functional Requirements                        | 1 KB  |
 | [onboarding.md](./onboarding.md)                           | 4. Onboarding Flow                                     | 1 KB  |
@@ -39,8 +40,8 @@
 
 ## Personal Running & Health Performance Platform
 
-**Version:** 3.5
-**Last Updated:** 2026-10-17
+**Version:** 3.6
+**Last Updated:** 2026-10-19
 **Owner:** Rafael Cahya
 **Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · Base Components · Claude AI (Sonnet 4.6) · Strava API
 
