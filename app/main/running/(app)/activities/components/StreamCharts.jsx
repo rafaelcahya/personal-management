@@ -914,6 +914,8 @@ export default function StreamCharts({
   historicalAvgCadence,
   maxPaceSecPerKm = null,
   pagePrefix = 'activityDetailPage',
+  // The page already downloaded this (same endpoint, same resolution); fetch only without it
+  streamsResponse = null,
 }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -928,7 +930,7 @@ export default function StreamCharts({
     setLoading(true)
     setError(null)
     try {
-      const res = await fetchActivityStreams(activityId, '10s')
+      const res = streamsResponse ?? (await fetchActivityStreams(activityId, '10s'))
       const raw = res.data ?? []
       const step = Math.max(1, Math.ceil(raw.length / 500))
       const maxSpeedMs = maxPaceSecPerKm > 0 ? 1000 / maxPaceSecPerKm : null
@@ -961,7 +963,7 @@ export default function StreamCharts({
     } finally {
       setLoading(false)
     }
-  }, [activityId, maxPaceSecPerKm])
+  }, [activityId, maxPaceSecPerKm, streamsResponse])
 
   useEffect(() => {
     load()

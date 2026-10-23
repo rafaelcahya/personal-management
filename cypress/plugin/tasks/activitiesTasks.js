@@ -11,6 +11,10 @@ import {
   seedTaggedActivitiesInDb,
 } from '../../support/db/running/activities/activitySeedDb.js'
 import {
+  seedActivityWithStreamsInDb,
+  deleteActivityWithStreamsFromDb,
+} from '../../support/db/running/activities/activityStreamSeedDb.js'
+import {
   seedStreamActivityInDb,
   deleteStreamActivityFromDb,
   countTaggedRouteRowsFromDb,
@@ -18,6 +22,12 @@ import {
 } from '../../support/db/running/route-simulator/streamSeedDb.js'
 
 export const activitiesTasks = (supabaseAdmin) => ({
+  async seedActivityWithStreamsInDb({ userId, tag, rowCount }) {
+    return seedActivityWithStreamsInDb(userId, tag, rowCount)
+  },
+  async deleteActivityWithStreamsFromDb({ userId, tag }) {
+    return deleteActivityWithStreamsFromDb(userId, tag)
+  },
   async seedAnalyticsActivitiesInDb({ userId, tag, count }) {
     return seedAnalyticsActivitiesInDb(userId, tag, count)
   },

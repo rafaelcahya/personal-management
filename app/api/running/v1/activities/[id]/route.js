@@ -60,34 +60,39 @@ export async function GET(_request, { params }) {
     }
 
     let gear = null
-    if (activity.gear_id) {
-      const admin = createAdminClient()
-      const { data: gearRow } = await admin
-        .from('rt_gear')
-        .select('name, distance_m')
-        .eq('id', activity.gear_id)
-        .eq('user_id', user.id)
-        .maybeSingle()
-      if (gearRow) gear = { name: gearRow.name, distance_m: gearRow.distance_m }
-    }
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+    const TOP_DISTANCES_DETAIL = ['1 mile', '5K', '10K', '15K', 'Half-Marathon']
 
-    const { data: splits, error: splitsError } = await supabase
-      .from('rt_activity_splits')
-      .select(
-        'id, split_number, distance_m, duration_sec, pace_sec_per_km, avg_hr, elevation_gain_m'
-      )
-      .eq('activity_id', id)
-      .order('split_number', { ascending: true })
-
-    if (splitsError) throw splitsError
-
-    const splitsWithGap = (splits ?? []).map((s) => ({
-      ...s,
-      gap_sec_per_km: computeGapSecPerKm(s.pace_sec_per_km, s.elevation_gain_m, s.distance_m),
-    }))
-
-    const [burn_bar, lapsResult, bestEffortsResult, photosResult] = await Promise.all([
-      computeBurnBar(supabase, activity, splitsWithGap, user.id),
+    // None of these queries needs another one's result (only `id` and `user.id`), so they run
+    // together instead of one after another. That was about nine sequential round trips.
+    const [
+      gearResult,
+      splitsResult,
+      lapsResult,
+      bestEffortsResult,
+      photosResult,
+      efResult,
+      profileResult,
+      settingsResult,
+      maxCadenceResult,
+      hrResult,
+      cadenceResult,
+    ] = await Promise.all([
+      activity.gear_id
+        ? createAdminClient()
+            .from('rt_gear')
+            .select('name, distance_m')
+            .eq('id', activity.gear_id)
+            .eq('user_id', user.id)
+            .maybeSingle()
+        : Promise.resolve({ data: null }),
+      supabase
+        .from('rt_activity_splits')
+        .select(
+          'id, split_number, distance_m, duration_sec, pace_sec_per_km, avg_hr, elevation_gain_m'
+        )
+        .eq('activity_id', id)
+        .order('split_number', { ascending: true }),
       supabase
         .from('rt_activity_laps')
         .select(
@@ -104,73 +109,13 @@ export async function GET(_request, { params }) {
         .from('rt_activity_photos')
         .select('id, unique_id, url_600, url_100, media_type')
         .eq('activity_id', id),
-    ])
-
-    const { data: laps, error: lapsError } = lapsResult
-    if (lapsError) throw lapsError
-
-    const { data: bestEffortsRaw, error: bestEffortsError } = bestEffortsResult
-    if (bestEffortsError) throw bestEffortsError
-
-    const { data: photos, error: photosError } = photosResult
-    if (photosError) throw photosError
-
-    const TOP_DISTANCES_DETAIL = ['1 mile', '5K', '10K', '15K', 'Half-Marathon']
-    const relevantEfforts = (bestEffortsRaw ?? []).filter(
-      (e) => e.pr_rank != null && e.pr_rank <= 5 && TOP_DISTANCES_DETAIL.includes(e.name)
-    )
-
-    const supersededSet = new Set()
-    if (relevantEfforts.length > 0) {
-      const names = [...new Set(relevantEfforts.map((e) => e.name))]
-      const ranks = [...new Set(relevantEfforts.map((e) => e.pr_rank))]
-      const { data: candidateRows } = await supabase
-        .from('rt_activity_best_efforts')
-        .select('name, pr_rank, rt_activities!inner(started_at)')
-        .in('name', names)
-        .in('pr_rank', ranks)
-        .not('pr_rank', 'is', null)
-        .lte('pr_rank', 5)
-        .eq('rt_activities.user_id', user.id)
-        .neq('activity_id', id)
-      for (const row of candidateRows ?? []) {
-        if ((row.rt_activities?.started_at ?? '') > activity.started_at) {
-          supersededSet.add(`${row.name}__${row.pr_rank}`)
-        }
-      }
-    }
-
-    const bestEfforts = (bestEffortsRaw ?? []).map((e) => {
-      const isRelevant =
-        e.pr_rank != null && e.pr_rank <= 5 && TOP_DISTANCES_DETAIL.includes(e.name)
-      return {
-        ...e,
-        is_latest_for_rank: !isRelevant || !supersededSet.has(`${e.name}__${e.pr_rank}`),
-      }
-    })
-
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-    const { data: efRows, error: efError } = await supabase
-      .from('rt_activities')
-      .select('efficiency_factor')
-      .eq('user_id', user.id)
-      .not('efficiency_factor', 'is', null)
-      .gte('started_at', thirtyDaysAgo)
-      .neq('id', id)
-
-    if (efError) throw efError
-
-    let efficiency_factor_30d_avg = null
-    if (efRows && efRows.length >= 3) {
-      const sum = efRows.reduce((acc, row) => acc + Number(row.efficiency_factor), 0)
-      efficiency_factor_30d_avg = parseFloat((sum / efRows.length).toFixed(4))
-    }
-
-    const [
-      { data: userProfile },
-      { data: userSettings },
-      { data: maxCadenceRow, error: maxCadenceError },
-    ] = await Promise.all([
+      supabase
+        .from('rt_activities')
+        .select('efficiency_factor')
+        .eq('user_id', user.id)
+        .not('efficiency_factor', 'is', null)
+        .gte('started_at', thirtyDaysAgo)
+        .neq('id', id),
       supabase
         .from('rt_users')
         .select('max_hr, weight_kg, resting_hr_baseline, threshold_hr, threshold_pace_sec')
@@ -189,8 +134,54 @@ export async function GET(_request, { params }) {
         .order('cadence', { ascending: false })
         .limit(1)
         .maybeSingle(),
+      supabase
+        .from('rt_activities')
+        .select('avg_hr, moving_time_sec, duration_sec')
+        .eq('user_id', user.id)
+        .not('avg_hr', 'is', null)
+        .neq('id', id)
+        .in('activity_type', ['Run', 'TrailRun', 'VirtualRun']),
+      supabase
+        .from('rt_activities')
+        .select('avg_cadence, moving_time_sec, duration_sec')
+        .eq('user_id', user.id)
+        .not('avg_cadence', 'is', null)
+        .neq('id', id)
+        .in('activity_type', ['Run', 'TrailRun', 'VirtualRun']),
     ])
 
+    const gearRow = gearResult.data
+    if (gearRow) gear = { name: gearRow.name, distance_m: gearRow.distance_m }
+
+    const { data: splits, error: splitsError } = splitsResult
+    if (splitsError) throw splitsError
+
+    const splitsWithGap = (splits ?? []).map((s) => ({
+      ...s,
+      gap_sec_per_km: computeGapSecPerKm(s.pace_sec_per_km, s.elevation_gain_m, s.distance_m),
+    }))
+
+    const { data: laps, error: lapsError } = lapsResult
+    if (lapsError) throw lapsError
+
+    const { data: bestEffortsRaw, error: bestEffortsError } = bestEffortsResult
+    if (bestEffortsError) throw bestEffortsError
+
+    const { data: photos, error: photosError } = photosResult
+    if (photosError) throw photosError
+
+    const { data: efRows, error: efError } = efResult
+    if (efError) throw efError
+
+    let efficiency_factor_30d_avg = null
+    if (efRows && efRows.length >= 3) {
+      const sum = efRows.reduce((acc, row) => acc + Number(row.efficiency_factor), 0)
+      efficiency_factor_30d_avg = parseFloat((sum / efRows.length).toFixed(4))
+    }
+
+    const { data: userProfile } = profileResult
+    const { data: userSettings } = settingsResult
+    const { data: maxCadenceRow, error: maxCadenceError } = maxCadenceResult
     if (maxCadenceError) throw maxCadenceError
 
     const max_cadence = maxCadenceRow?.cadence ?? null
@@ -201,14 +192,7 @@ export async function GET(_request, { params }) {
     const threshold_pace_sec = userProfile?.threshold_pace_sec ?? null
     const hr_zones_method = userSettings?.hr_zones_method ?? 'max_hr'
 
-    const { data: hrRows, error: hrError } = await supabase
-      .from('rt_activities')
-      .select('avg_hr, moving_time_sec, duration_sec')
-      .eq('user_id', user.id)
-      .not('avg_hr', 'is', null)
-      .neq('id', id)
-      .in('activity_type', ['Run', 'TrailRun', 'VirtualRun'])
-
+    const { data: hrRows, error: hrError } = hrResult
     if (hrError) throw hrError
 
     let historical_avg_hr = null
@@ -225,14 +209,7 @@ export async function GET(_request, { params }) {
       if (totalDuration > 0) historical_avg_hr = Math.round(weightedSum / totalDuration)
     }
 
-    const { data: cadenceRows, error: cadenceError } = await supabase
-      .from('rt_activities')
-      .select('avg_cadence, moving_time_sec, duration_sec')
-      .eq('user_id', user.id)
-      .not('avg_cadence', 'is', null)
-      .neq('id', id)
-      .in('activity_type', ['Run', 'TrailRun', 'VirtualRun'])
-
+    const { data: cadenceRows, error: cadenceError } = cadenceResult
     if (cadenceError) throw cadenceError
 
     let historical_avg_cadence = null
@@ -248,6 +225,44 @@ export async function GET(_request, { params }) {
       }
       if (totalDuration > 0) historical_avg_cadence = Math.round(weightedSum / totalDuration) * 2
     }
+
+    const relevantEfforts = (bestEffortsRaw ?? []).filter(
+      (e) => e.pr_rank != null && e.pr_rank <= 5 && TOP_DISTANCES_DETAIL.includes(e.name)
+    )
+    const names = [...new Set(relevantEfforts.map((e) => e.name))]
+    const ranks = [...new Set(relevantEfforts.map((e) => e.pr_rank))]
+
+    // Second round: the burn bar needs the splits, the superseded check needs the best efforts
+    const [burn_bar, candidateResult] = await Promise.all([
+      computeBurnBar(supabase, activity, splitsWithGap, user.id),
+      relevantEfforts.length > 0
+        ? supabase
+            .from('rt_activity_best_efforts')
+            .select('name, pr_rank, rt_activities!inner(started_at)')
+            .in('name', names)
+            .in('pr_rank', ranks)
+            .not('pr_rank', 'is', null)
+            .lte('pr_rank', 5)
+            .eq('rt_activities.user_id', user.id)
+            .neq('activity_id', id)
+        : Promise.resolve({ data: null }),
+    ])
+
+    const supersededSet = new Set()
+    for (const row of candidateResult.data ?? []) {
+      if ((row.rt_activities?.started_at ?? '') > activity.started_at) {
+        supersededSet.add(`${row.name}__${row.pr_rank}`)
+      }
+    }
+
+    const bestEfforts = (bestEffortsRaw ?? []).map((e) => {
+      const isRelevant =
+        e.pr_rank != null && e.pr_rank <= 5 && TOP_DISTANCES_DETAIL.includes(e.name)
+      return {
+        ...e,
+        is_latest_for_rank: !isRelevant || !supersededSet.has(`${e.name}__${e.pr_rank}`),
+      }
+    })
 
     const fuelBurn = estimateFuelBurn({
       calories: activity.calories,
