@@ -1,5 +1,7 @@
 ## 11. Mobile App (Android + iOS)
 
+> **Moving to the mobile repo (2026-10-23).** The app part of this file now lives in the mobile repo PRD (`app.md`). Server parts are in `mobile-backend.md` (section 14). Don't edit this file anymore. It becomes a short pointer once the move is done.
+
 **Status:** Draft
 **Release:** TBD (proposed v1.34)
 **Issue:** #874
@@ -42,6 +44,8 @@ Anything that isn't in the app has an **Open on web** link that opens the page i
 ---
 
 ### 11.3 Sign in and session
+
+> Full detail (flows, messages, acceptance criteria): `auth/mobile-authentication.md`, section 3.3.6.
 
 - **Continue with Google**, through Supabase — the same account and data as the web.
 - Google opens in the system browser and comes back to the app with a deep link (`pmapp://auth/callback`).
@@ -157,3 +161,102 @@ No new endpoints. Every existing `/api/*` route also accepts `Authorization: Bea
 - [ ] Cypress Bearer tests pass (headed) and web regression passes
 - [ ] Manual checklist done on both phones
 - [ ] PRD updated with the final behavior
+
+---
+
+### 11.13 Roadmap
+
+**Status:** Draft — direction only. Each phase gets its own PRD file and issue before work starts.
+
+**How I pick what goes into the app**
+A web feature moves to the app only if I use it away from my laptop: a quick log, a quick check, or something I use while running. Everything else keeps the **Open on web** link (section 11.1).
+
+Once section 11.4 (Bearer token) is done, every `/api/*` route already works for the app. So most phases are app UI only, with no new backend.
+
+#### Phase overview
+
+| Phase | Theme           | What's in it                                                        | Needs backend? | Effort | Depends on     |
+| ----- | --------------- | ------------------------------------------------------------------- | -------------- | ------ | -------------- |
+| 1     | Foundation (v1) | Sign in, Run Mode, Notifications, Native push, Widgets, Settings    | Yes (11.4)     | High   | —              |
+| 2     | After the run   | Activities list + detail, Run calculator, Next race card            | No             | Medium | Phase 1        |
+| 3     | Quick log       | Inventory quick stock update, Trading quick add trade               | No             | Medium | Phase 1        |
+| 4     | Glance and ask  | Running dashboard summary, Trading portfolio summary, Gear, AI chat | Maybe (AI)     | High   | Phases 2 and 3 |
+
+Release numbers are set when a phase is planned. Phase 1 is proposed for v1.34.
+
+---
+
+#### Phase 1 — Foundation (v1)
+
+Already specified in sections 11.1–11.12, push in section 12, widgets in section 13, sign-in detail in `auth/mobile-authentication.md` (section 3.3.6).
+
+**Done when:** the section 11.12 checklist is complete on both phones.
+
+---
+
+#### Phase 2 — After the run
+
+The first thing I do after a run is check how it went. This phase keeps me in the app instead of opening the web.
+
+| Feature         | Web source                               | What I get in the app                                                               |
+| --------------- | ---------------------------------------- | ----------------------------------------------------------------------------------- |
+| Activities list | `/main/running/activities`               | Newest first, with distance, time, pace, and date. Pull to refresh. Read-only       |
+| Activity detail | `/main/running/activities/[id]`          | Route map, splits per km, heart rate summary, AI insight if there is one. Read-only |
+| Run calculator  | `/main/running/run-calculator`           | Pace / time / distance calculator. Runs on the phone, no API needed                 |
+| Next race card  | `/main/running/race-log` (upcoming race) | Race name, countdown, goal time. Tap opens the race on the web                      |
+
+- Run tab becomes **Run · Activities** (top switch) or Activities gets its own tab. Decide in the Phase 2 design spec.
+- Charts are simple (bars for splits). Full analytics stays on the web.
+
+**Done when:** I can finish a run in Run Mode and see it in Activities after Strava sync, without opening the web.
+
+---
+
+#### Phase 3 — Quick log
+
+Two things I want to log the moment they happen, not later at my laptop.
+
+| Feature                      | Web source                     | What I get in the app                                                                                   |
+| ---------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| Inventory quick stock update | `/main/inventory/product-list` | Search products, tap **+ / −** to change stock, mark as "out of stock". Low stock items show at the top |
+| Trading quick add trade      | `/main/trading/trade`          | One short form: ticker, buy/sell, lots, price, date. Fee uses my saved settings                         |
+
+- Same validation and error messages as the web forms (same Zod rules on the server).
+- Adding products, brands, and editing full trade details stays on the web.
+- Bottom tab bar gets one new tab, **Log**, with Inventory and Trading inside it.
+
+**Done when:** I can update stock in the shop and log a trade right after I place it, and both show on the web right away.
+
+---
+
+#### Phase 4 — Glance and ask
+
+Quick summaries and the AI chats. Comes last because AI chat streaming in React Native needs a check first, and summaries depend on what I actually use from phases 2 and 3.
+
+| Feature                      | Web source                    | What I get in the app                                                     |
+| ---------------------------- | ----------------------------- | ------------------------------------------------------------------------- |
+| Running dashboard summary    | `/main/running/dashboard`     | This week's distance, training load, next race. Cards only, no big charts |
+| Trading portfolio summary    | `/main/trading/dashboard`     | Portfolio value and today's P&L. Read-only                                |
+| Gear                         | Running settings (gear)       | Shoe mileage and "replace soon" warning. Read-only                        |
+| AI Coach chat                | `/main/running/ai`            | Chat with the running coach                                               |
+| AI chat (Inventory, Trading) | Inventory and Trading AI chat | Same chats as the web                                                     |
+
+- Before this phase: a short research task on streaming chat in Expo (`researcher-agent`).
+- AI rate limits stay the same per user, web and app together.
+
+**Done when:** I can check my week, my portfolio, and ask the coach a question from the phone.
+
+---
+
+#### Stays on the web (not planned for the app)
+
+| Feature                                                               | Why                                                                                     |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Running Analytics, Zone analytics, Trading Valuation, Investment flow | Heavy charts. Recharts doesn't run in React Native, so every chart would need a rewrite |
+| Route Builder                                                         | Drawing a route on a map is much easier with a mouse                                    |
+| Route Simulator setup                                                 | Plans are made on the web and used in Run Mode (section 11.1)                           |
+| Trading Research, Fee, Currency holdings                              | Wide tables, rarely opened                                                              |
+| Inventory master data (Product name, Brand, History)                  | Rarely changed                                                                          |
+| Security (2FA), Onboarding, Strava connect, Notification preferences  | Set once, rarely touched                                                                |
+
+If I find myself opening one of these on the phone often, it moves into a future phase.
