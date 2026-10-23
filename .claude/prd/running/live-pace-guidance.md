@@ -1,5 +1,7 @@
 ## 25. Live Pace Guidance (Run Mode)
 
+> **Moving to the mobile repo (2026-10-23).** This feature now lives in the mobile repo PRD (`run-mode.md`). It has no server changes. Don't edit this file anymore.
+
 **Where:** mobile app → Run tab (shared section 11)
 **Status:** Draft
 **Release:** TBD (proposed v1.34)

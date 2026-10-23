@@ -1,5 +1,7 @@
 ## 13. Home Screen Widgets
 
+> **Moving to the mobile repo (2026-10-23).** The app part now lives in the mobile repo PRD (`widgets.md`). The widgets API (13.7) is in `mobile-backend.md` (section 14). Don't edit this file anymore.
+
 **Status:** Draft
 **Release:** TBD (proposed v1.34)
 **Issue:** #877

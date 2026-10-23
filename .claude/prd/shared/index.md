@@ -11,6 +11,7 @@
 | [database-tables.md](./database-tables.md)       | 6. Database Tables                                     | 3 KB  |
 | [notifications.md](./notifications.md)           | 10. Notifications and Push (v1.33, #856, #857)         | 6 KB  |
 | [mobile-app.md](./mobile-app.md)                 | 11. Mobile App (Android + iOS) (#874)                  | 9 KB  |
+| [mobile-backend.md](./mobile-backend.md)         | 14. Mobile Backend — API contract for the mobile app   | 8 KB  |
 | [mobile-push.md](./mobile-push.md)               | 12. Native Push on the Mobile App (#876)               | 7 KB  |
 | [mobile-widgets.md](./mobile-widgets.md)         | 13. Home Screen Widgets (#877)                         | 6 KB  |
 | [nfr.md](./nfr.md)                               | 7. Non-Functional Requirements                         | 1 KB  |
@@ -24,8 +25,8 @@
 
 ## Personal Management App
 
-**Version:** 1.26
-**Last Updated:** 2026-10-19
+**Version:** 1.28
+**Last Updated:** 2026-10-23
 **Owner:** Rafael Cahya  
 **Stack:** Next.js 15 App Router · Supabase (PostgreSQL) · Tailwind CSS · Base Components · Claude AI (Sonnet 4.6)
 

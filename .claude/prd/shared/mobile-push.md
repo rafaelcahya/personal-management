@@ -1,5 +1,7 @@
 ## 12. Native Push on the Mobile App
 
+> **Moving to the mobile repo (2026-10-23).** The app part now lives in the mobile repo PRD (`push.md`). Server parts (12.1 server side, 12.7, 12.9, 12.10) are in `mobile-backend.md` (section 14). Don't edit this file anymore.
+
 **Status:** Draft
 **Release:** TBD (proposed v1.34)
 **Issue:** #876
