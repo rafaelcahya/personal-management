@@ -1,4 +1,9 @@
 import { NextResponse } from 'next/server'
+import {
+  STRAVA_STATE_COOKIE,
+  generateOAuthState,
+  stateCookieOptions,
+} from '@/lib/utils/running/stravaOAuthState'
 
 export async function GET(request) {
   const clientId = process.env.STRAVA_CLIENT_ID
@@ -9,13 +14,20 @@ export async function GET(request) {
 
   const redirectUri = new URL('/api/running/v1/auth/strava/callback', request.url).toString()
 
+  const state = generateOAuthState()
+
   const params = new URLSearchParams({
     client_id: clientId,
     response_type: 'code',
     redirect_uri: redirectUri,
     approval_prompt: 'auto',
+    state,
     scope: 'read,activity:read_all,profile:read_all',
   })
 
-  return NextResponse.redirect(`https://www.strava.com/oauth/authorize?${params.toString()}`)
+  const response = NextResponse.redirect(
+    `https://www.strava.com/oauth/authorize?${params.toString()}`
+  )
+  response.cookies.set(STRAVA_STATE_COOKIE, state, stateCookieOptions())
+  return response
 }

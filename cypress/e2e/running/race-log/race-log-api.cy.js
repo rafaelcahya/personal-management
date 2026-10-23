@@ -108,7 +108,7 @@ describe('Race Log API — GET detail (authenticated)', () => {
     })
   })
 
-  it('returns 404 for an id not belonging to the authenticated user', () => {
+  it('returns 404 for an id that does not exist', () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000'
     cy.getRaceLogDetail(nonExistentId).then((res) => {
       expect(res.status).to.eq(404)
@@ -306,7 +306,7 @@ describe('Race Log API — PATCH (authenticated)', () => {
     })
   })
 
-  it('returns 404 for an id not belonging to the authenticated user', () => {
+  it('returns 404 for an id that does not exist', () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000'
     cy.patchRaceLog(nonExistentId, { title: 'Should not update' }).then((res) => {
       expect(res.status).to.eq(404)
@@ -372,7 +372,7 @@ describe('Race Log API — DELETE (authenticated)', () => {
     })
   })
 
-  it('returns 404 for an id not belonging to the authenticated user', () => {
+  it('returns 404 for an id that does not exist', () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000'
     cy.deleteRaceLog(nonExistentId).then((res) => {
       expect(res.status).to.eq(404)
@@ -661,7 +661,7 @@ describe('Upcoming Races API — PATCH update (authenticated)', () => {
     })
   })
 
-  it('returns 404 for an ID that does not belong to the authenticated user', () => {
+  it('returns 404 for an ID that does not exist', () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000'
     cy.patchUpcomingRace(nonExistentId, { title: 'Should not update' }).then((res) => {
       expect(res.status).to.eq(404)
@@ -711,7 +711,7 @@ describe('Upcoming Races API — DELETE (authenticated)', () => {
     })
   })
 
-  it('returns 404 for an ID that does not belong to the authenticated user', () => {
+  it('returns 404 for an ID that does not exist', () => {
     const nonExistentId = '00000000-0000-0000-0000-000000000000'
     cy.deleteUpcomingRace(nonExistentId).then((res) => {
       expect(res.status).to.eq(404)
@@ -824,6 +824,189 @@ describe('Race Log API — Pagination, Search, and Filter', () => {
       expect(res.status).to.eq(200)
       expect(res.body.data.length).to.be.lte(3)
       expect(res.body.limit).to.eq(3)
+    })
+  })
+})
+
+// Read-only on purpose: the "other user" rows belong to a real account, so only GET is sent.
+describe('Race Log & Upcoming Races API — cross-user isolation (read-only)', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it("race log detail returns 404 for another user's race", function () {
+    cy.getForeignRaceLogIdFromDb().then((foreignId) => {
+      if (!foreignId) this.skip()
+      cy.getRaceLogDetail(foreignId).then((res) => {
+        expect(res.status).to.eq(404)
+      })
+    })
+  })
+
+  it("race log list never contains another user's race", function () {
+    cy.getForeignRaceLogIdFromDb().then((foreignId) => {
+      if (!foreignId) this.skip()
+      cy.getRaceLog({ limit: 100 }).then((res) => {
+        expect(res.status).to.eq(200)
+        expect(res.body.data.some((r) => r.id === foreignId)).to.be.false
+      })
+    })
+  })
+
+  it("upcoming race detail returns 404 for another user's race", function () {
+    cy.getForeignUpcomingRaceIdFromDb().then((foreignId) => {
+      if (!foreignId) this.skip()
+      cy.getUpcomingRaceDetail(foreignId).then((res) => {
+        expect(res.status).to.eq(404)
+      })
+    })
+  })
+
+  it("upcoming races list never contains another user's race", function () {
+    cy.getForeignUpcomingRaceIdFromDb().then((foreignId) => {
+      if (!foreignId) this.skip()
+      cy.getUpcomingRaces().then((res) => {
+        expect(res.status).to.eq(200)
+        expect(res.body.data.some((r) => r.id === foreignId)).to.be.false
+      })
+    })
+  })
+})
+
+// ─── activity ownership (#904) ───────────────────────────────────
+// A race log may only link to an activity of the same user. Unknown and foreign ids must look
+// the same (404). The foreign activity is only sent as an id, so the only row written is the
+// test user's own race log; the other account is never modified.
+
+describe('Race Log API — activity ownership (#904)', () => {
+  const UNKNOWN_ACTIVITY_ID = '00000000-0000-4000-8000-000000000999'
+  const createdIds = []
+  let ownActivityId
+  let foreignActivityId
+  let raceId
+
+  const newRace = (overrides = {}) => ({
+    title: `Cypress Ownership ${Cypress._.random(1e9)}`,
+    race_date: '2024-03-10',
+    distance_m: 10000,
+    finish_time_sec: 3000,
+    ...overrides,
+  })
+
+  before(() => {
+    cy.setupApiAuthCookies()
+    foreignActivityId = Cypress.env('OTHER_USER_ACTIVITY_ID')
+    cy.getActivities().then((res) => {
+      ownActivityId = res.body?.data?.[0]?.id
+    })
+    cy.postRaceLog(newRace()).then((res) => {
+      expect(res.status).to.eq(201)
+      raceId = res.body.data.id
+      createdIds.push(raceId)
+    })
+  })
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  after(() => {
+    cy.setupApiAuthCookies()
+    createdIds.forEach((id) => cy.deleteRaceLog(id))
+  })
+
+  const expectActivityNotFound = (res) => {
+    expect(res.status).to.eq(404)
+    expect(res.body.error).to.eq('Not found')
+    expect(res.body.message).to.eq('Activity not found')
+  }
+
+  describe('POST', () => {
+    it('returns 404 for an activity of another user and stores nothing', function () {
+      if (!foreignActivityId) {
+        cy.log('OTHER_USER_ACTIVITY_ID not set, skipping')
+        this.skip()
+      }
+      const body = newRace({ activity_id: foreignActivityId })
+      cy.postRaceLog(body).then((res) => {
+        expectActivityNotFound(res)
+      })
+      cy.getRaceLog({ search: body.title }).then((res) => {
+        expect(res.body.data).to.have.length(0)
+      })
+    })
+
+    it('returns 404 for an unknown activity id and stores nothing', () => {
+      const body = newRace({ activity_id: UNKNOWN_ACTIVITY_ID })
+      cy.postRaceLog(body).then((res) => {
+        expectActivityNotFound(res)
+      })
+      cy.getRaceLog({ search: body.title }).then((res) => {
+        expect(res.body.data).to.have.length(0)
+      })
+    })
+
+    it('still creates a race log with an activity of the same user', function () {
+      if (!ownActivityId) this.skip()
+      cy.postRaceLog(newRace({ activity_id: ownActivityId })).then((res) => {
+        expect(res.status).to.eq(201)
+        expect(res.body.data.activity_id).to.eq(ownActivityId)
+        createdIds.push(res.body.data.id)
+      })
+    })
+
+    it('still creates a race log without activity_id', () => {
+      cy.postRaceLog(newRace()).then((res) => {
+        expect(res.status).to.eq(201)
+        expect(res.body.data.activity_id ?? null).to.be.null
+        createdIds.push(res.body.data.id)
+      })
+    })
+  })
+
+  describe('PATCH', () => {
+    it('returns 404 for an activity of another user and leaves the race log unchanged', function () {
+      if (!foreignActivityId) {
+        cy.log('OTHER_USER_ACTIVITY_ID not set, skipping')
+        this.skip()
+      }
+      cy.patchRaceLog(raceId, { activity_id: foreignActivityId }).then((res) => {
+        expectActivityNotFound(res)
+      })
+      cy.getRaceLogDetail(raceId).then((res) => {
+        expect(res.body.data.activity_id ?? null).to.not.eq(foreignActivityId)
+      })
+    })
+
+    it('returns 404 for an unknown activity id and leaves the race log unchanged', () => {
+      cy.patchRaceLog(raceId, { activity_id: UNKNOWN_ACTIVITY_ID }).then((res) => {
+        expectActivityNotFound(res)
+      })
+      cy.getRaceLogDetail(raceId).then((res) => {
+        expect(res.body.data.activity_id ?? null).to.not.eq(UNKNOWN_ACTIVITY_ID)
+      })
+    })
+
+    it('links an activity of the same user', function () {
+      if (!ownActivityId) this.skip()
+      cy.patchRaceLog(raceId, { activity_id: ownActivityId }).then((res) => {
+        expect(res.status).to.eq(200)
+        expect(res.body.data.activity_id).to.eq(ownActivityId)
+      })
+    })
+
+    it('unlinks with activity_id null', () => {
+      cy.patchRaceLog(raceId, { activity_id: null }).then((res) => {
+        expect(res.status).to.eq(200)
+        expect(res.body.data.activity_id ?? null).to.be.null
+      })
+    })
+
+    it('still updates other fields when activity_id is not sent', () => {
+      cy.patchRaceLog(raceId, { notes: 'ownership check' }).then((res) => {
+        expect(res.status).to.eq(200)
+        expect(res.body.data.notes).to.eq('ownership check')
+      })
     })
   })
 })

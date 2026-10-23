@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { inngest } from '@/lib/inngest/client'
+import { isStravaStubbed } from '@/lib/services/running/strava/stravaStub'
+
+// Each queued activity costs Strava API calls; the user can call this again for the next batch.
+const RE_ENRICH_BATCH_CAP = 100
 
 export async function POST(_request) {
   try {
@@ -17,34 +21,43 @@ export async function POST(_request) {
 
     const admin = createAdminClient()
 
-    const { data: credentials } = await admin
+    const { data: credentials, error: credError } = await admin
       .from('rt_strava_credentials')
       .select('user_id')
       .eq('user_id', user.id)
-      .single()
+      .maybeSingle()
 
+    if (credError) throw new Error(credError.message)
     if (!credentials) {
       return NextResponse.json({ error: 'Strava not connected' }, { status: 400 })
     }
 
-    // Fetch all Strava activities for this user
+    // enriched_at is set once the streams are stored, so null means still missing streams.
     const { data: activities, error: fetchError } = await admin
       .from('rt_activities')
       .select('id, external_id')
       .eq('user_id', user.id)
       .eq('source', 'strava')
       .not('external_id', 'is', null)
+      .is('enriched_at', null)
+      .order('started_at', { ascending: false })
+      .limit(RE_ENRICH_BATCH_CAP)
 
     if (fetchError) {
-      return NextResponse.json({ error: fetchError.message }, { status: 500 })
+      throw new Error(fetchError.message)
     }
 
     if (!activities || activities.length === 0) {
       return NextResponse.json({ queued: 0 })
     }
 
+    if (isStravaStubbed()) {
+      return NextResponse.json({ queued: activities.length, stubbed: true })
+    }
+
     await inngest.send(
       activities.map((a) => ({
+        id: `fetch-streams-${a.id}`,
         name: 'strava/fetch-streams',
         data: { activityId: a.id, userId: user.id, stravaActivityId: a.external_id },
       }))
@@ -52,7 +65,7 @@ export async function POST(_request) {
 
     return NextResponse.json({ queued: activities.length })
   } catch (err) {
-    console.error('[strava/re-enrich]', err.message)
+    console.error('[strava/re-enrich]', err)
     return NextResponse.json({ error: 'Re-enrich failed' }, { status: 500 })
   }
 }

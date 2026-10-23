@@ -2,7 +2,17 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import dynamic from 'next/dynamic'
-import { Map, Trash2, AlertCircle, Eye, Pencil, Check, X as XIcon, Download } from 'lucide-react'
+import {
+  Map,
+  Trash2,
+  AlertCircle,
+  Eye,
+  Pencil,
+  Check,
+  Loader2,
+  X as XIcon,
+  Download,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import polyline from '@mapbox/polyline'
 import Card, {
@@ -24,6 +34,9 @@ import {
   ModalHeaderContent,
   ModalTitle,
   ModalBody,
+  ModalDescription,
+  ModalFooter,
+  ModalClose,
 } from '@/components/base/Modal/Modal'
 import { totalDistance } from '@/lib/running/geo'
 import {
@@ -36,10 +49,11 @@ import {
 } from '@/lib/api/running'
 import { fmtPace } from '@/app/main/running/(app)/dashboard/utils/format'
 import PageHeader from '@/app/main/components/PageHeader'
+import useMediaQuery from './hooks/useMediaQuery'
 
 const RouteBuilderMap = dynamic(() => import('./components/RouteBuilderMap'), {
   ssr: false,
-  loading: () => <Skeleton className="w-full rounded-xl" style={{ height: 420 }} />,
+  loading: () => <Skeleton className="w-full rounded-xl h-[clamp(280px,55dvh,420px)]" />,
 })
 
 const RouteMap = dynamic(() => import('@/app/main/running/(app)/activities/components/RouteMap'), {
@@ -65,6 +79,7 @@ function SavedRouteRow({ route, onDelete, onView, onRename }) {
   const [editName, setEditName] = useState(route.name)
   const [saving, setSaving] = useState(false)
   const [exporting, setExporting] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   async function handleExport() {
     setExporting(true)
@@ -90,6 +105,7 @@ function SavedRouteRow({ route, onDelete, onView, onRename }) {
       await onDelete(route.id)
     } finally {
       setDeleting(false)
+      setConfirmOpen(false)
     }
   }
 
@@ -210,7 +226,7 @@ function SavedRouteRow({ route, onDelete, onView, onRename }) {
               id={`deleteRouteBtn_${route.id}_routeBuilderPage`}
               variant="ghost"
               size="xs"
-              onClick={handleDelete}
+              onClick={() => setConfirmOpen(true)}
               disabled={deleting}
               className="text-slate-400 hover:text-red-600 hover:bg-red-50"
               aria-label={`Delete route ${route.name}`}
@@ -220,6 +236,38 @@ function SavedRouteRow({ route, onDelete, onView, onRename }) {
           </>
         )}
       </div>
+
+      <Modal open={confirmOpen} onOpenChange={(open) => !deleting && setConfirmOpen(open)}>
+        <ModalContent id={`deleteRouteModal_${route.id}_routeBuilderPage`} className="max-w-md">
+          <ModalHeader>
+            <ModalTitle>Delete route?</ModalTitle>
+            <ModalDescription className="text-sm">
+              This will remove <span className="font-medium text-violet-700">{route.name}</span>{' '}
+              from your saved routes. This action cannot be undone.
+            </ModalDescription>
+          </ModalHeader>
+          <ModalFooter className="gap-2">
+            <ModalClose asChild>
+              <Button
+                id={`cancelDeleteRouteBtn_${route.id}_routeBuilderPage`}
+                variant="secondary"
+                type="button"
+                disabled={deleting}
+              >
+                Cancel
+              </Button>
+            </ModalClose>
+            <Button
+              id={`confirmDeleteRouteBtn_${route.id}_routeBuilderPage`}
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={deleting}
+            >
+              {deleting ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : 'Delete'}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   )
 }
@@ -235,6 +283,7 @@ export default function RouteBuilderPage() {
   const [routesLoading, setRoutesLoading] = useState(true)
   const [routesError, setRoutesError] = useState(null)
   const [viewingRoute, setViewingRoute] = useState(null)
+  const isSmallScreen = useMediaQuery('(max-width: 639px)')
 
   const distanceM = useMemo(() => Math.round(totalDistance(waypoints)), [waypoints])
 
@@ -402,7 +451,12 @@ export default function RouteBuilderPage() {
             >
               <AlertCircle className="size-5 text-red-400" />
               <p className="text-sm text-slate-500">{routesError}</p>
-              <Button variant="ghost" onClick={loadRoutes} className="text-violet-600">
+              <Button
+                id="retrySavedRoutesBtn_routeBuilderPage"
+                variant="ghost"
+                onClick={loadRoutes}
+                className="text-violet-600"
+              >
                 Retry
               </Button>
             </div>
@@ -448,7 +502,7 @@ export default function RouteBuilderPage() {
       >
         <ModalContent
           id="routePreviewModal_routeBuilderPage"
-          className="max-w-2xl w-full overflow-hidden !p-0 !gap-0"
+          className="max-w-2xl w-full max-h-[90dvh] overflow-y-auto !p-0 !gap-0"
         >
           <ModalHeader className="px-6 pt-6 pb-0">
             <ModalHeaderContent>
@@ -461,7 +515,10 @@ export default function RouteBuilderPage() {
                 {formatDistance(viewingRoute.distance_m)} · {formatDate(viewingRoute.created_at)}
               </p>
               <div className="px-6 pb-6">
-                <RouteMap encodedPolyline={viewingRoute.encoded_polyline} height={480} />
+                <RouteMap
+                  encodedPolyline={viewingRoute.encoded_polyline}
+                  height={isSmallScreen ? 280 : 480}
+                />
               </div>
             </>
           )}

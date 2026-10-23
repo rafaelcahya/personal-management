@@ -13,8 +13,10 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
+import './common/db/test-user'
 import './common/auth/ui-commands'
 import './common/auth/api-commands'
+import './common/auth/bearer-commands'
 import './common/trade/api-commands'
 import './common/trade/db-commands'
 import './common/trading/api/dashboard/commands'
@@ -50,7 +52,11 @@ import './common/running/api/upcoming-races/commands'
 import './common/running/api/injury-ai/commands'
 import './common/running/api/sync/commands'
 import './common/running/api/onboarding/commands'
+import './common/running/api/settings/commands'
+import './common/running/db/settings/commands'
 import './common/running/api/routes/commands'
+import './common/running/api/route-simulator/commands'
+import './common/running/db/route-simulator/commands'
 import './common/running/db/ai-insights/commands'
 import './common/currency-investments/api/commands'
 import './common/trading/api/investment-flow/commands'

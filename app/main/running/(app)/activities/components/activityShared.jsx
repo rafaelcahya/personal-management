@@ -19,9 +19,7 @@ export function StatTile({
     <div id={id} className="flex flex-col gap-0.5 p-3 bg-slate-50 rounded-lg">
       <div className="flex items-center gap-1.5">
         {Icon && <Icon className="size-3.5 text-slate-400 shrink-0" aria-hidden="true" />}
-        <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide">
-          {label}
-        </span>
+        <span className="text-2xs font-medium text-slate-400 uppercase tracking-wide">{label}</span>
         {tooltip && (
           <Popover>
             <PopoverTrigger asChild>
@@ -46,7 +44,7 @@ export function StatTile({
         </span>
         {unit && <span className="text-xs text-slate-400">{unit}</span>}
       </div>
-      {sub && <span className="text-[10px] text-slate-400">{sub}</span>}
+      {sub && <span className="text-2xs text-slate-400">{sub}</span>}
       {footer}
     </div>
   )

@@ -3,11 +3,19 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { refreshStravaToken } from '@/lib/services/running/strava/refreshStravaToken'
 import { inngest } from '@/lib/inngest/client'
+import { isStravaStubbed } from '@/lib/services/running/strava/stravaStub'
+import { invalidateRunningAnalytics } from '@/lib/services/running/analyticsCache'
 
 const STRAVA_ACTIVITIES_URL = 'https://www.strava.com/api/v3/athlete/activities'
 const STRAVA_ATHLETE_URL = 'https://www.strava.com/api/v3/athlete'
 const STRAVA_GEAR_URL = 'https://www.strava.com/api/v3/gear'
 const PER_PAGE = 100
+const BACKFILL_DEDUPE_WINDOW_MS = 10 * 60 * 1000
+const NEEDS_RECONNECT_BODY = {
+  error: 'Strava needs reconnect',
+  message: 'Your Strava connection expired. Reconnect Strava to keep syncing.',
+  needs_reconnect: true,
+}
 const GEAR_REFRESH_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000
 
 async function syncAthleteShoes(accessToken, admin, userId) {
@@ -67,6 +75,10 @@ async function syncAthleteShoes(accessToken, admin, userId) {
 }
 
 export async function POST(_request) {
+  // Set as soon as any activity row is written, so the finally block clears the
+  // cached dashboard even when a later step throws or returns an error.
+  let dirty = false
+  let userId = null
   try {
     const supabase = await createClient()
     const {
@@ -77,22 +89,47 @@ export async function POST(_request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    userId = user.id
     const admin = createAdminClient()
 
     const { data: credentials, error: credError } = await admin
       .from('rt_strava_credentials')
       .select('access_token, refresh_token, expires_at, last_sync_at, needs_reconnect')
       .eq('user_id', user.id)
-      .single()
+      .maybeSingle()
 
-    if (credError || !credentials) {
+    if (credError) throw new Error(credError.message)
+    if (!credentials) {
       return NextResponse.json({ error: 'Strava not connected' }, { status: 400 })
+    }
+
+    if (credentials.needs_reconnect) {
+      return NextResponse.json(NEEDS_RECONNECT_BODY, { status: 409 })
+    }
+
+    if (isStravaStubbed()) {
+      return NextResponse.json({ synced: 0, skipped: true, reason: 'stubbed' })
+    }
+
+    // No cursor (first sync, or after all activities were deleted): re-importing the whole
+    // history is too slow for one request, so hand it to the backfill job.
+    if (!credentials.last_sync_at) {
+      await inngest.send({
+        id: `strava-backfill-${user.id}-${Math.floor(Date.now() / BACKFILL_DEDUPE_WINDOW_MS)}`,
+        name: 'strava/backfill',
+        data: { userId: user.id },
+      })
+      return NextResponse.json({
+        synced: 0,
+        backfill_started: true,
+        message: 'Importing your full Strava history in the background. It may take a few minutes.',
+      })
     }
 
     // Same path as the background jobs: a 401 sets needs_reconnect and sends one notification.
     const tokenResult = await refreshStravaToken(user.id, credentials)
     if (tokenResult.skipped || tokenResult.needsReconnect) {
-      return NextResponse.json({ synced: 0, skipped: true, reason: 'needs_reconnect' })
+      return NextResponse.json(NEEDS_RECONNECT_BODY, { status: 409 })
     }
     const { accessToken } = tokenResult
 
@@ -185,6 +222,8 @@ export async function POST(_request) {
           return NextResponse.json({ error: 'Sync failed' }, { status: 500 })
         }
 
+        dirty = true
+
         if (insertedRows?.length > 0) {
           await inngest.send(
             insertedRows.map((r) => ({
@@ -257,6 +296,7 @@ export async function POST(_request) {
 
       // Update mutable Strava fields on existing activities (gear, name, kudos, etc.)
       if (toUpdate.length > 0) {
+        dirty = true
         for (const a of toUpdate) {
           await admin
             .from('rt_activities')
@@ -288,5 +328,7 @@ export async function POST(_request) {
   } catch (err) {
     console.error('[strava/sync]', err.message)
     return NextResponse.json({ error: 'Sync failed' }, { status: 500 })
+  } finally {
+    if (dirty && userId) invalidateRunningAnalytics(userId)
   }
 }

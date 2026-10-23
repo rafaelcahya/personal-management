@@ -2,7 +2,7 @@
 
 **Status:** API endpoints are implemented (`GET /api/user`, `PUT /api/user`, and `POST /api/user/avatar`). Only the Settings page UI is pending (P2 backlog).
 
-**Data Source:** `auth.users` via `supabase.auth.getUser()` + `users` table
+**Data Source:** `auth.users` via `supabase.auth.getUser()`
 
 **API Endpoints:**
 

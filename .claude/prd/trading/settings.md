@@ -1,6 +1,6 @@
 #### 3.2.5 Settings (`/main/trading/settings`)
 
-**Description:** A configuration page for trading metrics parameters. Settings affect how dashboard metrics (Sharpe ratio, TP/SL suggestions, risk calculations) are computed. Settings are stored per user in the `settings` table and upserted on save.
+**Description:** A configuration page for trading metrics parameters. Settings affect how dashboard metrics (Sharpe ratio, TP/SL suggestions, risk calculations) are computed. Settings are stored per user in the `trd_settings` table and upserted on save.
 
 **Route:** `/main/trading/settings`
 

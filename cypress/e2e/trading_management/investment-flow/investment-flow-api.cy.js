@@ -32,6 +32,30 @@ const makeTickerPayload = (overrides = {}) => ({
   ...overrides,
 })
 
+// Nodes are capped at 500 per user, so anything this spec creates is removed afterwards.
+// Only nodes absent from the starting snapshot are deleted; existing data is left alone.
+let nodeIdsBeforeSpec = new Set()
+
+before(() => {
+  cy.setupApiAuthCookies()
+  cy.listInvestmentFlowNodes().then((res) => {
+    nodeIdsBeforeSpec = new Set((res.body?.data?.nodes ?? res.body?.data ?? []).map((n) => n.id))
+  })
+})
+
+after(() => {
+  cy.setupApiAuthCookies()
+  cy.listInvestmentFlowNodes().then((res) => {
+    const nodes = res.body?.data?.nodes ?? res.body?.data ?? []
+    const created = nodes.filter((n) => !nodeIdsBeforeSpec.has(n.id))
+    const createdIds = new Set(created.map((n) => n.id))
+    // Deleting a root removes its subtree, so skip nodes whose parent is also being removed
+    created
+      .filter((n) => !createdIds.has(n.parent_id))
+      .forEach((n) => cy.deleteInvestmentFlowNode(n.id))
+  })
+})
+
 // ─── GET /api/investment-flow/v1 ─────────────────────────────────────────────
 
 describe('Investment Flow API — GET /api/investment-flow/v1', () => {
@@ -172,6 +196,15 @@ describe('Investment Flow API — POST /api/investment-flow/v1 (create)', () => 
         expect(node).to.have.property('nominal', null)
         expect(node).to.have.property('parent_id', parentId)
       })
+    })
+  })
+
+  it('returns 400 with the custom type message when nominal is not a number', () => {
+    cy.createInvestmentFlowNode(makeTickerPayload({ nominal: 'abc' })).then((res) => {
+      expect(res.status).to.eq(400)
+      expect(res.body.error).to.eq('Validation failed')
+      const messages = res.body.details.map((d) => d.message)
+      expect(messages).to.include('Nominal must be a number')
     })
   })
 
@@ -990,6 +1023,64 @@ describe('Investment Flow API — PATCH /api/investment-flow/v1/highlights', () 
     cy.patchInvestmentFlowHighlights({}).then((res) => {
       expect(res.status).to.eq(400)
       expect(res.body).to.have.property('success', false)
+    })
+  })
+})
+
+// ─── validation details (#902) ───────────────────────────────────
+// Zod 4 has no `error.errors` (it is `.issues`), so routes that returned `parsed.error.errors`
+// silently dropped `details`. Every route that validates with Zod must send the issues.
+
+describe('Investment Flow API — validation details are returned (#902)', () => {
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  const expectIssues = (res) => {
+    expect(res.status).to.eq(400)
+    expect(res.body.success).to.be.false
+    expect(res.body.error).to.eq('Validation failed')
+    expect(res.body.details, 'details').to.be.an('array').that.is.not.empty
+    res.body.details.forEach((issue) => {
+      expect(issue.message).to.be.a('string').and.not.be.empty
+      expect(issue.path).to.be.an('array')
+    })
+  }
+
+  const cases = [
+    [
+      'POST /v1 (create node)',
+      () => cy.createInvestmentFlowNode({ node_type: 'stock', name: 'x' }),
+    ],
+    ['PUT /v1 (update node)', () => cy.updateInvestmentFlowNode({ name: 'No ID' })],
+    ['DELETE /v1', () => cy.deleteInvestmentFlowNode('not-a-uuid')],
+    ['PUT /v1/move', () => cy.moveInvestmentFlowNode({})],
+    ['POST /v1/close', () => cy.closeInvestmentFlowPosition({})],
+    ['PATCH /v1/uninvested-cash', () => cy.patchUninvestedCash({ amount: 'not-a-number' })],
+    [
+      'POST /v1/uninvested-cash/categories',
+      () => cy.createUninvestedCashCategory({ nominal: 1000000 }),
+    ],
+    [
+      'PUT /v1/uninvested-cash/categories/:id',
+      () =>
+        cy.updateUninvestedCashCategory('00000000-0000-4000-8000-000000000000', { nominal: -100 }),
+    ],
+    ['PATCH /v1/highlights', () => cy.patchInvestmentFlowHighlights({})],
+  ]
+
+  cases.forEach(([label, send]) => {
+    it(`${label} returns 400 with details`, () => {
+      send().then(expectIssues)
+    })
+  })
+
+  it('returns the custom enum message for an invalid node_type (errorMap -> error)', () => {
+    cy.createInvestmentFlowNode({ node_type: 'stock', name: 'x' }).then((res) => {
+      expect(res.status).to.eq(400)
+      expect(res.body.details.map((d) => d.message)).to.include(
+        'node_type must be category or ticker'
+      )
     })
   })
 })

@@ -1,4 +1,4 @@
-const TABLE_NAME = 'product_brand'
+const TABLE_NAME = 'inv_product_brand'
 
 export async function getSingleProductBrandFromDb(supabase, productBrandId, userId) {
   const { data, error } = await supabase
@@ -34,7 +34,7 @@ export async function getTotalProductBrandsFromDb(supabase, userId) {
 // Returns the count of active (non-deleted) products linked to a given brand_id
 export async function getActiveProductCountByBrandFromDb(supabase, brandId) {
   const { count, error } = await supabase
-    .from('product_list')
+    .from('inv_product_list')
     .select('*', { count: 'exact', head: true })
     .eq('brand_id', brandId)
     .is('deleted_at', null)

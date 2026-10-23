@@ -1,6 +1,6 @@
 #### 3.1.4 Product History (`/main/inventory/product-history`)
 
-**Description:** A read-only log of all product usage sessions. Each record represents one usage session from the `product_history` table — when a product was started, finished, or paused. Users can browse the full list, search by product name, filter by status, and sort by date or product name. No record can be added, edited, or deleted from this page.
+**Description:** A read-only log of all product usage sessions. Each record represents one usage session from the `inv_product_history` table — when a product was started, finished, or paused. Users can browse the full list, search by product name, filter by status, and sort by date or product name. No record can be added, edited, or deleted from this page.
 
 **Note:** Records in this table are created internally from the Product List page when a user triggers "Record Usage". The Product History page itself has no add/edit/delete UI — it is strictly a read-only view.
 
@@ -110,7 +110,7 @@ THEN a skeleton (id="loadingSkeleton_productHistoryPage") with 7 columns is show
 | Rule            | Detail                                                              |
 | --------------- | ------------------------------------------------------------------- |
 | Read-only       | No add, edit, or delete action on this page                         |
-| Data source     | Records from `product_history` only — this page writes nothing      |
+| Data source     | Records from `inv_product_history` only — this page writes nothing  |
 | Search scope    | Product name only — brand and type are displayed but not searchable |
 | Sort default    | Most recent first (start_usage_date DESC) on initial load           |
 | Filter + search | AND logic                                                           |

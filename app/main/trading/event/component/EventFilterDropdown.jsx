@@ -67,7 +67,7 @@ export default function EventFilterDropdown({ filter, onFilterChange, events }) 
           <span className="hidden sm:inline">Filter</span>
           <span className="sm:hidden">Filter</span>
           {activeCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 bg-violet-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+            <span className="absolute -top-1.5 -right-1.5 bg-violet-500 text-white text-2xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
               {activeCount}
             </span>
           )}

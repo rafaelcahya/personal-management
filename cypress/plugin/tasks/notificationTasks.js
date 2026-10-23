@@ -8,7 +8,7 @@
 // service_role, so RLS blocks the insert. Raw fetch with the key in both
 // `apikey` and `Authorization` headers reliably runs as service_role.
 
-const REST = () => `${process.env.SUPABASE_URL}/rest/v1/notifications`
+const REST = () => `${process.env.SUPABASE_URL}/rest/v1/app_notifications`
 const REST_BASE = () => `${process.env.SUPABASE_URL}/rest/v1`
 const authHeaders = () => {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -49,7 +49,7 @@ export const notificationTasks = () => ({
     return { success: true }
   },
 
-  // ── push devices (push_subscriptions) ──────────────────────────────────────
+  // ── push devices (app_push_subscriptions) ──────────────────────────────────────
 
   async getOtherUserId({ userId }) {
     const res = await fetch(`${REST_BASE()}/rt_users?select=id&id=neq.${userId}&limit=1`, {
@@ -61,7 +61,7 @@ export const notificationTasks = () => ({
   },
 
   async seedPushDevice({ userId, endpoint }) {
-    const res = await fetch(`${REST_BASE()}/push_subscriptions`, {
+    const res = await fetch(`${REST_BASE()}/app_push_subscriptions`, {
       method: 'POST',
       headers: {
         ...authHeaders(),
@@ -83,7 +83,7 @@ export const notificationTasks = () => ({
 
   async getPushDevice({ endpoint }) {
     const res = await fetch(
-      `${REST_BASE()}/push_subscriptions?select=id,user_id&endpoint=eq.${encodeURIComponent(endpoint)}`,
+      `${REST_BASE()}/app_push_subscriptions?select=id,user_id&endpoint=eq.${encodeURIComponent(endpoint)}`,
       { headers: authHeaders() }
     )
     if (!res.ok) throw new Error(`getPushDevice failed (${res.status}): ${await res.text()}`)
@@ -93,7 +93,7 @@ export const notificationTasks = () => ({
 
   async deletePushDeviceByEndpoint({ endpoint }) {
     const res = await fetch(
-      `${REST_BASE()}/push_subscriptions?endpoint=eq.${encodeURIComponent(endpoint)}`,
+      `${REST_BASE()}/app_push_subscriptions?endpoint=eq.${encodeURIComponent(endpoint)}`,
       { method: 'DELETE', headers: authHeaders() }
     )
     if (!res.ok) throw new Error(`deletePushDeviceByEndpoint failed (${res.status})`)

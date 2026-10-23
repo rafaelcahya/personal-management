@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../support/common/unique-name'
 
 describe('GET Product Brand Summary API', () => {
   before(() => {
@@ -159,6 +160,32 @@ describe('GET Product Brand Summary API', () => {
             expect(apiCount).to.eq(dbCount)
           })
         })
+    })
+  })
+
+  describe('Totals are not capped at one page', () => {
+    const LIST_PAGE_SIZE = 15
+
+    // The summary used to count the rows of the first list page, so it never went above 15.
+    // Make sure the table is bigger than one page, then compare the summary with the list total.
+    it('totalProductBrands should be above the list page size and equal the list total', () => {
+      cy.GetListProductBrand({ page: 1, limit: 1 }).then((listRes) => {
+        const missing = Math.max(0, LIST_PAGE_SIZE + 1 - listRes.body.total)
+        Cypress._.times(missing, () => {
+          cy.AddProductBrand({
+            brand: uniqueName(faker.food.fruit()),
+            brand_status: 'active',
+            note: faker.word.words(3),
+          }).then((res) => expect(res.status).to.eq(201))
+        })
+      })
+
+      cy.GetListProductBrand({ page: 1, limit: 1 }).then((listRes) => {
+        cy.GetProductBrandSummary().then((sumRes) => {
+          expect(sumRes.body.data.totalProductBrands).to.be.greaterThan(LIST_PAGE_SIZE)
+          expect(sumRes.body.data.totalProductBrands).to.eq(listRes.body.total)
+        })
+      })
     })
   })
 

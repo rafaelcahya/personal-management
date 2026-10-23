@@ -43,13 +43,12 @@ export async function GET(request, { params }) {
 
     const downFactor = VALID_RESOLUTIONS[resolutionParam]
 
-    const { data: rows, error: streamsError } = await supabase
-      .from('rt_activity_streams')
-      .select(
-        'timestamp, distance_m, heart_rate, cadence, altitude_m, pace_sec_per_km, velocity_m_s, latitude, longitude'
-      )
-      .eq('activity_id', id)
-      .order('timestamp', { ascending: true })
+    // The database keeps every `downFactor`-th row and also reports the totals over all rows, so a
+    // long run no longer sends every point to the server just to throw most of them away.
+    const { data: rows, error: streamsError } = await supabase.rpc(
+      'get_activity_streams_downsampled',
+      { p_activity_id: id, p_step: downFactor }
+    )
 
     if (streamsError) throw streamsError
 
@@ -67,14 +66,11 @@ export async function GET(request, { params }) {
       })
     }
 
-    const sampled = rows.filter((_, i) => i % downFactor === 0)
-
+    // The first kept row is always the first row of the activity, so it is the time origin
     const startMs = new Date(rows[0].timestamp).getTime()
-    const has_hr = rows.some((r) => r.heart_rate != null)
-    const has_cadence = rows.some((r) => r.cadence != null)
-    const has_altitude = rows.some((r) => r.altitude_m != null)
+    const { total_points, has_hr, has_cadence, has_altitude } = rows[0]
 
-    const data = sampled.map((r) => ({
+    const data = rows.map((r) => ({
       t: Math.round((new Date(r.timestamp).getTime() - startMs) / 1000),
       dist_m: r.distance_m,
       hr: r.heart_rate,
@@ -89,8 +85,8 @@ export async function GET(request, { params }) {
     return NextResponse.json(
       {
         meta: {
-          total_points: rows.length,
-          returned_points: sampled.length,
+          total_points: Number(total_points),
+          returned_points: rows.length,
           resolution: resolutionParam,
           has_hr,
           has_cadence,

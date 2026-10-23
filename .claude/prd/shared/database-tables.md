@@ -2,23 +2,47 @@
 
 ### Inventory Tables
 
-| Table              | Module    | Description                                                                                                       |
-| ------------------ | --------- | ----------------------------------------------------------------------------------------------------------------- |
-| `product_list`     | Inventory | Product data                                                                                                      |
-| `product_brand`    | Inventory | Brand master data                                                                                                 |
-| `product_name`     | Inventory | Product type master data                                                                                          |
-| `product_quantity` | Inventory | Current stock per product                                                                                         |
-| `product_history`  | Inventory | Stock activity log                                                                                                |
-| `inventory_budget` | Inventory | Monthly budget per type — columns: `user_id`, `type`, `monthly_budget`, `updated_at`; unique on `(user_id, type)` |
+| Table                  | Module    | Description                                                                                                       |
+| ---------------------- | --------- | ----------------------------------------------------------------------------------------------------------------- |
+| `inv_product_list`     | Inventory | Product data                                                                                                      |
+| `inv_product_brand`    | Inventory | Brand master data                                                                                                 |
+| `inv_product_name`     | Inventory | Product type master data                                                                                          |
+| `inv_product_quantity` | Inventory | Current stock per product                                                                                         |
+| `inv_product_history`  | Inventory | Stock activity log                                                                                                |
+| `inv_budget`           | Inventory | Monthly budget per type — columns: `user_id`, `type`, `monthly_budget`, `updated_at`; unique on `(user_id, type)` |
 
 ### Trading Tables
 
-| Table        | Module  | Description       |
-| ------------ | ------- | ----------------- |
-| `trade_list` | Trading | Trade data        |
-| `event_list` | Trading | Market events     |
-| `fee_list`   | Trading | Fee structure     |
-| `settings`   | Trading | Per-user settings |
+| Table                            | Module  | Description                                            |
+| -------------------------------- | ------- | ------------------------------------------------------ |
+| `trd_trade_list`                 | Trading | Trade data                                             |
+| `trd_event_list`                 | Trading | Market events                                          |
+| `trd_fee_list`                   | Trading | Fee structure                                          |
+| `trd_event_ai_analysis`          | Trading | Saved AI analysis per event                            |
+| `trd_buy_reason_options`         | Trading | Buy reason dropdown options                            |
+| `trd_sell_reason_options`        | Trading | Sell reason dropdown options                           |
+| `trd_entry_occasion_options`     | Trading | Entry occasion dropdown options                        |
+| `trd_entry_session_options`      | Trading | Entry session dropdown options                         |
+| `trd_stock_type_options`         | Trading | Stock type dropdown options                            |
+| `trd_currency_investments`       | Trading | Currency buy/sell transactions                         |
+| `trd_currency_holdings`          | Trading | Currencies the user holds                              |
+| `trd_forex_rate_cache`           | Trading | Cached daily exchange rates                            |
+| `trd_investment_flow_nodes`      | Trading | Investment flow tree nodes                             |
+| `trd_investment_flow_settings`   | Trading | Investment flow settings (uninvested cash, highlights) |
+| `trd_uninvested_cash_categories` | Trading | Uninvested cash categories                             |
+| `trd_research_cache`             | Trading | Cached research data per ticker and endpoint           |
+| `trd_watchlist`                  | Trading | Watched tickers per user                               |
+| `trd_watchlist_fundamentals`     | Trading | Cached valuation data per ticker                       |
+| `trd_settings`                   | Trading | Per-user trading settings (margin, risk-free rates)    |
+
+### Shared Tables
+
+| Table                          | Module | Description                                    |
+| ------------------------------ | ------ | ---------------------------------------------- |
+| `app_notifications`            | Shared | In-app notifications (Realtime-enabled)        |
+| `app_notification_preferences` | Shared | Push on/off per user and notification type     |
+| `app_push_subscriptions`       | Shared | One row per browser device registered for push |
+| `app_push_delivery_log`        | Shared | One row per push attempt (kept 30 days)        |
 
 ### Auth Tables
 

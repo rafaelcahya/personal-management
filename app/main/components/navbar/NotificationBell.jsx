@@ -31,7 +31,7 @@ export default function NotificationBell() {
               id="notificationUnreadBadge_navbar"
               variant="destructive"
               radius="full"
-              className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center px-1 text-[11px] font-semibold leading-none tabular-nums"
+              className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center px-1 text-2xs font-semibold leading-none tabular-nums"
             >
               {unreadCount > 9 ? '9+' : unreadCount}
             </Badge>

@@ -53,6 +53,9 @@
       "budget": "/api/inventory/v1/budget"
     },
     "product": {
+      "favorite_toggle": "/api/inventory/v1/product/:id/favorite",
+      "last_price_by_id": "/api/inventory/v1/product/:id/last-price",
+      "stock_by_id": "/api/inventory/v1/product/stock/:id",
       "list": "/api/inventory/v1/product/list",
       "create": "/api/inventory/v1/product/create",
       "detail": "/api/inventory/v1/product",
@@ -84,6 +87,7 @@
       "detail": "/api/valuation/v1/detail/:ticker"
     },
     "user": {
+      "avatar": "/api/user/avatar",
       "profile": "/api/user",
       "profile_v1": "/api/user/v1/profile",
       "update_profile": "/api/user/v1/update"
@@ -100,13 +104,16 @@
       "sync_webhook": "/api/running/v1/sync/webhook"
     },
     "running_manual": {
+      "activity_types": "/api/running/v1/activities/types",
       "activities": "/api/running/v1/activities",
       "subjective_health": "/api/running/v1/health/subjective",
       "weight_log": "/api/running/v1/health/weight"
     },
     "running_dashboard": {
       "dashboard": "/api/running/v1/dashboard",
-      "weekly_stats": "/api/running/v1/dashboard/weekly-stats"
+      "weekly_stats": "/api/running/v1/dashboard/weekly-stats",
+      "calendar": "/api/running/v1/calendar",
+      "performance_trends": "/api/running/v1/performance-trends"
     },
     "running_gear": {
       "list": "/api/running/v1/gear",
@@ -123,6 +130,7 @@
       "update": "/api/running/v1/goals"
     },
     "running_activity_streams": {
+      "streams": "/api/running/v1/activities/:id/streams",
       "get": "/api/running/v1/activities"
     },
     "running_ai_insights": {
@@ -130,6 +138,10 @@
       "generate": "/api/running/v1/ai/insights/generate"
     },
     "running_strava": {
+      "connect": "/api/running/v1/auth/strava/connect",
+      "callback": "/api/running/v1/auth/strava/callback",
+      "disconnect": "/api/running/v1/auth/strava/disconnect",
+      "sync": "/api/running/v1/auth/strava/sync",
       "re_enrich": "/api/running/v1/auth/strava/re-enrich",
       "re_enrich_metrics": "/api/running/v1/auth/strava/re-enrich-metrics"
     },
@@ -173,6 +185,8 @@
       "settings": "/api/running/v1/user/settings",
       "activities": "/api/running/v1/user/activities",
       "max_hr_detect": "/api/running/v1/user/max-hr-detect",
+      "hr_zones": "/api/running/v1/user/hr-zones",
+      "threshold_pace_detect": "/api/running/v1/user/threshold-pace-detect",
       "strava_disconnect": "/api/running/v1/auth/strava/disconnect"
     },
     "trading_settings": {
@@ -180,6 +194,7 @@
       "update": "/api/trade/v1/settings/update"
     },
     "trading_event": {
+      "import_suggestions": "/api/trade/v1/event/import-suggestions",
       "list": "/api/trade/v1/event/list",
       "create": "/api/trade/v1/event/create",
       "update": "/api/trade/v1/event/update",
@@ -190,6 +205,7 @@
       "tags": "/api/trade/v1/event/tags"
     },
     "trading_ai": {
+      "event_analysis_history": "/api/trade/v1/ai/event-analysis/history",
       "event_analysis_get": "/api/trade/v1/ai/event-analysis",
       "event_analysis_post": "/api/trade/v1/ai/event-analysis"
     },
@@ -222,12 +238,14 @@
       "injury_coach_history": "/api/running/v1/ai/injury-coach/history"
     },
     "running_routes": {
+      "export_gpx": "/api/running/v1/routes/:id/export/gpx",
       "list": "/api/running/v1/routes",
       "create": "/api/running/v1/routes",
-      "update": "/api/running/v1/routes",
-      "delete": "/api/running/v1/routes"
+      "update": "/api/running/v1/routes/:id",
+      "delete": "/api/running/v1/routes/:id"
     },
     "investment_flow": {
+      "close": "/api/investment-flow/v1/close",
       "list": "/api/investment-flow/v1",
       "create": "/api/investment-flow/v1",
       "update": "/api/investment-flow/v1",
@@ -245,6 +263,59 @@
       "push_subscriptions": "/api/notifications/v1/push-subscriptions",
       "push_subscriptions_test": "/api/notifications/v1/push-subscriptions/test",
       "preferences": "/api/notifications/v1/preferences"
+    },
+    "product_brand": {
+      "list": "/api/inventory/v1/product-brand/list",
+      "create": "/api/inventory/v1/product-brand/create",
+      "update": "/api/inventory/v1/product-brand/update",
+      "delete": "/api/inventory/v1/product-brand/delete",
+      "detail": "/api/inventory/v1/product-brand",
+      "summary": "/api/inventory/v1/product-brand/summary"
+    },
+    "product_name": {
+      "list": "/api/inventory/v1/product-name/list",
+      "create": "/api/inventory/v1/product-name/create",
+      "update": "/api/inventory/v1/product-name/update",
+      "delete": "/api/inventory/v1/product-name/delete",
+      "detail": "/api/inventory/v1/product-name",
+      "summary": "/api/inventory/v1/product-name/summary",
+      "bulk_update_status": "/api/inventory/v1/product-name/bulk-update-status"
+    },
+    "product_history": {
+      "list": "/api/inventory/v1/product-history/list",
+      "update": "/api/inventory/v1/product-history/update"
+    },
+    "trading_fee": {
+      "list": "/api/trade/v1/fee/list",
+      "create": "/api/trade/v1/fee/create",
+      "update": "/api/trade/v1/fee/update",
+      "delete": "/api/trade/v1/fee/delete",
+      "detail": "/api/trade/v1/fee",
+      "summary": "/api/trade/v1/fee/summary"
+    },
+    "trading_trade": {
+      "list": "/api/trade/v1/trade/list",
+      "create": "/api/trade/v1/trade/create",
+      "update": "/api/trade/v1/trade/update",
+      "delete": "/api/trade/v1/trade/delete",
+      "detail": "/api/trade/v1/trade",
+      "summary": "/api/trade/v1/trade/summary",
+      "options": "/api/trade/v1/trade/options"
+    },
+    "running_route_simulations": {
+      "list": "/api/running/v1/route-simulations",
+      "create": "/api/running/v1/route-simulations",
+      "detail": "/api/running/v1/route-simulations/:id",
+      "preview": "/api/running/v1/route-simulations/preview",
+      "ai_strategy": "/api/running/v1/route-simulations/:id/ai-strategy"
+    },
+    "app_misc": {
+      "chat": "/api/chat",
+      "trade_chat": "/api/trade-chat",
+      "docs": "/api/docs",
+      "inngest": "/api/inngest",
+      "map_directions": "/api/map-directions",
+      "map_match": "/api/map-match"
     }
   },
   "test_ids": {
@@ -612,18 +683,8 @@
       "next_race_location": "nextRaceLocation",
       "next_race_target_time": "nextRaceTargetTime",
       "next_race_progress_bar": "nextRaceProgressBar",
-      "activity_calendar_card": "activityCalendarCard",
-      "recent_activities_card": "recentActivitiesCard",
-      "ai_coach_card": "aiCoachCard",
-      "ai_coach_loading": "aiCoachLoading_dashboardPage",
-      "ai_coach_empty": "aiCoachEmpty_dashboardPage",
-      "ai_coach_error": "aiCoachError_dashboardPage",
-      "ai_coach_content": "aiCoachContent_dashboardPage",
-      "ai_coach_retry_btn": "aiCoachRetryBtn_dashboardPage",
-      "health_checkin_card": "healthCheckinCard",
       "skeleton": "dashboardSkeleton",
       "error": "dashboardError",
-      "performance_trends_card": "performanceTrendsCard",
       "sync_status_bar": "syncStatusBar",
       "sync_btn": "syncBtn_dashboard",
       "sync_result_msg": "syncResultMsg",
@@ -632,7 +693,23 @@
       "streak_card": "streakCard_dashboardPage",
       "streak_current": "streakCurrent_dashboardPage",
       "streak_best": "streakBest_dashboardPage",
-      "streak_at_risk": "streakAtRisk_dashboardPage"
+      "streak_at_risk": "streakAtRisk_dashboardPage",
+      "weekly_stats_week_filter": "weeklyStatsWeekFilter_dashboardPage",
+      "weekly_stats_moving_pace": "weeklyStatsMovingPace_dashboardPage",
+      "weekly_stats_elapsed_pace": "weeklyStatsElapsedPace_dashboardPage",
+      "activity_type_filter_all": "activityTypeFilterAll_dashboardPage",
+      "activity_type_filter": "activityTypeFilter",
+      "activity_section": "activitySection",
+      "calendar_prev_month_btn": "calendarPrevMonthBtn_dashboardPage",
+      "calendar_next_month_btn": "calendarNextMonthBtn_dashboardPage",
+      "calendar_grid": "calendarGrid_dashboardPage",
+      "calendar_day": "calendarDay",
+      "calendar_error": "calendarError_dashboardPage",
+      "calendar_retry_btn": "calendarRetryBtn_dashboardPage",
+      "calendar_empty": "calendarEmpty_dashboardPage",
+      "recent_activity_btn": "recentActivityBtn",
+      "recent_activities_empty": "recentActivitiesEmpty_dashboardPage",
+      "see_all_activities_link": "seeAllActivitiesLink_dashboardPage"
     },
     "running_ai_coach": {
       "page": "aiCoachPage",
@@ -720,9 +797,10 @@
       "loading_skeleton": "loadingSkeleton_productHistoryPage"
     },
     "running_gear": {
-      "page": "gearPage",
+      "page": "shoeRotationSection_dashboardPage",
       "loading_skeleton": "gearLoadingSkeleton",
       "error": "gearError",
+      "retry_btn": "shoeRotationRetryBtn_dashboardPage",
       "list": "gearList",
       "gear_card": "gearCard",
       "category_input": "gearCategoryInput",
@@ -952,8 +1030,6 @@
     "running_profile_settings": {
       "section": "profileSection_settings",
       "loading": "profileLoading_settings",
-      "load_error": "profileLoadError_settings",
-      "form": "profileForm_settings",
       "birth_date_input": "birthDateInput_settings",
       "sex_select": "sexSelect_settings",
       "height_input": "heightInput_settings",
@@ -1073,8 +1149,6 @@
       "max_hr_detect_error": "maxHrDetectError_settingsPage",
       "resting_hr_input": "restingHrInput_settingsPage",
       "threshold_hr_input": "thresholdHrInput_settingsPage",
-      "threshold_hr_auto_fill_btn": "thresholdHrAutoFillBtn_settingsPage",
-      "threshold_hr_no_max_hr": "thresholdHrNoMaxHr_settingsPage",
       "hr_zones_method_select": "hrZonesMethodSelect_settingsPage",
       "hr_zones_save_btn": "hrZonesSaveBtn_settingsPage",
       "hr_zones_save_success": "hrZonesSaveSuccess_settingsPage",
@@ -1091,6 +1165,25 @@
       "pace_zones_save_success": "paceZonesSaveSuccess_settingsPage",
       "pace_zones_save_error": "paceZonesSaveError_settingsPage",
       "strava_disconnect_btn": "stravaDisconnectBtn_settings",
+      "profile_load_error": "profileLoadError_settingsPage",
+      "profile_retry_btn": "profileRetryBtn_settingsPage",
+      "hr_zones_load_error": "hrZonesLoadError_settingsPage",
+      "hr_zones_retry_btn": "hrZonesRetryBtn_settingsPage",
+      "pace_zones_load_error": "paceZonesLoadError_settingsPage",
+      "strava_connection_error": "stravaConnectionError_settings",
+      "strava_retry_btn": "stravaRetryBtn_settings",
+      "strava_connect_btn": "stravaConnectBtn_settings",
+      "strava_last_synced_text": "stravaLastSyncedText_settings",
+      "strava_sync_block": "stravaSyncBlock_settings",
+      "strava_sync_btn": "syncStravaBtn_settings",
+      "strava_sync_notice_msg": "syncNoticeMsg_settings",
+      "strava_oauth_error": "stravaOauthError_settings",
+      "strava_sync_success_msg": "syncSuccessMsg_settings",
+      "strava_sync_error_msg": "syncErrorMsg_settings",
+      "strava_disconnect_dialog": "stravaDisconnectDialog_settings",
+      "strava_disconnect_cancel_btn": "stravaDisconnectCancelBtn_settings",
+      "strava_disconnect_confirm_btn": "stravaDisconnectConfirmBtn_settings",
+      "strava_disconnect_error": "stravaDisconnectError_settings",
       "danger_zone_delete_btn": "dangerZoneDeleteBtn_settingsPage",
       "danger_zone_dialog": "dangerZoneDialog_settingsPage",
       "danger_zone_confirm_input": "dangerZoneConfirmInput_settingsPage",
@@ -1210,7 +1303,60 @@
       "fullscreen_controls_overlay": "fullscreenControlsOverlay_routeBuilderPage",
       "pace_input": "paceInput_routeBuilderPage",
       "distance_tooltip": "distanceTooltip_routeBuilderPage",
-      "estimated_time": "estimatedTime_routeBuilderPage"
+      "estimated_time": "estimatedTime_routeBuilderPage",
+      "fullscreen_clear_btn": "fullscreenClearBtn_routeBuilderPage",
+      "fullscreen_route_name_input": "fullscreenRouteNameInput_routeBuilderPage",
+      "fullscreen_save_btn": "fullscreenSaveBtn_routeBuilderPage",
+      "map_error": "mapError_routeBuilderPage",
+      "map_retry_btn": "mapRetryBtn_routeBuilderPage",
+      "retry_saved_routes_btn": "retrySavedRoutesBtn_routeBuilderPage",
+      "delete_route_modal": "deleteRouteModal_{id}_routeBuilderPage",
+      "cancel_delete_route_btn": "cancelDeleteRouteBtn_{id}_routeBuilderPage",
+      "confirm_delete_route_btn": "confirmDeleteRouteBtn_{id}_routeBuilderPage"
+    },
+    "running_route_simulator": {
+      "page": "routeSimulatorPage",
+      "simulator_input_card": "simulatorInputCard_routeSimulatorPage",
+      "source_gpx": "sourceGpx_routeSimulatorPage",
+      "source_activity": "sourceActivity_routeSimulatorPage",
+      "gpx_upload": "gpxUpload_routeSimulatorPage",
+      "choose_gpx_btn": "chooseGpxBtn_routeSimulatorPage",
+      "activity_select": "activitySelect_routeSimulatorPage",
+      "activities_loading": "activitiesLoading_routeSimulatorPage",
+      "activities_error": "activitiesError_routeSimulatorPage",
+      "retry_activities_btn": "retryActivitiesBtn_routeSimulatorPage",
+      "target_pace": "targetPace_routeSimulatorPage",
+      "target_time": "targetTime_routeSimulatorPage",
+      "target_pace_input": "targetPaceInput_routeSimulatorPage",
+      "target_time_input": "targetTimeInput_routeSimulatorPage",
+      "simulate_btn": "simulateBtn_routeSimulatorPage",
+      "sim_name_input": "simNameInput_routeSimulatorPage",
+      "save_simulation_btn": "saveSimulationBtn_routeSimulatorPage",
+      "saved_simulations_card": "savedSimulationsCard_routeSimulatorPage",
+      "saved_simulations_loading": "savedSimulationsLoading_routeSimulatorPage",
+      "saved_simulations_error": "savedSimulationsError_routeSimulatorPage",
+      "saved_simulations_empty": "savedSimulationsEmpty_routeSimulatorPage",
+      "saved_simulations_list": "savedSimulationsList_routeSimulatorPage",
+      "retry_saved_simulations_btn": "retrySavedSimulationsBtn_routeSimulatorPage",
+      "saved_sim_item": "savedSim_{id}_routeSimulatorPage",
+      "view_sim_btn": "viewSimBtn_{id}_routeSimulatorPage",
+      "rename_sim_btn": "renameSimBtn_{id}_routeSimulatorPage",
+      "delete_sim_btn": "deleteSimBtn_{id}_routeSimulatorPage",
+      "edit_sim_name_input": "editSimNameInput_{id}_routeSimulatorPage",
+      "confirm_rename_sim_btn": "confirmRenameSimBtn_{id}_routeSimulatorPage",
+      "cancel_rename_sim_btn": "cancelRenameSimBtn_{id}_routeSimulatorPage",
+      "delete_sim_modal": "deleteSimModal_{id}_routeSimulatorPage",
+      "cancel_delete_sim_btn": "cancelDeleteSimBtn_{id}_routeSimulatorPage",
+      "confirm_delete_sim_btn": "confirmDeleteSimBtn_{id}_routeSimulatorPage"
+    },
+    "running_route_simulation_detail": {
+      "page": "routeSimulationDetailPage",
+      "loading": "routeSimulationDetailLoading_routeSimulationDetailPage",
+      "not_found": "routeSimulationNotFound_routeSimulationDetailPage",
+      "not_found_back_btn": "notFoundBackBtn_routeSimulationDetailPage",
+      "error": "routeSimulationError_routeSimulationDetailPage",
+      "retry_btn": "retryBtn_routeSimulationDetailPage",
+      "result_card": "routeSimulationResultCard_routeSimulationDetailPage"
     },
     "trading_currency": {
       "currency_nav": "currencyNav_sidebar",

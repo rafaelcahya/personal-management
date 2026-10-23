@@ -4,10 +4,7 @@ import {
   getSubjectiveHealth,
   upsertSubjectiveHealth,
 } from '@/lib/services/running/health/subjectiveHealth'
-import { createSubjectiveHealthSchema } from '@/schemas/runningManualEntry'
-
-const MAX_LIMIT = 100
-const DEFAULT_LIMIT = 30
+import { createSubjectiveHealthSchema, healthListQuerySchema } from '@/schemas/runningManualEntry'
 
 export async function GET(request) {
   try {
@@ -25,16 +22,17 @@ export async function GET(request) {
       )
     }
 
-    const { searchParams } = new URL(request.url)
-    const from = searchParams.get('from') ?? undefined
-    const to = searchParams.get('to') ?? undefined
-    const page = parseInt(searchParams.get('page') ?? '1', 10) || 1
-    const limit = Math.min(
-      MAX_LIMIT,
-      Math.max(1, parseInt(searchParams.get('limit') ?? String(DEFAULT_LIMIT), 10) || DEFAULT_LIMIT)
+    const parsedQuery = healthListQuerySchema.safeParse(
+      Object.fromEntries(new URL(request.url).searchParams)
     )
+    if (!parsedQuery.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', issues: parsedQuery.error.issues },
+        { status: 400 }
+      )
+    }
 
-    const result = await getSubjectiveHealth(user.id, { from, to, page, limit })
+    const result = await getSubjectiveHealth(user.id, parsedQuery.data)
 
     return NextResponse.json(result, { status: 200 })
   } catch (err) {
@@ -76,7 +74,7 @@ export async function POST(request) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', issues: parsed.error.issues },
-        { status: 422 }
+        { status: 400 }
       )
     }
 

@@ -38,9 +38,18 @@ export default function SyncStravaButton({ id = 'syncStravaBtn', actions, autoSy
     try {
       const result = await syncStrava()
       setLastSyncAt(new Date().toISOString())
-      setSyncResult({ count: result.synced })
-    } catch {
-      // sync failure is non-blocking
+      if (result.backfill_started) {
+        setSyncResult({
+          count: 0,
+          message: result.message || 'Sync started, activities will appear shortly',
+        })
+      } else {
+        setSyncResult({ count: result.synced })
+      }
+    } catch (err) {
+      if (err.needsReconnect) {
+        setSyncResult({ count: 0, message: 'Strava needs reconnecting. See Settings.', warn: true })
+      }
     } finally {
       setSyncing(false)
     }
@@ -74,14 +83,20 @@ export default function SyncStravaButton({ id = 'syncStravaBtn', actions, autoSy
           <span className="hidden md:contents">{actions}</span>
           {syncResult !== null && (
             <span
+              role="status"
               className={`flex items-center gap-1.5 text-xs font-medium ${
-                syncResult.count > 0 ? 'text-green-600' : 'text-slate-400'
+                syncResult.warn
+                  ? 'text-amber-600'
+                  : syncResult.count > 0
+                    ? 'text-green-600'
+                    : 'text-slate-400'
               }`}
             >
               <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
-              {syncResult.count > 0
-                ? `${syncResult.count} new ${syncResult.count === 1 ? 'activity' : 'activities'}`
-                : 'Already up to date'}
+              {syncResult.message ??
+                (syncResult.count > 0
+                  ? `${syncResult.count} new ${syncResult.count === 1 ? 'activity' : 'activities'}`
+                  : 'Already up to date')}
             </span>
           )}
           <Button

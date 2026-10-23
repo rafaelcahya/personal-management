@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { useParams, useRouter } from 'next/navigation'
 import {
   Trophy,
@@ -33,17 +34,14 @@ import Textarea from '@/components/base/Textarea/Textarea'
 import { toast } from 'sonner'
 import {
   fetchActivity,
-  getDashboard,
   updateActivity,
   fetchRaceLog,
   fetchSubjectiveHealthByDate,
   fetchActivityStreams,
   getUserProfile,
 } from '@/lib/api/running'
-import StreamCharts from '../components/StreamCharts'
 import AIInsightCard from '../components/AIInsightCard'
 import MediaCarousel from '../components/MediaCarousel'
-import EditGoalModal from '../components/EditGoalModal'
 import SplitsSection from '../components/SplitsSection'
 import BurnBarChart from '../components/BurnBarChart'
 import LapsTable from '../components/LapsTable'
@@ -62,6 +60,13 @@ import {
   BannerDescription,
 } from '@/components/base/Banner/Banner'
 import { Badge } from '@/components/base/Badge/Badge'
+
+// The charts are the heaviest part of this page (Recharts plus about 1,100 lines), so they are
+// loaded in their own chunk instead of with the summary.
+const StreamCharts = dynamic(() => import('../components/StreamCharts'), {
+  ssr: false,
+  loading: () => <div className="h-64 animate-pulse rounded-xl bg-slate-100" aria-hidden="true" />,
+})
 
 // ─── zone classification ──────────────────────────────────────────────────────
 
@@ -136,7 +141,7 @@ function getHrZone(avgHr, method, maxHr, restingHr, thresholdHr) {
 function ZoneBadge({ zone }) {
   if (!zone) return null
   return (
-    <Badge className={`inline-flex w-fit text-[10px] rounded-full mt-0.5 ${zone.cls}`}>
+    <Badge className={`inline-flex w-fit text-2xs rounded-full mt-0.5 ${zone.cls}`}>
       {zone.name} {zone.label}
     </Badge>
   )
@@ -175,11 +180,10 @@ export default function ActivityDetailPage() {
   const [bestEfforts, setBestEfforts] = useState([])
   const [photos, setPhotos] = useState([])
   const [streams, setStreams] = useState([])
+  const [streamsResponse, setStreamsResponse] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const [nextRaceGoal, setNextRaceGoal] = useState(null)
-  const [editGoalOpen, setEditGoalOpen] = useState(false)
   const [linkedRace, setLinkedRace] = useState(null)
 
   const [healthLog, setHealthLog] = useState(undefined)
@@ -212,12 +216,10 @@ export default function ActivityDetailPage() {
       setLoading(true)
       setError(null)
       try {
-        // getDashboard is fetched eagerly for nextRaceGoal (EditGoalModal).
-        // Known: could be lazy-loaded when the modal opens — tracked as WF-2.
-        const [actRes, dashRes, raceLogRes, streamsRes, profileRes] = await Promise.allSettled([
+        // Only what the first screen needs. The race log is loaded after the summary is drawn
+        // (see the next effect); the dashboard was only used by a goal modal that nothing opens.
+        const [actRes, streamsRes, profileRes] = await Promise.allSettled([
           fetchActivity(id),
-          getDashboard(),
-          fetchRaceLog(),
           fetchActivityStreams(id),
           getUserProfile(),
         ])
@@ -244,16 +246,10 @@ export default function ActivityDetailPage() {
           } else {
             throw actRes.reason
           }
-          if (dashRes.status === 'fulfilled') {
-            setNextRaceGoal(dashRes.value?.training_load?.next_race_goal ?? null)
-          }
-          if (raceLogRes.status === 'fulfilled') {
-            const entries = raceLogRes.value?.data ?? raceLogRes.value ?? []
-            const matched = entries.find((entry) => entry.activity_id === id)
-            setLinkedRace(matched ?? null)
-          }
           if (streamsRes.status === 'fulfilled') {
             setStreams(streamsRes.value?.data ?? [])
+            // StreamCharts needs meta as well, and would otherwise download the same data again
+            setStreamsResponse(streamsRes.value ?? null)
           }
           if (profileRes.status === 'fulfilled') {
             setProfile(profileRes.value)
@@ -272,6 +268,26 @@ export default function ActivityDetailPage() {
       cancelled = true
     }
   }, [id])
+
+  // Linked-race badge and racing-weight finish time: not needed for the first screen, so this
+  // starts once the activity is there instead of competing with it.
+  const activityId = activity?.id
+  useEffect(() => {
+    if (!id || !activityId) return
+    let cancelled = false
+    fetchRaceLog()
+      .then((res) => {
+        if (cancelled) return
+        const entries = res?.data ?? res ?? []
+        setLinkedRace(entries.find((entry) => entry.activity_id === id) ?? null)
+      })
+      .catch(() => {
+        if (!cancelled) setLinkedRace(null)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [id, activityId])
 
   const activityName =
     activity?.name || (activity ? (getActivityCfg(activity).label ?? activity.activity_type) : null)
@@ -570,7 +586,7 @@ export default function ActivityDetailPage() {
                           }
                           footer={
                             activity.fuel_mode === 'avg_hr' ? (
-                              <span className="text-[10px] text-slate-400">avg HR estimate</span>
+                              <span className="text-2xs text-slate-400">avg HR estimate</span>
                             ) : null
                           }
                         />
@@ -691,7 +707,7 @@ export default function ActivityDetailPage() {
                                 footer={
                                   avg != null ? (
                                     <span
-                                      className={`inline-flex w-fit text-[10px] font-medium px-1.5 py-0.5 rounded-full mt-0.5 ${
+                                      className={`inline-flex w-fit text-2xs font-medium px-1.5 py-0.5 rounded-full mt-0.5 ${
                                         ef > avg
                                           ? 'bg-green-50 text-green-600'
                                           : ef < avg
@@ -1199,19 +1215,13 @@ export default function ActivityDetailPage() {
                     thresholdPaceSec={activity.threshold_pace_sec ?? null}
                     historicalAvgCadence={activity.historical_avg_cadence ?? null}
                     maxPaceSecPerKm={activity.max_pace_sec_per_km ?? null}
+                    streamsResponse={streamsResponse}
                   />
                 </div>
               </div>
             </>
           )
         })()}
-
-      <EditGoalModal
-        open={editGoalOpen}
-        goal={nextRaceGoal}
-        onClose={() => setEditGoalOpen(false)}
-        onSaved={(updated) => setNextRaceGoal((prev) => ({ ...prev, ...updated }))}
-      />
     </div>
   )
 }

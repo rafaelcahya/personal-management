@@ -19,8 +19,8 @@ Cypress.Commands.add('postRouteNoAuth', (body) => {
   return cy.apiRequestNoAuth('POST', BASE, { body })
 })
 
-Cypress.Commands.add('patchRoute', (id, body) => {
-  return cy.apiRequestWithSession('PATCH', `${BASE}/${id}`, { body })
+Cypress.Commands.add('patchRoute', (id, body, headers) => {
+  return cy.apiRequestWithSession('PATCH', `${BASE}/${id}`, { body, headers })
 })
 
 Cypress.Commands.add('patchRouteNoAuth', (id, body) => {
@@ -33,4 +33,32 @@ Cypress.Commands.add('deleteRoute', (id) => {
 
 Cypress.Commands.add('deleteRouteNoAuth', (id) => {
   return cy.apiRequestNoAuth('DELETE', `${BASE}/${id}`)
+})
+
+const EXPORT_GPX = constants.endpoints.running_routes.export_gpx
+const MAP_DIRECTIONS = constants.endpoints.app_misc.map_directions
+const MAP_MATCH = constants.endpoints.app_misc.map_match
+
+Cypress.Commands.add('exportRouteGpx', (id) => {
+  return cy.apiRequestWithSession('GET', EXPORT_GPX.replace(':id', id))
+})
+
+Cypress.Commands.add('exportRouteGpxNoAuth', (id) => {
+  return cy.apiRequestNoAuth('GET', EXPORT_GPX.replace(':id', id))
+})
+
+Cypress.Commands.add('postMapDirections', (body, headers) => {
+  return cy.apiRequestWithSession('POST', MAP_DIRECTIONS, { body, headers })
+})
+
+Cypress.Commands.add('postMapDirectionsNoAuth', (body) => {
+  return cy.apiRequestNoAuth('POST', MAP_DIRECTIONS, { body })
+})
+
+Cypress.Commands.add('postMapMatch', (body, headers) => {
+  return cy.apiRequestWithSession('POST', MAP_MATCH, { body, headers })
+})
+
+Cypress.Commands.add('postMapMatchNoAuth', (body) => {
+  return cy.apiRequestNoAuth('POST', MAP_MATCH, { body })
 })

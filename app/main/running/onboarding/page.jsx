@@ -597,6 +597,7 @@ export default function OnboardingPage() {
     searchParams.get('step') === '3' && !searchParams.get('strava_error')
   const [stravaConnected, setStravaConnected] = useState(stravaConnectedViaOAuth)
   const stravaError = searchParams.get('strava_error') === '1'
+  const stravaErrorReason = searchParams.get('reason')
 
   const [biometricValues, setBiometricValues] = useState({
     birth_date: format(new Date(), 'yyyy-MM-dd'),
@@ -653,7 +654,9 @@ export default function OnboardingPage() {
             onSkip={handleSkip}
             initialError={
               stravaError
-                ? 'Failed to connect Strava. Please check if your Strava account is already linked to another account.'
+                ? stravaErrorReason === 'state'
+                  ? 'Link expired, please try again.'
+                  : 'Failed to connect Strava. Please check if your Strava account is already linked to another account.'
                 : null
             }
           />

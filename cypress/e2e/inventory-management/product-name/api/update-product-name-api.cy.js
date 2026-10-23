@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../support/common/unique-name'
 
 describe('Product Name Update API', () => {
   let testProductNameId
-  let testUserId
 
   before(() => {
     cy.clearCookies()
@@ -10,7 +10,7 @@ describe('Product Name Update API', () => {
     cy.setupApiAuthCookies()
 
     const request = {
-      product_name: faker.food.fruit() + '-' + Date.now(),
+      product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
       note: faker.word.words(25),
       product_name_status: 'active',
     }
@@ -18,7 +18,6 @@ describe('Product Name Update API', () => {
     cy.AddProductName(request).then((response) => {
       expect(response.status).to.eq(201)
       testProductNameId = response.body.productName.id
-      testUserId = response.body.productName.user_id
     })
   })
 
@@ -29,7 +28,7 @@ describe('Product Name Update API', () => {
   describe('Authentication & Authorization', () => {
     it('should update product name successfully (200)', () => {
       const request = {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }
@@ -44,7 +43,7 @@ describe('Product Name Update API', () => {
     it('should return 307 or 401 without authentication', () => {
       cy.clearCookies()
       cy.UpdateProductNameNoAuth(testProductNameId, {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }).then((response) => {
@@ -56,7 +55,6 @@ describe('Product Name Update API', () => {
         }
 
         if (response.status === 401) {
-          expect(response.body.success).to.be.false
           expect(response.body.error).to.eq('Unauthorized')
         }
       })
@@ -66,7 +64,7 @@ describe('Product Name Update API', () => {
   describe('ID Validation', () => {
     it('should return 400 for non-numeric ID', () => {
       cy.UpdateProductName('abc', {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }).then((response) => {
@@ -78,7 +76,7 @@ describe('Product Name Update API', () => {
 
     it('should return 400 for missing ID', () => {
       cy.UpdateProductName(null, {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }).then((response) => {
@@ -92,7 +90,7 @@ describe('Product Name Update API', () => {
   describe('Product Name Object Structure Scenarios', () => {
     it('should update product name with all required fields', () => {
       const request = {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }
@@ -103,17 +101,15 @@ describe('Product Name Update API', () => {
         expect(productName).to.have.property('product_name')
         expect(productName).to.have.property('product_name_status')
         expect(productName).to.have.property('note')
-        expect(productName).to.have.property('user_id')
         expect(productName).to.have.property('created_at')
         expect(productName).to.have.property('updated_at')
         expect(productName).to.have.property('deleted_at')
-        expect(productName).to.have.property('uuid')
       })
     })
 
     it('should return complete updated product name object', () => {
       const request = {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }
@@ -128,15 +124,13 @@ describe('Product Name Update API', () => {
           'id',
           'note',
           'updated_at',
-          'user_id',
-          'uuid',
         ])
       })
     })
 
     it('should return correct success response structure', () => {
       const request = {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }
@@ -162,7 +156,7 @@ describe('Product Name Update API', () => {
   describe('Success Scenario', () => {
     it('should update product name successfully (200)', () => {
       const request = {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }
@@ -180,28 +174,20 @@ describe('Product Name Update API', () => {
       })
     })
 
-    it('should assign user_id from authenticated user', () => {
-      const request = {
-        product_name: faker.food.fruit() + '-' + Date.now(),
-        note: faker.word.words(25),
+    it('should not expose user_id in the response', () => {
+      cy.UpdateProductName(testProductNameId, {
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         product_name_status: 'active',
-      }
-
-      cy.UpdateProductName(testProductNameId, request).then((response) => {
+        note: faker.word.words(25),
+      }).then((response) => {
         expect(response.status).to.eq(200)
-
-        const productName = response.body.productName
-        expect(productName.user_id).to.exist
-        expect(productName.user_id).to.be.a('string')
-        expect(productName.user_id.length).to.be.greaterThan(0)
-
-        cy.log(`✅ User ID assigned: ${productName.user_id}`)
+        expect(response.body.productName).to.not.have.property('user_id')
       })
     })
 
     it('should generate timestamps (created_at, updated_at)', () => {
       const request = {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }
@@ -221,18 +207,22 @@ describe('Product Name Update API', () => {
 
     it('should not change user_id after update', () => {
       cy.UpdateProductName(testProductNameId, {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         product_name_status: 'active',
         note: faker.word.words(25),
       }).then((response) => {
         expect(response.status).to.eq(200)
-        expect(response.body.productName.user_id).to.eq(testUserId)
+        cy.getSingleProductNameFromDb(testProductNameId.toString()).then((rows) => {
+          cy.getTestUserId().then((userId) => {
+            expect(rows[0].user_id).to.eq(userId)
+          })
+        })
       })
     })
 
     it('updated_at should be more recent than created_at after update', () => {
       cy.UpdateProductName(testProductNameId, {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         product_name_status: 'active',
       }).then((response) => {
         expect(response.status).to.eq(200)
@@ -245,7 +235,7 @@ describe('Product Name Update API', () => {
   describe('Data Integrity - API vs Database Comparison', () => {
     beforeEach(() => {
       const request = {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }
@@ -330,7 +320,7 @@ describe('Product Name Update API', () => {
   describe('Business Logic — product name is deleted', () => {
     it('should auto-set deleted_at when product name is deleted', () => {
       cy.UpdateProductName(testProductNameId, {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'deleted',
       }).then((response) => {
@@ -342,7 +332,7 @@ describe('Product Name Update API', () => {
 
     it('should return 400 when deleted_at is invalid ISO date', () => {
       cy.UpdateProductName(testProductNameId, {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'deleted',
         deleted_at: 'bukan-tanggal',
@@ -355,7 +345,7 @@ describe('Product Name Update API', () => {
 
     it('should accept valid deleted_at ISO date', () => {
       cy.UpdateProductName(testProductNameId, {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'deleted',
         deleted_at: new Date().toISOString(),
@@ -397,7 +387,7 @@ describe('Product Name Update API', () => {
 
     it('should return 400 when product name status is missing', () => {
       cy.UpdateProductName(testProductNameId, {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
       }).then((response) => {
         expect(response.status).to.eq(400)
@@ -437,7 +427,7 @@ describe('Product Name Update API', () => {
     it('should update within 2000ms', () => {
       const start = Date.now()
       cy.UpdateProductName(testProductNameId, {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }).then((response) => {
@@ -511,6 +501,65 @@ describe('Product Name Update — Uniqueness Check: 409 Conflict', () => {
     }).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.success).to.be.true
+    })
+  })
+})
+
+describe('Product Name Status Validation on update (#901)', () => {
+  let targetId
+  let targetName
+
+  before(() => {
+    cy.setupApiAuthCookies()
+    targetName = 'st' + faker.string.alphanumeric(12)
+    cy.AddProductName({ product_name: targetName, product_name_status: 'active' }).then(
+      (response) => {
+        expect(response.status).to.eq(201)
+        targetId = response.body.productName.id
+      }
+    )
+  })
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  ;['apple', 'ACTIVE', 'pending'].forEach((status) => {
+    it(`returns 400 for product_name_status "${status}" and leaves the row unchanged`, () => {
+      cy.UpdateProductName(targetId, {
+        product_name: targetName,
+        product_name_status: status,
+      }).then((response) => {
+        expect(response.status).to.eq(400)
+        expect(response.body.success).to.be.false
+        expect(response.body.error).to.include(
+          'product name status must be active, inactive or deleted'
+        )
+      })
+      cy.getSingleProductNameFromDb(targetId.toString()).then((rows) => {
+        expect(rows[0].product_name_status).to.eq('active')
+      })
+    })
+  })
+
+  it('returns 400 when product_name_status is not a string', () => {
+    cy.UpdateProductName(targetId, { product_name: targetName, product_name_status: 123 }).then(
+      (response) => {
+        expect(response.status).to.eq(400)
+        expect(response.body.error).to.include(
+          'product name status must be active, inactive or deleted'
+        )
+      }
+    )
+  })
+
+  it('accepts a valid product_name_status (inactive) and stores it', () => {
+    cy.UpdateProductName(targetId, {
+      product_name: targetName,
+      product_name_status: 'inactive',
+    }).then((response) => {
+      expect(response.status).to.eq(200)
+      expect(response.body.productName.product_name_status).to.eq('inactive')
     })
   })
 })

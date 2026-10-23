@@ -59,15 +59,7 @@ Shown above the table. Collapses to a single card on mobile (collapsible trigger
 
 **Select Options (loaded on form open):**
 
-All options are loaded in a single call to `/api/trade/v1/trade/options/all`. Individual endpoints also exist per type.
-
-| Option         | Endpoint                                   |
-| -------------- | ------------------------------------------ |
-| Stock Type     | `GET /api/trade/v1/options/stock-type`     |
-| Entry Session  | `GET /api/trade/v1/options/entry-session`  |
-| Entry Occasion | `GET /api/trade/v1/options/entry-occasion` |
-| Buy Reason     | `GET /api/trade/v1/options/buy-reason`     |
-| Sell Reason    | `GET /api/trade/v1/options/sell-reason`    |
+All options (stock type, entry session, entry occasion, buy reason, sell reason) are loaded in a single call to `GET /api/trade/v1/trade/options/all`. There are no per-type endpoints.
 
 **Validations:**
 

@@ -61,7 +61,7 @@ export async function POST(req) {
     const [{ data: tradeList }, { data: feeList }, { data: eventList }, { data: settings }] =
       await Promise.all([
         supabase
-          .from('trade_list')
+          .from('trd_trade_list')
           .select(
             'buy_date,sell_date,ticker,margin,proceeds,return_percent,realized_gain,entry_session_option,buy_reason_option,sell_reason_option,entry_occasion_option,stock_type_option,notes'
           )
@@ -70,21 +70,21 @@ export async function POST(req) {
           .order('sell_date', { ascending: false, nullsFirst: false })
           .limit(200),
         supabase
-          .from('fee_list')
+          .from('trd_fee_list')
           .select('fee_name,fee,fee_date')
           .eq('user_id', user.id)
           .is('deleted_at', null)
           .order('fee_date', { ascending: false })
           .limit(100),
         supabase
-          .from('event_list')
+          .from('trd_event_list')
           .select('event_description,impact_direction,event_date,is_favorite')
           .eq('user_id', user.id)
           .is('deleted_at', null)
           .order('event_date', { ascending: false })
           .limit(50),
         supabase
-          .from('settings')
+          .from('trd_settings')
           .select('initial_margin,bi_risk_free_rate,personal_risk_free_rate,margin_of_error')
           .eq('user_id', user.id)
           .limit(1)

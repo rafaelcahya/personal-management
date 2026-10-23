@@ -385,32 +385,32 @@ describe('Activity Detail API — PATCH (validation errors)', () => {
     cy.setupApiAuthCookies()
   })
 
-  it('returns 422 when body is empty (at-least-one-field refinement)', function () {
+  it('returns 400 when body is empty (at-least-one-field refinement)', function () {
     if (!activityId) this.skip()
     cy.patchActivity(activityId, {}).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
       expect(res.body).to.have.property('error')
     })
   })
 
-  it('returns 422 when activity_type is an unrecognised enum value', function () {
+  it('returns 400 when activity_type is an unrecognised enum value', function () {
     if (!activityId) this.skip()
     cy.patchActivity(activityId, { activity_type: 'ultra' }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when notes exceeds 2000 characters', function () {
+  it('returns 400 when notes exceeds 2000 characters', function () {
     if (!activityId) this.skip()
     cy.patchActivity(activityId, { notes: 'x'.repeat(2001) }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when perceived_exertion is out of range (> 10)', function () {
+  it('returns 400 when perceived_exertion is out of range (> 10)', function () {
     if (!activityId) this.skip()
     cy.patchActivity(activityId, { perceived_exertion: 11 }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 })
@@ -472,48 +472,48 @@ describe('Activities API — POST create (authenticated)', () => {
     })
   })
 
-  it('returns 422 when started_at is missing', () => {
+  it('returns 400 when started_at is missing', () => {
     cy.postActivity({ duration_sec: 1800, distance_m: 5000 }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when duration_sec is missing', () => {
+  it('returns 400 when duration_sec is missing', () => {
     cy.postActivity({
       started_at: '2025-01-01T06:00:00.000Z',
       distance_m: 5000,
     }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when distance_m is missing', () => {
+  it('returns 400 when distance_m is missing', () => {
     cy.postActivity({
       started_at: '2025-01-01T06:00:00.000Z',
       duration_sec: 1800,
     }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when duration_sec is negative', () => {
+  it('returns 400 when duration_sec is negative', () => {
     cy.postActivity({
       started_at: '2025-01-01T06:00:00.000Z',
       duration_sec: -100,
       distance_m: 5000,
     }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 
-  it('returns 422 when activity_type is invalid enum value', () => {
+  it('returns 400 when activity_type is invalid enum value', () => {
     cy.postActivity({
       started_at: '2025-01-01T06:00:00.000Z',
       duration_sec: 1800,
       distance_m: 5000,
       activity_type: 'Run',
     }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
     })
   })
 })
@@ -678,17 +678,18 @@ describe('Streams API — Unauthenticated', () => {
   })
 })
 
-// ─── lazy compute metrics ─────────────────────────────────────────────────────
+// ─── streams with data (#844) ────────────────────────────────────
+// The test account has no stream rows, so a 30 minute run (1 Hz, 1,800 points) is seeded.
 
-describe('Lazy Compute Metrics — eligible activity (long + has HR)', () => {
-  let eligibleId
+describe('Streams API — with data (#844)', () => {
+  const POINTS = 1800
+  let seededId
 
   before(() => {
     cy.setupApiAuthCookies()
-    findActivities(
-      (a) => (a.moving_time_sec ?? a.duration_sec ?? 0) > 1200 && a.avg_hr != null
-    ).then((matches) => {
-      if (matches.length > 0) eligibleId = matches[0].id
+    cy.deleteActivityWithStreamsFromDb()
+    cy.seedActivityWithStreamsInDb(POINTS).then((seed) => {
+      seededId = seed.activityId
     })
   })
 
@@ -696,8 +697,158 @@ describe('Lazy Compute Metrics — eligible activity (long + has HR)', () => {
     cy.setupApiAuthCookies()
   })
 
-  it('returns 200 with at least one derived metric non-null', function () {
-    if (!eligibleId) this.skip()
+  after(() => {
+    cy.deleteActivityWithStreamsFromDb()
+  })
+
+  it('returns meta with the real number of points and the sensors found', () => {
+    cy.getActivityStreams(seededId, { resolution: 'raw' }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.meta).to.deep.eq({
+        total_points: POINTS,
+        returned_points: POINTS,
+        resolution: 'raw',
+        has_hr: true,
+        has_cadence: true,
+        has_altitude: true,
+      })
+    })
+  })
+
+  it('returns every field on each point', () => {
+    cy.getActivityStreams(seededId, { resolution: '60s' }).then((res) => {
+      res.body.data.forEach((point) => {
+        expect(point).to.have.all.keys(
+          't',
+          'dist_m',
+          'hr',
+          'cadence',
+          'alt',
+          'pace',
+          'velocity',
+          'lat',
+          'lng'
+        )
+        expect(point.t).to.be.a('number')
+      })
+    })
+  })
+
+  it('starts at t = 0 and t rises with every point', () => {
+    cy.getActivityStreams(seededId, { resolution: 'raw' }).then((res) => {
+      const ts = res.body.data.map((p) => p.t)
+      expect(ts[0]).to.eq(0)
+      expect(ts[ts.length - 1]).to.eq(POINTS - 1)
+      ts.slice(1).forEach((t, i) => expect(t).to.be.greaterThan(ts[i]))
+    })
+  })
+
+  ;[
+    ['raw', POINTS],
+    ['10s', POINTS / 10],
+    ['30s', POINTS / 30],
+    ['60s', POINTS / 60],
+  ].forEach(([resolution, expected]) => {
+    it(`downsamples to ${expected} points at resolution ${resolution}`, () => {
+      cy.getActivityStreams(seededId, { resolution }).then((res) => {
+        expect(res.status).to.eq(200)
+        expect(res.body.meta.total_points).to.eq(POINTS)
+        expect(res.body.meta.returned_points).to.eq(expected)
+        expect(res.body.data).to.have.length(expected)
+        expect(res.body.meta.resolution).to.eq(resolution)
+      })
+    })
+  })
+
+  it('uses 10s when no resolution is given', () => {
+    cy.getActivityStreams(seededId).then((res) => {
+      expect(res.body.meta.resolution).to.eq('10s')
+      expect(res.body.data).to.have.length(POINTS / 10)
+    })
+  })
+
+  it('keeps heart rate and distance values from the stored rows', () => {
+    cy.getActivityStreams(seededId, { resolution: 'raw' }).then((res) => {
+      const first = res.body.data[0]
+      const last = res.body.data[POINTS - 1]
+      expect(first.hr).to.eq(140)
+      expect(last.hr).to.be.within(155, 160)
+      expect(last.dist_m).to.be.greaterThan(first.dist_m)
+    })
+  })
+
+  it('responds within 3000ms for a 30 minute run', () => {
+    const start = Date.now()
+    cy.getActivityStreams(seededId).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(Date.now() - start).to.be.lte(3000)
+    })
+  })
+})
+
+// ─── cross-user isolation (#844) ─────────────────────────────────
+// Read-only on purpose: CYPRESS_OTHER_USER_ACTIVITY_ID belongs to a real account, so only GET
+// is sent and the other account is never modified.
+
+describe('Activities API — cross-user isolation (read-only, #844)', () => {
+  let foreignId
+
+  before(() => {
+    foreignId = Cypress.env('OTHER_USER_ACTIVITY_ID')
+  })
+
+  beforeEach(function () {
+    if (!foreignId) {
+      cy.log('OTHER_USER_ACTIVITY_ID not set, skipping')
+      this.skip()
+    }
+    cy.setupApiAuthCookies()
+  })
+
+  it("detail returns 404 for another user's activity", () => {
+    cy.getActivityDetail(foreignId).then((res) => {
+      expect(res.status).to.eq(404)
+    })
+  })
+
+  it("streams returns 404 for another user's activity", () => {
+    cy.getActivityStreams(foreignId).then((res) => {
+      expect(res.status).to.eq(404)
+    })
+  })
+
+  it("list never contains another user's activity", () => {
+    cy.getActivities({ limit: 100 }).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.data.some((a) => a.id === foreignId)).to.be.false
+    })
+  })
+})
+
+// ─── lazy compute metrics ─────────────────────────────────────────────────────
+
+describe('Lazy Compute Metrics — eligible activity (long + has HR)', () => {
+  let eligibleId
+
+  // The derived metrics need streams, and the test account has none, so seed a 30 minute run
+  // with heart rate instead of searching for one (this used to skip both tests).
+  before(() => {
+    cy.setupApiAuthCookies()
+    cy.deleteActivityWithStreamsFromDb()
+    cy.seedActivityWithStreamsInDb(1800).then((seed) => {
+      eligibleId = seed.activityId
+    })
+  })
+
+  after(() => {
+    cy.deleteActivityWithStreamsFromDb()
+  })
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  it('returns 200 with at least one derived metric non-null', () => {
     cy.getActivityDetail(eligibleId).then((res) => {
       expect(res.status).to.eq(200)
       const act = res.body.activity
@@ -709,8 +860,7 @@ describe('Lazy Compute Metrics — eligible activity (long + has HR)', () => {
     })
   })
 
-  it('two successive GETs return identical derived metric values (idempotency)', function () {
-    if (!eligibleId) this.skip()
+  it('two successive GETs return identical derived metric values (idempotency)', () => {
     cy.getActivityDetail(eligibleId).then((first) => {
       expect(first.status).to.eq(200)
       cy.getActivityDetail(eligibleId).then((second) => {

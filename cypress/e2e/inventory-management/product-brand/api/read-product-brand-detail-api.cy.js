@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../support/common/unique-name'
 
 describe('Product Brand Detail API', () => {
   let testProductBrandId
@@ -12,7 +13,7 @@ describe('Product Brand Detail API', () => {
     cy.setupApiAuthCookies()
 
     request = {
-      brand_status: faker.food.fruit(),
+      brand_status: 'active',
       note: faker.word.words(25),
       brand: faker.string.alphanumeric(10),
     }

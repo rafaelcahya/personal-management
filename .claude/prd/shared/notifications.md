@@ -8,7 +8,7 @@ Every alert goes through one function, `notify()`:
 
 1. It saves the notification in the **notification list** (the bell). This always happens.
 2. It sends a **push** to every device you turned push on for — unless you turned push off for that type.
-3. A push that can't be delivered never breaks step 1. Failures are recorded in `push_delivery_log`; dead devices (the push service says "gone") are removed on their own.
+3. A push that can't be delivered never breaks step 1. Failures are recorded in `app_push_delivery_log`; dead devices (the push service says "gone") are removed on their own.
 
 Used by: the 7 Running alerts (post-activity, weekly review, Friday prep, anomaly, race reminder, personal record, gear mileage) and Inventory low stock.
 
@@ -60,9 +60,9 @@ Mobile: single column, remove and test buttons at least 44px tall.
 
 ### 10.6 Data
 
-- `push_subscriptions` — one row per device: `user_id`, `endpoint` (unique), `p256dh`, `auth`, `user_agent`, `created_at`, `last_seen_at`, `last_success_at`. You can read and delete your own rows; the server writes them.
-- `notification_preferences` — `user_id` + `type` → `push_enabled`. No row means on.
-- `push_delivery_log` — one row per push attempt (kept 30 days).
+- `app_push_subscriptions` — one row per device: `user_id`, `endpoint` (unique), `p256dh`, `auth`, `user_agent`, `created_at`, `last_seen_at`, `last_success_at`. You can read and delete your own rows; the server writes them.
+- `app_notification_preferences` — `user_id` + `type` → `push_enabled`. No row means on.
+- `app_push_delivery_log` — one row per push attempt (kept 30 days).
 - The old columns `rt_user_settings.push_subscription`, `push_notifications_enabled`, and `notify_*` are no longer used. They stay for now and get removed in a later cleanup.
 
 ### 10.7 Acceptance criteria

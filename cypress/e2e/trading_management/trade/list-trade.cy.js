@@ -3,9 +3,11 @@ import { faker } from '@faker-js/faker'
 describe('Trade List API - GET /api/trade/v1/trade/list', () => {
   let testUserId
   let testTradeIds = []
+  let testTickers = []
 
   const makeTradeRequest = () => ({
-    trade_date: faker.date.recent(),
+    buy_date: faker.date.recent({ days: 10 }).toISOString().slice(0, 10),
+    sell_date: faker.date.recent({ days: 5 }).toISOString().slice(0, 10),
     ticker: faker.word.noun(4).toUpperCase(),
     margin: faker.string.numeric(5),
     proceeds: faker.string.numeric(5),
@@ -30,6 +32,7 @@ describe('Trade List API - GET /api/trade/v1/trade/list', () => {
         const trade = response.body.trade
         testUserId = trade.user_id
         testTradeIds.push(trade.id)
+        testTickers.push(trade.ticker)
       })
     })
   })
@@ -73,10 +76,10 @@ describe('Trade List API - GET /api/trade/v1/trade/list', () => {
   })
 
   it('returns all created test trades in data.trades', () => {
-    cy.GetListTrade().then((response) => {
-      expect(response.status).to.eq(200)
-      expect(response.body.data.trades.length).to.be.gte(testTradeIds.length)
-      testTradeIds.forEach((id) => {
+    // The test account holds 1000+ trades, so created ones are not on page 1
+    testTradeIds.forEach((id, i) => {
+      cy.GetListTrade({ ticker: testTickers[i], limit: 100 }).then((response) => {
+        expect(response.status).to.eq(200)
         expect(response.body.data.trades.some((t) => t.id === id)).to.be.true
       })
     })
@@ -95,13 +98,14 @@ describe('Trade List API - GET /api/trade/v1/trade/list', () => {
     })
   })
 
-  it('sorts trades by trade_date DESC', () => {
+  it('sorts trades by sell_date DESC, nulls last', () => {
     cy.GetListTrade().then((response) => {
       const trades = response.body.data.trades
-      for (let i = 0; i < trades.length - 1; i++) {
-        const date1 = new Date(trades[i].trade_date)
-        const date2 = new Date(trades[i + 1].trade_date)
-        expect(date1.getTime()).to.gte(date2.getTime())
+      const dated = trades.filter((t) => t.sell_date)
+      for (let i = 0; i < dated.length - 1; i++) {
+        expect(new Date(dated[i].sell_date).getTime()).to.gte(
+          new Date(dated[i + 1].sell_date).getTime()
+        )
       }
     })
   })

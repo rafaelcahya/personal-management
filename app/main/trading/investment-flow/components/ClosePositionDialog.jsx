@@ -36,9 +36,7 @@ import { formatRupiah } from '@/lib/utils/currencyFormatter'
 import { cn } from '@/lib/utils'
 
 const closeFormSchema = z.object({
-  proceeds: z
-    .number({ invalid_type_error: 'Proceeds is required' })
-    .nonnegative('Proceeds cannot be negative'),
+  proceeds: z.number({ error: 'Proceeds is required' }).nonnegative('Proceeds cannot be negative'),
   cash_category_id: z.string().uuid('Select a cash pool to receive the proceeds'),
 })
 
@@ -165,7 +163,7 @@ export default function ClosePositionDialog({
                 <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2.5">
                   <div className="flex flex-col">
                     <span className="text-xs font-medium text-slate-500">Realized P&amp;L</span>
-                    <span className="text-[11px] text-slate-400">
+                    <span className="text-2xs text-slate-400">
                       {formatRupiah(proceeds)} − {formatRupiah(nominal)}
                     </span>
                   </div>

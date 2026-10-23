@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../support/common/unique-name'
 
 describe('Product Name Add API and Database Comparison', () => {
   beforeEach(() => {
@@ -13,7 +14,7 @@ describe('Product Name Add API and Database Comparison', () => {
         cy.clearApiAuth()
 
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -22,18 +23,17 @@ describe('Product Name Add API and Database Comparison', () => {
           expect(response.status).to.be.oneOf([307, 401])
 
           if (response.status === 401) {
-            expect(response.body.success).to.be.false
             expect(response.body.error).to.eq('Unauthorized')
+          } else {
+            const location = response.headers.location || response.body
+            expect(String(location)).to.include('/login')
           }
-
-          const location = response.headers.location || response.body
-          expect(String(location)).to.include('/login')
         })
       })
 
       it('should return 201 when user is authenticated', () => {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -136,7 +136,7 @@ describe('Product Name Add API and Database Comparison', () => {
     describe('Product name Object Structure Scenarios', () => {
       it('should create product name with all required fields', () => {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -151,7 +151,7 @@ describe('Product Name Add API and Database Comparison', () => {
 
       it('should return correct success response structure', () => {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -177,7 +177,7 @@ describe('Product Name Add API and Database Comparison', () => {
     describe('Success Scenarios', () => {
       it('should create product name with all required fields', () => {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -189,9 +189,9 @@ describe('Product Name Add API and Database Comparison', () => {
         })
       })
 
-      it('should assign user_id from authenticated user', () => {
+      it('should not expose user_id in the response', () => {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -200,15 +200,13 @@ describe('Product Name Add API and Database Comparison', () => {
           expect(response.status).to.eq(201)
 
           const productName = response.body.productName
-          expect(productName.user_id).to.exist
-          expect(productName.user_id).to.be.a('string')
-          expect(productName.user_id.length).to.be.greaterThan(0)
+          expect(productName).to.not.have.property('user_id')
         })
       })
 
       it('should generate timestamps (created_at, updated_at)', () => {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -231,7 +229,7 @@ describe('Product Name Add API and Database Comparison', () => {
 
     beforeEach(() => {
       const request = {
-        product_name: faker.food.fruit() + '-' + Date.now(),
+        product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
         note: faker.word.words(25),
         product_name_status: 'active',
       }
@@ -318,7 +316,7 @@ describe('Product Name Add API and Database Comparison', () => {
         })
 
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -335,7 +333,7 @@ describe('Product Name Add API and Database Comparison', () => {
 
       it('should match totalProductNames with database count', function () {
         const request = {
-          product_name: faker.food.fruit() + '-' + Date.now(),
+          product_name: uniqueName(faker.food.fruit()) + '-' + Date.now(),
           note: faker.word.words(25),
           product_name_status: 'active',
         }
@@ -419,6 +417,50 @@ describe('Product Name Add — Uniqueness Check (409 Conflict)', () => {
     cy.AddProductName({ product_name: name, product_name_status: 'active' }).then((res) => {
       expect(res.status).to.eq(201)
       expect(res.body.success).to.be.true
+    })
+  })
+})
+
+describe('Product Name Status Validation on create (#901)', () => {
+  const newName = () => 'st' + faker.string.alphanumeric(12)
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  ;['apple', 'ACTIVE', 'pending'].forEach((status) => {
+    it(`returns 400 for product_name_status "${status}" and stores nothing`, () => {
+      const name = newName()
+      cy.AddProductName({ product_name: name, product_name_status: status }).then((response) => {
+        expect(response.status).to.eq(400)
+        expect(response.body.success).to.be.false
+        expect(response.body.error).to.include(
+          'product name status must be active, inactive or deleted'
+        )
+      })
+      cy.GetListProductName({ search: name }).then((response) => {
+        expect(response.body.data).to.have.length(0)
+      })
+    })
+  })
+
+  it('returns 400 when product_name_status is not a string', () => {
+    cy.AddProductName({ product_name: newName(), product_name_status: 123 }).then((response) => {
+      expect(response.status).to.eq(400)
+      expect(response.body.error).to.include(
+        'product name status must be active, inactive or deleted'
+      )
+    })
+  })
+
+  ;['active', 'inactive', 'deleted'].forEach((status) => {
+    it(`accepts product_name_status "${status}"`, () => {
+      cy.AddProductName({ product_name: newName(), product_name_status: status }).then(
+        (response) => {
+          expect(response.status).to.eq(201)
+          expect(response.body.productName.product_name_status).to.eq(status)
+        }
+      )
     })
   })
 })

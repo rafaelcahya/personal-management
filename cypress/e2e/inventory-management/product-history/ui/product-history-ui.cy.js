@@ -426,7 +426,7 @@ describe('Product History - True Empty State', () => {
   // Because the page uses SSR, we need a different approach:
   // stub the page route by intercepting the rendered HTML is not possible,
   // so instead we test the "no results" empty state directly by verifying
-  // the emptyState element when a user has zero product_history rows.
+  // the emptyState element when a user has zero inv_product_history rows.
   //
   // NOTE: This test is fragile if the test account already has records.
   // It is marked as conditional — if records exist, skip gracefully.

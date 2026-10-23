@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../../support/common/unique-name'
 
 describe('POST Create Product Stock API - /api/inventory/v1/product/stock/create', () => {
   let validProductListId
@@ -17,14 +18,14 @@ describe('POST Create Product Stock API - /api/inventory/v1/product/stock/create
     cy.setupApiAuthCookies()
 
     cy.AddProductBrand({
-      brand: faker.food.fruit(),
+      brand: uniqueName(faker.food.fruit()),
       brand_status: 'active',
       note: faker.word.words(5),
     }).then((brandRes) => {
       expect(brandRes.status).to.eq(201)
 
       cy.AddProductName({
-        product_name: faker.food.ingredient(),
+        product_name: uniqueName(faker.food.ingredient()),
         product_name_status: 'active',
       }).then((nameRes) => {
         expect(nameRes.status).to.eq(201)

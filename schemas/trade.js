@@ -8,21 +8,21 @@ export const tradeListQuerySchema = z.object({
 
 export const tradeSchema = z.object({
   // z.date() for browser form use (DatePicker returns Date objects)
-  buy_date: z.date({ required_error: 'Please select a buy date' }).nullable().optional(),
-  sell_date: z.date({ required_error: 'Please select a sell date' }).nullable().optional(),
+  buy_date: z.date({ error: 'Please select a buy date' }).nullable().optional(),
+  sell_date: z.date({ error: 'Please select a sell date' }).nullable().optional(),
   ticker: z
-    .string()
+    .string({ error: 'Ticker is required' })
     .min(1, 'Ticker is required')
     .max(10, 'Ticker must not exceed 10 characters')
     .transform((val) => val.toUpperCase()),
   margin: z
-    .string()
+    .string({ error: 'Margin is required' })
     .min(1, 'Margin is required')
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
       message: 'Margin must be a positive number',
     }),
   proceeds: z
-    .string()
+    .string({ error: 'Proceeds is required' })
     .min(1, 'Proceeds is required')
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
       message: 'Proceeds must be a positive number',
@@ -53,6 +53,10 @@ export const createTradeServerSchema = tradeSchema.extend({
   buy_date: dateString,
   sell_date: dateString,
 })
+
+// Update takes any subset of the create fields; a field that is sent is checked like on create.
+// Unknown keys (user_id, id, ...) are dropped by the schema.
+export const updateTradeServerSchema = createTradeServerSchema.partial()
 
 export const dailyPnlQuerySchema = z.object({
   year: z.coerce

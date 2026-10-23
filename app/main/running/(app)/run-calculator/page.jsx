@@ -307,7 +307,7 @@ export default function RunCalculatorPage() {
               {paceCalc && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
                   <div className="flex flex-col gap-0.5 bg-violet-50 rounded-lg px-3 py-2.5">
-                    <span className="text-[10px] font-semibold text-violet-400 uppercase tracking-wide">
+                    <span className="text-2xs font-semibold text-violet-400 uppercase tracking-wide">
                       Pace
                     </span>
                     <span
@@ -318,7 +318,7 @@ export default function RunCalculatorPage() {
                     </span>
                   </div>
                   <div className="flex flex-col gap-0.5 bg-slate-50 rounded-lg px-3 py-2.5">
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+                    <span className="text-2xs font-semibold text-slate-400 uppercase tracking-wide">
                       Pace
                     </span>
                     <span
@@ -329,7 +329,7 @@ export default function RunCalculatorPage() {
                     </span>
                   </div>
                   <div className="flex flex-col gap-0.5 bg-slate-50 rounded-lg px-3 py-2.5">
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+                    <span className="text-2xs font-semibold text-slate-400 uppercase tracking-wide">
                       Speed
                     </span>
                     <span
@@ -340,7 +340,7 @@ export default function RunCalculatorPage() {
                     </span>
                   </div>
                   <div className="flex flex-col gap-0.5 bg-slate-50 rounded-lg px-3 py-2.5">
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+                    <span className="text-2xs font-semibold text-slate-400 uppercase tracking-wide">
                       Speed
                     </span>
                     <span
@@ -376,7 +376,7 @@ export default function RunCalculatorPage() {
                       placeholder="00"
                       className={inputClass}
                     />
-                    <span className="text-[10px] text-slate-400">MM</span>
+                    <span className="text-2xs text-slate-400">MM</span>
                   </div>
                   <span className="text-slate-400 font-medium pb-3">:</span>
                   <div className="flex flex-col items-center gap-0.5">
@@ -390,7 +390,7 @@ export default function RunCalculatorPage() {
                       placeholder="00"
                       className={inputClass}
                     />
-                    <span className="text-[10px] text-slate-400">SS</span>
+                    <span className="text-2xs text-slate-400">SS</span>
                   </div>
                 </div>
                 {parseInt(projPaceSec, 10) >= 60 && (
@@ -452,7 +452,7 @@ export default function RunCalculatorPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                   {projCalc.result.type === 'time' ? (
                     <div className="flex flex-col gap-0.5 bg-violet-50 rounded-lg px-3 py-2.5">
-                      <span className="text-[10px] font-semibold text-violet-400 uppercase tracking-wide">
+                      <span className="text-2xs font-semibold text-violet-400 uppercase tracking-wide">
                         Estimated Time
                       </span>
                       <span
@@ -464,7 +464,7 @@ export default function RunCalculatorPage() {
                     </div>
                   ) : (
                     <div className="flex flex-col gap-0.5 bg-violet-50 rounded-lg px-3 py-2.5">
-                      <span className="text-[10px] font-semibold text-violet-400 uppercase tracking-wide">
+                      <span className="text-2xs font-semibold text-violet-400 uppercase tracking-wide">
                         Estimated Distance
                       </span>
                       <span
@@ -476,7 +476,7 @@ export default function RunCalculatorPage() {
                     </div>
                   )}
                   <div className="flex flex-col gap-0.5 bg-slate-50 rounded-lg px-3 py-2.5">
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+                    <span className="text-2xs font-semibold text-slate-400 uppercase tracking-wide">
                       Avg Pace
                     </span>
                     <span
@@ -534,7 +534,7 @@ export default function RunCalculatorPage() {
                     }`}
                   >
                     <span
-                      className={`text-[10px] font-semibold uppercase tracking-wide ${
+                      className={`text-2xs font-semibold uppercase tracking-wide ${
                         unit === 'km' ? 'text-violet-400' : 'text-slate-400'
                       }`}
                     >
@@ -555,7 +555,7 @@ export default function RunCalculatorPage() {
                     }`}
                   >
                     <span
-                      className={`text-[10px] font-semibold uppercase tracking-wide ${
+                      className={`text-2xs font-semibold uppercase tracking-wide ${
                         unit === 'mi' ? 'text-violet-400' : 'text-slate-400'
                       }`}
                     >

@@ -168,14 +168,17 @@ export default function RaceDetailPage() {
         >
           <ChevronLeft className="size-4" />
         </Button>
-        <PageHeader
-          title={entry?.title ?? 'Race Detail'}
-          breadcrumbs={[
-            { label: 'Running', href: '/main/running/dashboard' },
-            { label: 'Race Log', href: '/main/running/race-log' },
-            { label: entry?.title ?? 'Detail' },
-          ]}
-        />
+        {/* min-w-0 lets the breadcrumb truncate a long title instead of widening the row */}
+        <div className="min-w-0 flex-1">
+          <PageHeader
+            title={entry?.title ?? 'Race Detail'}
+            breadcrumbs={[
+              { label: 'Running', href: '/main/running/dashboard' },
+              { label: 'Race Log', href: '/main/running/race-log' },
+              { label: entry?.title ?? 'Detail' },
+            ]}
+          />
+        </div>
       </div>
 
       {loading && <PageSkeleton />}

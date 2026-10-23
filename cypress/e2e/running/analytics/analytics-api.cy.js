@@ -1075,7 +1075,7 @@ describe('Analytics AI Generate API — POST validation (authenticated)', () => 
     cy.setupApiAuthCookies()
   })
 
-  it('returns 422 (or 500 on DB error) when type=post_activity without activity_id', () => {
+  it('returns 400 (or 500 on DB error) when type=post_activity without activity_id', () => {
     cy.getCookie('sb-access-token').then((cookie) => {
       cy.request({
         method: 'POST',
@@ -1084,15 +1084,15 @@ describe('Analytics AI Generate API — POST validation (authenticated)', () => 
         body: { type: 'post_activity' },
         failOnStatusCode: false,
       }).then((res) => {
-        expect([422, 500]).to.include(res.status)
-        if (res.status === 422) {
+        expect([400, 500]).to.include(res.status)
+        if (res.status === 400) {
           expect(res.body).to.have.property('error')
         }
       })
     })
   })
 
-  it('returns 422 (or 500 on DB error) when focus is invalid', () => {
+  it('returns 400 (or 500 on DB error) when focus is invalid', () => {
     cy.getCookie('sb-access-token').then((cookie) => {
       cy.request({
         method: 'POST',
@@ -1101,7 +1101,7 @@ describe('Analytics AI Generate API — POST validation (authenticated)', () => 
         body: { type: 'post_activity', activity_id: 'some-id', focus: 'invalid_focus_value' },
         failOnStatusCode: false,
       }).then((res) => {
-        expect([422, 500]).to.include(res.status)
+        expect([400, 500]).to.include(res.status)
       })
     })
   })
@@ -1198,7 +1198,7 @@ describe('Analytics AI Staleness API — GET (authenticated)', () => {
     })
   })
 
-  it('rejects invalid section param → 422 (or 500 on DB error)', () => {
+  it('rejects invalid section param → 400 (or 500 on DB error)', () => {
     cy.getCookie('sb-access-token').then((cookie) => {
       cy.request({
         method: 'GET',
@@ -1206,8 +1206,8 @@ describe('Analytics AI Staleness API — GET (authenticated)', () => {
         headers: cookie?.value ? { Authorization: `Bearer ${cookie.value}` } : {},
         failOnStatusCode: false,
       }).then((res) => {
-        expect([422, 500]).to.include(res.status)
-        if (res.status === 422) {
+        expect([400, 500]).to.include(res.status)
+        if (res.status === 400) {
           expect(res.body).to.have.property('error')
         }
       })

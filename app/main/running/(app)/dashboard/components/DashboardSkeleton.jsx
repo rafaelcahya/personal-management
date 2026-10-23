@@ -52,15 +52,6 @@ export default function DashboardSkeleton() {
         <Skeleton className="h-4 w-28 rounded" />
         <Skeleton className="h-80 rounded-xl" />
       </div>
-
-      {/* PerformanceTrends — tabs + chart */}
-      <div className="flex flex-col gap-3">
-        <Skeleton className="h-4 w-36 rounded" />
-        <Skeleton className="h-64 rounded-xl" />
-      </div>
-
-      {/* AiCoachPlaceholder */}
-      <Skeleton className="h-20 rounded-xl" />
     </div>
   )
 }

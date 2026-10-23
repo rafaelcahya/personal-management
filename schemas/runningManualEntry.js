@@ -64,3 +64,37 @@ export const patchWeightSchema = z
     notes: z.string().max(500).optional(),
   })
   .refine((obj) => Object.keys(obj).length > 0, { message: 'At least one field must be provided' })
+
+export const uuidParamSchema = z.object({ id: z.uuid({ error: 'Invalid id' }) })
+
+const MAX_PAGE_LIMIT = 100
+const DEFAULT_PAGE_LIMIT = 30
+
+// A form that submits `?from=&limit=` should behave like the params were left out.
+const emptyToUndefined = (schema) => z.preprocess((v) => (v === '' ? undefined : v), schema)
+
+const dateOrDatetime = z
+  .string()
+  .refine((v) => /^\d{4}-\d{2}-\d{2}([T ].+)?$/.test(v) && !Number.isNaN(Date.parse(v)), {
+    error: 'Must be a valid date or ISO datetime',
+  })
+
+// Limits above the max are clamped, not rejected, so older clients asking for more keep working.
+export const healthListQuerySchema = z
+  .object({
+    page: emptyToUndefined(z.coerce.number().int().min(1).default(1)),
+    limit: emptyToUndefined(
+      z.coerce
+        .number()
+        .int()
+        .min(1)
+        .default(DEFAULT_PAGE_LIMIT)
+        .transform((n) => Math.min(n, MAX_PAGE_LIMIT))
+    ),
+    from: emptyToUndefined(dateOrDatetime.optional()),
+    to: emptyToUndefined(dateOrDatetime.optional()),
+  })
+  .refine((q) => !q.from || !q.to || Date.parse(q.from) <= Date.parse(q.to), {
+    error: '`from` must not be after `to`',
+    path: ['from'],
+  })

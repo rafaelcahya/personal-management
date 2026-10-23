@@ -18,7 +18,7 @@
 // IDOR test setup: the "PUT /read IDOR protection" suite needs a notification
 // row owned by a user other than CYPRESS_TEST_EMAIL. Seed one via Supabase
 // before running, then pass its id as an env var:
-//   insert into notifications (user_id, type, title, message, is_read)
+//   insert into app_notifications (user_id, type, title, message, is_read)
 //   values ('<some-other-auth-user-id>', 'product_update', 'IDOR test row', 'seed', false)
 //   returning id;
 // npx cypress run --config-file=cypress.config.js --headed --browser chrome \
@@ -136,6 +136,11 @@ describe('Notifications API — GET list response shape (authenticated)', () => 
       'product_update',
       'pr_achieved',
       'gear_mileage',
+      'low_stock',
+      'strava_disconnected',
+      'restock_reminder',
+      'event_analysis_ready',
+      'weekly_summary',
     ]
     cy.getNotifications().then((res) => {
       const { items } = res.body.data
@@ -253,30 +258,30 @@ describe('Notifications API — GET list validation (authenticated)', () => {
     cy.setupApiAuthCookies()
   })
 
-  it('?status=invalid_status returns 422', () => {
+  it('?status=invalid_status returns 400', () => {
     cy.getNotifications({ status: 'invalid_status' }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
       expect(res.body).to.have.property('issues')
     })
   })
 
-  it('?limit=51 (over max) returns 422', () => {
+  it('?limit=51 (over max) returns 400', () => {
     cy.getNotifications({ limit: 51 }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
       expect(res.body).to.have.property('issues')
     })
   })
 
-  it('?limit=0 returns 422', () => {
+  it('?limit=0 returns 400', () => {
     cy.getNotifications({ limit: 0 }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
       expect(res.body).to.have.property('issues')
     })
   })
 
-  it('?page=0 returns 422', () => {
+  it('?page=0 returns 400', () => {
     cy.getNotifications({ page: 0 }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
       expect(res.body).to.have.property('issues')
     })
   })
@@ -343,23 +348,23 @@ describe('Notifications API — PUT /read (authenticated)', () => {
     })
   })
 
-  it('returns 422 when id is missing', () => {
+  it('returns 400 when id is missing', () => {
     cy.putNotificationRead({}).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
       expect(res.body).to.have.property('issues')
     })
   })
 
-  it('returns 422 when id is not a valid number (e.g. a string word)', () => {
+  it('returns 400 when id is not a valid number (e.g. a string word)', () => {
     cy.putNotificationRead({ id: 'not-a-number' }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
       expect(res.body).to.have.property('issues')
     })
   })
 
-  it('returns 422 when id is negative', () => {
+  it('returns 400 when id is negative', () => {
     cy.putNotificationRead({ id: -1 }).then((res) => {
-      expect(res.status).to.eq(422)
+      expect(res.status).to.eq(400)
       expect(res.body).to.have.property('issues')
     })
   })

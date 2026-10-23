@@ -1,6 +1,6 @@
 export async function getSingleProductFromDb(supabase, productId, userId) {
   const { data, error } = await supabase
-    .from('product_list')
+    .from('inv_product_list')
     .select('*')
     .eq('id', productId)
     .eq('user_id', userId)
@@ -16,7 +16,7 @@ export async function getSingleProductFromDb(supabase, productId, userId) {
 
 export async function getProductListFromDb(supabase, userId) {
   const { data, error } = await supabase
-    .from('product_list')
+    .from('inv_product_list')
     .select('*')
     .eq('user_id', userId)
     .is('deleted_at', null)
@@ -29,7 +29,7 @@ export async function getProductListFromDb(supabase, userId) {
 
 export async function getTotalProductsFromDb(supabase, userId) {
   const { count, error } = await supabase
-    .from('product_list')
+    .from('inv_product_list')
     .select('*', { count: 'exact', head: true })
     .eq('user_id', userId)
     .is('deleted_at', null)
@@ -41,30 +41,30 @@ export async function getTotalProductsFromDb(supabase, userId) {
 export async function getProductSummaryFromDb(supabase, userId) {
   const [r1, r2, r3, r4, r5] = await Promise.all([
     supabase
-      .from('product_list')
+      .from('inv_product_list')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
       .is('deleted_at', null),
     supabase
-      .from('product_list')
+      .from('inv_product_list')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
       .eq('product_status', 'active')
       .is('deleted_at', null),
     supabase
-      .from('product_list')
+      .from('inv_product_list')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
       .eq('product_status', 'inactive')
       .is('deleted_at', null),
     supabase
-      .from('product_list')
+      .from('inv_product_list')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
       .eq('is_favorite', true)
       .is('deleted_at', null),
     supabase
-      .from('product_list')
+      .from('inv_product_list')
       .select('quantity, usage_quantity')
       .eq('user_id', userId)
       .is('deleted_at', null)
@@ -90,7 +90,7 @@ export async function getProductSummaryFromDb(supabase, userId) {
 
 export async function getSingleProductIncludeDeletedFromDb(supabase, productId, userId) {
   const { data, error } = await supabase
-    .from('product_list')
+    .from('inv_product_list')
     .select('*')
     .eq('id', productId)
     .eq('user_id', userId)
@@ -105,7 +105,7 @@ export async function getSingleProductIncludeDeletedFromDb(supabase, productId, 
 
 export async function getProductWithQuantityFromDb(supabase, productId, userId) {
   const { data, error } = await supabase
-    .from('product_list')
+    .from('inv_product_list')
     .select('id, quantity, usage_quantity, product_status, usage_date, note, updated_at')
     .eq('id', productId)
     .eq('user_id', userId)
@@ -121,7 +121,7 @@ export async function getProductWithQuantityFromDb(supabase, productId, userId) 
 
 export async function getLatestProductHistoryFromDb(supabase, productListId, userId) {
   const { data, error } = await supabase
-    .from('product_history')
+    .from('inv_product_history')
     .select('*')
     .eq('product_list_id', productListId)
     .eq('user_id', userId)
@@ -138,7 +138,7 @@ export async function getLatestProductHistoryFromDb(supabase, productListId, use
 
 export async function setProductQuantityInDb(supabase, productId, quantity) {
   const { data, error } = await supabase
-    .from('product_list')
+    .from('inv_product_list')
     .update({ quantity })
     .eq('id', productId)
     .select()
@@ -150,7 +150,7 @@ export async function setProductQuantityInDb(supabase, productId, quantity) {
 
 export async function getProductHistoryCountFromDb(supabase, productId, userId) {
   const { count, error } = await supabase
-    .from('product_history')
+    .from('inv_product_history')
     .select('*', { count: 'exact', head: true })
     .eq('product_list_id', productId)
     .eq('user_id', userId)
@@ -161,7 +161,7 @@ export async function getProductHistoryCountFromDb(supabase, productId, userId) 
 
 export async function getProductFavoriteStatusFromDb(supabase, productId, userId) {
   const { data, error } = await supabase
-    .from('product_list')
+    .from('inv_product_list')
     .select('id, is_favorite, updated_at')
     .eq('id', productId)
     .eq('user_id', userId)
@@ -182,19 +182,20 @@ export async function insertProductHistoryFromDb(
   startUsageDate,
   depletedQuantity
 ) {
-  // Fetch denormalized fields from product_list so the history row satisfies NOT NULL constraints
+  // Fetch denormalized fields from inv_product_list so the history row satisfies NOT NULL constraints
   const { data: pl, error: plErr } = await supabase
-    .from('product_list')
+    .from('inv_product_list')
     .select('product, brand, type, quantity, product_status')
     .eq('id', productListId)
     .single()
 
-  if (plErr) throw new Error(`Failed to fetch product_list for history insert: ${plErr.message}`)
+  if (plErr)
+    throw new Error(`Failed to fetch inv_product_list for history insert: ${plErr.message}`)
 
   const remainingQty = Math.max(0, Number(pl.quantity) - Number(depletedQuantity))
 
   const { data, error } = await supabase
-    .from('product_history')
+    .from('inv_product_history')
     .insert({
       product_list_id: productListId,
       user_id: userId,
@@ -215,13 +216,13 @@ export async function insertProductHistoryFromDb(
 }
 
 /**
- * Insert a fully-denormalized product_history record for UI test seeding.
+ * Insert a fully-denormalized inv_product_history record for UI test seeding.
  * Allows setting all display fields (product, brand, type, status, quantity, dates, note)
- * without requiring a real product_list row.
+ * without requiring a real inv_product_list row.
  */
 export async function insertFullProductHistoryFromDb(supabase, record) {
   const { data, error } = await supabase
-    .from('product_history')
+    .from('inv_product_history')
     .insert({
       user_id: record.userId,
       product_list_id: record.productListId ?? null,
@@ -246,11 +247,11 @@ export async function insertFullProductHistoryFromDb(supabase, record) {
 }
 
 /**
- * Delete all product_history records seeded for a given userId during UI tests.
+ * Delete all inv_product_history records seeded for a given userId during UI tests.
  * Pass an array of ids to only remove specific rows.
  */
 export async function deleteProductHistoryFromDb(supabase, userId, ids = []) {
-  let query = supabase.from('product_history').delete().eq('user_id', userId)
+  let query = supabase.from('inv_product_history').delete().eq('user_id', userId)
 
   if (ids.length > 0) {
     query = query.in('id', ids)

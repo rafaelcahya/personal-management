@@ -1,24 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Button from '@/components/base/Button/Button'
-import {
-  Footprints,
-  Bike,
-  Waves,
-  Mountain,
-  Dumbbell,
-  Zap,
-  Timer,
-  Map,
-  Trophy,
-  Heart,
-  Activity,
-  PersonStanding,
-  Wind,
-  RefreshCw,
-  CheckCircle2,
-} from 'lucide-react'
+import { RefreshCw, CheckCircle2 } from 'lucide-react'
 import { getDashboard, syncStrava, fetchUpcomingRaces, fetchActivityTypes } from '@/lib/api/running'
 import WeeklyStats from './components/WeeklyStats'
 import TrainingLoad from './components/TrainingLoad'
@@ -32,43 +16,32 @@ import PageHeader from '@/app/main/components/PageHeader'
 import FitnessAgeTile from './components/FitnessAgeTile'
 import EnduranceScoreTile from './components/EnduranceScoreTile'
 import StreakCard from './components/StreakCard'
+import { getCfg } from './utils/activityDisplay'
+import LazyMount from '@/app/main/running/components/LazyMount'
 
-const ACTIVITY_CONFIG = {
-  Run: { icon: Footprints, color: 'text-violet-600', bg: 'bg-violet-50', label: 'Run' },
-  TrailRun: { icon: Mountain, color: 'text-amber-600', bg: 'bg-amber-50', label: 'Trail Run' },
-  VirtualRun: {
-    icon: Footprints,
-    color: 'text-violet-400',
-    bg: 'bg-violet-50',
-    label: 'Virtual Run',
-  },
-  Walk: { icon: PersonStanding, color: 'text-green-600', bg: 'bg-green-50', label: 'Walk' },
-  Hike: { icon: Mountain, color: 'text-amber-700', bg: 'bg-amber-50', label: 'Hike' },
-  Ride: { icon: Bike, color: 'text-blue-600', bg: 'bg-blue-50', label: 'Ride' },
-  VirtualRide: { icon: Bike, color: 'text-blue-400', bg: 'bg-blue-50', label: 'Virtual Ride' },
-  MountainBikeRide: { icon: Bike, color: 'text-orange-600', bg: 'bg-orange-50', label: 'MTB' },
-  GravelRide: { icon: Bike, color: 'text-stone-600', bg: 'bg-stone-50', label: 'Gravel' },
-  Swim: { icon: Waves, color: 'text-cyan-600', bg: 'bg-cyan-50', label: 'Swim' },
-  WeightTraining: { icon: Dumbbell, color: 'text-slate-600', bg: 'bg-slate-100', label: 'Weights' },
-  Yoga: { icon: Wind, color: 'text-teal-600', bg: 'bg-teal-50', label: 'Yoga' },
-  easy: { icon: Footprints, color: 'text-green-600', bg: 'bg-green-50', label: 'Easy' },
-  tempo: { icon: Zap, color: 'text-orange-600', bg: 'bg-orange-50', label: 'Tempo' },
-  interval: { icon: Timer, color: 'text-red-600', bg: 'bg-red-50', label: 'Interval' },
-  long: { icon: Map, color: 'text-blue-600', bg: 'bg-blue-50', label: 'Long' },
-  race: { icon: Trophy, color: 'text-purple-600', bg: 'bg-purple-50', label: 'Race' },
-  recovery: { icon: Heart, color: 'text-slate-500', bg: 'bg-slate-100', label: 'Recovery' },
-}
-
-const DEFAULT_CONFIG = { icon: Activity, color: 'text-slate-500', bg: 'bg-slate-100', label: null }
 const SYNC_COOLDOWN_MIN = 30
-
-function getConfig(type) {
-  return ACTIVITY_CONFIG[type] ?? DEFAULT_CONFIG
-}
 
 function shouldAutoSync(lastSyncAt) {
   if (!lastSyncAt) return true
   return (Date.now() - new Date(lastSyncAt).getTime()) / 60000 > SYNC_COOLDOWN_MIN
+}
+
+function formatSyncMessage(result) {
+  if (result.message) return result.message
+  if (result.count > 0) {
+    return `${result.count} new ${result.count === 1 ? 'activity' : 'activities'}`
+  }
+  return 'Already up to date'
+}
+
+// Keeps the Strava round trip off the critical rendering path
+function afterFirstPaint(cb) {
+  if (typeof window.requestIdleCallback === 'function') {
+    const handle = window.requestIdleCallback(cb, { timeout: 2000 })
+    return () => window.cancelIdleCallback(handle)
+  }
+  const handle = setTimeout(cb, 200)
+  return () => clearTimeout(handle)
 }
 
 function formatRelativeTime(isoString) {
@@ -93,6 +66,10 @@ export default function RunningDashboardPage() {
   const [syncing, setSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState(null)
   const [error, setError] = useState(null)
+  // Refs because the auto-sync callback is scheduled from an older render
+  const activeTypeRef = useRef(null)
+  const syncingRef = useRef(false)
+  const cancelAutoSyncRef = useRef(null)
 
   async function loadDashboard(type = null, { isFilter = false, silent = false } = {}) {
     if (isFilter) setFiltering(true)
@@ -117,18 +94,33 @@ export default function RunningDashboardPage() {
   }
 
   async function runSync() {
+    if (syncingRef.current) return
+    // A manual click makes the still-pending auto-sync redundant
+    cancelAutoSyncRef.current?.()
+    syncingRef.current = true
     setSyncing(true)
     setSyncResult(null)
     try {
       const result = await syncStrava()
       setLastSyncAt(new Date().toISOString())
-      setSyncResult({ count: result.synced })
-      if (result.synced > 0) {
-        await loadDashboard(activeType, { silent: true })
+      if (result.backfill_started) {
+        setSyncResult({
+          count: 0,
+          message: result.message || 'Sync started, activities will appear shortly',
+        })
+      } else {
+        setSyncResult({ count: result.synced })
+        if (result.synced > 0) {
+          await loadDashboard(activeTypeRef.current, { silent: true })
+        }
       }
-    } catch {
-      // sync failure is non-blocking — dashboard data is still shown
+    } catch (err) {
+      // other failures are non-blocking — dashboard data is still shown
+      if (err.needsReconnect) {
+        setSyncResult({ count: 0, message: 'Strava needs reconnecting. See Settings.', warn: true })
+      }
     } finally {
+      syncingRef.current = false
       setSyncing(false)
     }
   }
@@ -140,6 +132,7 @@ export default function RunningDashboardPage() {
   }, [])
 
   useEffect(() => {
+    let cancelled = false
     async function init() {
       const [data] = await Promise.all([
         loadDashboard(),
@@ -147,16 +140,21 @@ export default function RunningDashboardPage() {
           .then((res) => setUpcomingRaces(res.data ?? []))
           .catch(() => setUpcomingRaces([])),
       ])
-      if (data && shouldAutoSync(data.last_sync_at)) {
-        await runSync()
+      if (!cancelled && data && shouldAutoSync(data.last_sync_at)) {
+        cancelAutoSyncRef.current = afterFirstPaint(runSync)
       }
     }
     init()
+    return () => {
+      cancelled = true
+      cancelAutoSyncRef.current?.()
+    }
   }, [])
 
   function handleTypeSelect(type) {
     const next = activeType === type ? null : type
     setActiveType(next)
+    activeTypeRef.current = next
     setSyncResult(null)
     loadDashboard(next, { isFilter: true })
   }
@@ -185,22 +183,26 @@ export default function RunningDashboardPage() {
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs text-slate-400 font-medium">Filter:</span>
                 <Button
+                  id="activityTypeFilterAll_dashboardPage"
                   variant="ghost"
                   size="xs"
+                  aria-pressed={activeType === null}
                   onClick={() => handleTypeSelect(null)}
                   className={`rounded-full ${activeType === null ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
                 >
                   All
                 </Button>
                 {availableTypes.map((type) => {
-                  const cfg = getConfig(type)
+                  const cfg = getCfg(type)
                   const Icon = cfg.icon
                   const isActive = activeType === type
                   return (
                     <Button
                       key={type}
+                      id={`activityTypeFilter_${type}_dashboardPage`}
                       variant="ghost"
                       size="xs"
+                      aria-pressed={isActive}
                       onClick={() => handleTypeSelect(type)}
                       className={`rounded-full ${isActive ? `${cfg.bg} ${cfg.color} ring-1 ring-current` : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
                     >
@@ -216,7 +218,7 @@ export default function RunningDashboardPage() {
               id="syncStatusBar"
               className="rounded-lg bg-slate-50 border border-slate-200/70 px-4 py-2.5"
             >
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
                 <div className="flex items-center gap-1.5 text-xs text-slate-400">
                   <span>Last synced:</span>
                   <span className="font-medium text-slate-500">
@@ -224,49 +226,37 @@ export default function RunningDashboardPage() {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  {syncResult !== null && (
-                    <span
-                      id="syncResultMsg"
-                      className={`hidden sm:flex items-center gap-1.5 text-xs font-medium ${
-                        syncResult.count > 0 ? 'text-green-600' : 'text-slate-400'
-                      }`}
-                    >
-                      <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
-                      {syncResult.count > 0
-                        ? `${syncResult.count} new ${syncResult.count === 1 ? 'activity' : 'activities'}`
-                        : 'Already up to date'}
-                    </span>
-                  )}
-                  <Button
-                    id="syncBtn_dashboard"
-                    variant="ghost"
-                    size="xs"
-                    onClick={runSync}
-                    disabled={syncing}
-                    className="text-slate-500 hover:bg-slate-200"
+                {syncResult !== null && (
+                  <span
+                    id="syncResultMsg"
+                    role="status"
+                    className={`order-3 flex w-full items-center gap-1.5 text-xs font-medium sm:order-2 sm:ml-auto sm:w-auto ${
+                      syncResult.warn
+                        ? 'text-amber-600'
+                        : syncResult.count > 0
+                          ? 'text-green-600'
+                          : 'text-slate-400'
+                    }`}
                   >
-                    <RefreshCw
-                      className={`size-3 ${syncing ? 'animate-spin' : ''}`}
-                      aria-hidden="true"
-                    />
-                    {syncing ? 'Syncing…' : 'Sync'}
-                  </Button>
-                </div>
-              </div>
-
-              {syncResult !== null && (
-                <div
-                  className={`mt-1.5 sm:hidden flex items-center gap-1.5 text-xs font-medium ${
-                    syncResult.count > 0 ? 'text-green-600' : 'text-slate-400'
-                  }`}
+                    <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
+                    {formatSyncMessage(syncResult)}
+                  </span>
+                )}
+                <Button
+                  id="syncBtn_dashboard"
+                  variant="ghost"
+                  size="xs"
+                  onClick={runSync}
+                  disabled={syncing}
+                  className="order-2 text-slate-500 hover:bg-slate-200 sm:order-3"
                 >
-                  <CheckCircle2 className="size-3.5 shrink-0" aria-hidden="true" />
-                  {syncResult.count > 0
-                    ? `${syncResult.count} new ${syncResult.count === 1 ? 'activity' : 'activities'}`
-                    : 'Already up to date'}
-                </div>
-              )}
+                  <RefreshCw
+                    className={`size-3 ${syncing ? 'animate-spin' : ''}`}
+                    aria-hidden="true"
+                  />
+                  {syncing ? 'Syncing…' : 'Sync'}
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -281,7 +271,7 @@ export default function RunningDashboardPage() {
             />
           )}
           <YtdStats ytd_stats={dashboardData.training_load?.ytd_stats} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {dashboardData.fitness_age != null && (
               <FitnessAgeTile
                 fitnessAge={dashboardData.fitness_age}
@@ -295,9 +285,11 @@ export default function RunningDashboardPage() {
               />
             )}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <NextRace upcoming_races={upcomingRaces} />
-            <ShoeRotation />
+            <LazyMount minHeight={320}>
+              <ShoeRotation />
+            </LazyMount>
           </div>
           <ActivitySection
             calendarActivities={dashboardData.calendar_activities ?? []}

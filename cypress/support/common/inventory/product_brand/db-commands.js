@@ -1,19 +1,3 @@
-Cypress.Commands.add('getTestUserId', () => {
-  cy.env(['TEST_EMAIL', 'TEST_PASSWORD']).then(({ TEST_EMAIL, TEST_PASSWORD }) => {
-    return cy
-      .task('getSupabaseSession', {
-        email: TEST_EMAIL,
-        password: TEST_PASSWORD,
-      })
-      .then((session) => {
-        if (!session) {
-          throw new Error('Failed to get test user session')
-        }
-        return session.user.id
-      })
-  })
-})
-
 Cypress.Commands.add('getSingleProductBrandFromDb', (productBrandId) => {
   return cy.getTestUserId().then((userId) => {
     return cy.task('getSingleProductBrandFromDb', {
@@ -29,7 +13,7 @@ Cypress.Commands.add('getTotalProductBrandsFromDb', () => {
   })
 })
 
-// Returns the count of active (non-deleted) products in product_list linked to a given brand ID
+// Returns the count of active (non-deleted) products in inv_product_list linked to a given brand ID
 Cypress.Commands.add('getActiveProductCountByBrandFromDb', (brandId) => {
   return cy.task('getActiveProductCountByBrandFromDb', { brandId })
 })

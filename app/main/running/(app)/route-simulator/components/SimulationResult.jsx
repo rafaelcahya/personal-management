@@ -54,6 +54,7 @@ export default function SimulationResult({
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <Input
             id="simNameInput_routeSimulatorPage"
+            aria-label="Simulation name"
             placeholder="Name this simulation to save it"
             value={name}
             onChange={(e) => setName(e.target.value)}

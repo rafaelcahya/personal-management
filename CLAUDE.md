@@ -30,7 +30,7 @@ Personal productivity web app for one user, four domains: **Inventory Management
 | `.claude/prd/{shared,inventory,trading,auth,running}/` | PRD files; each folder has `index.md` (version + file list)          |
 | `.claude/skills/`                                      | How-to skills for agents (routes, services, UI, tests, reviews, git) |
 | `.claude/agents/subagents/`                            | Agent definitions                                                    |
-| `cypress/fixtures/app-constants.json`                  | Endpoint + test-id registry (Cypress runtime); keep `.yaml` in sync  |
+| `cypress/fixtures/app-constants.json`                  | Endpoint + test-id registry (Cypress runtime); `.json` only          |
 | GitHub Project 3                                       | Planning board — https://github.com/users/rafaelcahya/projects/3     |
 
 ## Agent System

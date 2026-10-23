@@ -64,7 +64,7 @@ export function ComboOption({ option, isSelected, onSelect }) {
 export function ComboGroup({ group, items, selectedValues, onSelect }) {
   return (
     <div>
-      <div className="px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+      <div className="px-3 py-1.5 text-2xs font-semibold text-muted-foreground uppercase tracking-wide">
         {group}
       </div>
       {items.map((item) => (

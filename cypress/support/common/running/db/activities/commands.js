@@ -41,3 +41,33 @@ Cypress.Commands.add('getSeededAnalyticsActivitiesFromDb', () => {
     return cy.task('getSeededAnalyticsActivitiesFromDb', { userId, tag: ANALYTICS_SEED_TAG })
   })
 })
+
+const DASHBOARD_SEED_TAG = 'cy843'
+
+Cypress.Commands.add('seedTaggedActivitiesInDb', (rows) => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('seedTaggedActivitiesInDb', { userId, tag: DASHBOARD_SEED_TAG, rows })
+  })
+})
+
+Cypress.Commands.add('deleteSeededDashboardActivitiesFromDb', () => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('deleteSeededAnalyticsActivitiesFromDb', { userId, tag: DASHBOARD_SEED_TAG })
+  })
+})
+
+const STREAMS_SEED_TAG = 'cy844'
+
+// One activity of 20+ minutes with heart rate and per-second streams (1 Hz), for the streams
+// endpoint and the lazy derived-metric compute. Delete it with deleteActivityWithStreamsFromDb.
+Cypress.Commands.add('seedActivityWithStreamsInDb', (rowCount = 1800) => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('seedActivityWithStreamsInDb', { userId, tag: STREAMS_SEED_TAG, rowCount })
+  })
+})
+
+Cypress.Commands.add('deleteActivityWithStreamsFromDb', () => {
+  return cy.getTestUserId().then((userId) => {
+    return cy.task('deleteActivityWithStreamsFromDb', { userId, tag: STREAMS_SEED_TAG })
+  })
+})

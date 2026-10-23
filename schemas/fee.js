@@ -17,6 +17,6 @@ export const feeSchema = z.object({
       message: 'Fee must be a positive number',
     }),
   fee_date: z.date({
-    required_error: 'Please select a fee date',
+    error: 'Please select a fee date',
   }),
 })

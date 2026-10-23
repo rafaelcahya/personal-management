@@ -1,8 +1,8 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import Button from '@/components/base/Button/Button'
-import { Activity, Timer, Footprints, Zap, CalendarRange } from 'lucide-react'
+import { Activity, Timer, Footprints, CalendarRange } from 'lucide-react'
 import Card, {
   CardAction,
   CardContent,
@@ -15,6 +15,7 @@ import Card, {
 import { format, startOfWeek, subWeeks, addDays } from 'date-fns'
 import { fmtDistance, fmtDuration, fmtPace } from '../utils/format'
 import { fetchWeeklyStatsForWeek } from '@/lib/api/running'
+import PaceTile from './PaceTile'
 
 const WEEK_OPTIONS = [
   { value: 0, label: 'This Week' },
@@ -35,6 +36,19 @@ function getWeekTitle(weeksAgo) {
     return `${format(start, 'MMM d')} – ${format(end, 'MMM d')}`
   }
   return `${format(start, 'MMM d, yyyy')} – ${format(end, 'MMM d, yyyy')}`
+}
+
+// Static class strings so Tailwind keeps them: 1 col on mobile, 3 on md, 5 on lg
+function tileBorder(i, n) {
+  const last = i === n - 1
+  return [
+    'border-slate-200',
+    last ? 'border-b-0' : 'border-b',
+    i % 3 === 2 || last ? 'md:border-r-0' : 'md:border-r',
+    i < 3 && n > 3 ? 'md:border-b' : 'md:border-b-0',
+    'lg:border-b-0',
+    last ? 'lg:border-r-0' : 'lg:border-r',
+  ].join(' ')
 }
 
 export default function WeeklyStats({ data, activityType = null }) {
@@ -83,7 +97,7 @@ export default function WeeklyStats({ data, activityType = null }) {
       return { label: 'No change', color: 'text-slate-400', desc: `same as ${vsLabel}` }
     const better = diff > 0
     return {
-      label: `${better ? '+' : ''}${fmtDistance(Math.abs(diff))} km`,
+      label: `${better ? '+' : '-'}${fmtDistance(Math.abs(diff))} km`,
       color: better ? 'text-green-600' : 'text-red-500',
       desc: better ? `more distance than ${vsLabel}` : `less distance than ${vsLabel}`,
     }
@@ -151,13 +165,7 @@ export default function WeeklyStats({ data, activityType = null }) {
   )
   const elapsedPaceD = singlePaceDelta(current.avg_pace_sec_per_km, prev.avg_pace_sec_per_km)
 
-  const paceDeltaDesc = hasMovingPace
-    ? movingPaceD.label !== '—' && movingPaceD.label !== 'No change'
-      ? (movingPaceD.color === 'text-green-600' ? 'faster' : 'slower') + ` than ${vsLabel}`
-      : `same as ${vsLabel}`
-    : elapsedPaceD.label !== '—' && elapsedPaceD.label !== 'No change'
-      ? (elapsedPaceD.color === 'text-green-600' ? 'faster' : 'slower') + ` than ${vsLabel}`
-      : `same as ${vsLabel}`
+  const tileCount = hasMovingPace ? 5 : 4
 
   const statTiles = [
     {
@@ -213,11 +221,11 @@ export default function WeeklyStats({ data, activityType = null }) {
               onClick={() => handleWeekSelect(opt.value)}
               disabled={loadingWeek}
               aria-pressed={selectedWeek === opt.value}
-              className={
+              className={`${
                 selectedWeek === opt.value
                   ? 'bg-violet-600 text-white hover:bg-violet-700'
                   : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-              }
+              }`}
             >
               {opt.label}
             </Button>
@@ -231,14 +239,8 @@ export default function WeeklyStats({ data, activityType = null }) {
         >
           {statTiles.map((t, i) => {
             const Icon = t.icon
-            const border =
-              i === 0
-                ? 'border-b md:border-b-0 md:border-r border-slate-200'
-                : i === 1
-                  ? 'border-b md:border-b-0 md:border-r border-slate-200'
-                  : 'border-b md:border-b-0 lg:border-r border-slate-200'
             return (
-              <div key={t.label} className={`px-4 py-3 ${border}`}>
+              <div key={t.label} className={`px-4 py-3 ${tileBorder(i, tileCount)}`}>
                 <div className="flex items-center gap-1.5 mb-2">
                   <div className={`p-1 rounded-md ${t.iconBg}`}>
                     <Icon className={`size-3 ${t.iconColor}`} aria-hidden="true" />
@@ -254,117 +256,26 @@ export default function WeeklyStats({ data, activityType = null }) {
             )
           })}
 
-          {/* Avg Pace combined — mobile + tablet only (hidden on desktop) */}
-          <div
-            className="md:col-span-3 lg:hidden md:border-t border-slate-200 px-4 py-3"
-            aria-label={`Avg Pace vs ${vsLabel}: ${paceDeltaDesc}`}
-          >
-            <div className="flex items-center gap-1.5 mb-2">
-              <div className="p-1 rounded-md bg-orange-50">
-                <Zap className="size-3 text-orange-600" aria-hidden="true" />
-              </div>
-              <span className="text-xs font-medium text-slate-500">Avg Pace</span>
-            </div>
-            {hasMovingPace ? (
-              <div className="flex items-start gap-6">
-                <div className="min-w-0">
-                  <p className="text-xl font-semibold text-slate-800 tabular-nums">
-                    {fmtPace(current.avg_moving_pace_sec_per_km)} /km
-                  </p>
-                  <p className="text-xs text-slate-400 mt-0.5">moving</p>
-                  <span className={`text-xs font-medium ${movingPaceD.color}`}>
-                    {movingPaceD.label}
-                  </span>
-                  {movingPaceD.desc && (
-                    <p className="text-xs text-slate-400 mt-0.5 leading-tight">
-                      {movingPaceD.desc}
-                    </p>
-                  )}
-                </div>
-                <div className="border-l border-slate-200 pl-6 min-w-0">
-                  <p className="text-xl font-semibold text-slate-800 tabular-nums">
-                    {current.avg_pace_sec_per_km != null
-                      ? `${fmtPace(current.avg_pace_sec_per_km)} /km`
-                      : '—'}
-                  </p>
-                  <p className="text-xs text-slate-400 mt-0.5">elapsed</p>
-                  <span className={`text-xs font-medium ${elapsedPaceD.color}`}>
-                    {elapsedPaceD.label}
-                  </span>
-                  {elapsedPaceD.desc && (
-                    <p className="text-xs text-slate-400 mt-0.5 leading-tight">
-                      {elapsedPaceD.desc}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div>
-                <p className="text-xl font-semibold text-slate-800 tabular-nums">
-                  {current.avg_pace_sec_per_km != null
-                    ? `${fmtPace(current.avg_pace_sec_per_km)} /km`
-                    : '—'}
-                </p>
-                <p className="text-xs text-slate-400 mt-0.5">elapsed</p>
-                <div className="mt-1.5">
-                  <span className={`text-xs font-medium ${elapsedPaceD.color}`}>
-                    {elapsedPaceD.label}
-                  </span>
-                  {elapsedPaceD.desc && (
-                    <p className="text-xs text-slate-400 mt-0.5 leading-tight">
-                      {elapsedPaceD.desc}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Moving Pace — desktop only, 4th col */}
           {hasMovingPace && (
-            <div className="hidden lg:block border-r border-slate-200 px-4 py-3">
-              <div className="flex items-center gap-1.5 mb-2">
-                <div className="p-1 rounded-md bg-orange-50">
-                  <Zap className="size-3 text-orange-600" aria-hidden="true" />
-                </div>
-                <span className="text-xs font-medium text-slate-500">Moving Pace</span>
-              </div>
-              <p className="text-xl font-semibold text-slate-800 tabular-nums">
-                {fmtPace(current.avg_moving_pace_sec_per_km)} /km
-              </p>
-              <div className="mt-1.5">
-                <span className={`text-xs font-medium ${movingPaceD.color}`}>
-                  {movingPaceD.label}
-                </span>
-                {movingPaceD.desc && (
-                  <p className="text-xs text-slate-400 mt-0.5 leading-tight">{movingPaceD.desc}</p>
-                )}
-              </div>
-            </div>
+            <PaceTile
+              id="weeklyStatsMovingPace_dashboardPage"
+              label="Moving Pace"
+              value={`${fmtPace(current.avg_moving_pace_sec_per_km)} /km`}
+              delta={movingPaceD}
+              className={tileBorder(3, tileCount)}
+            />
           )}
-
-          {/* Elapsed Pace — desktop only, 5th col (spans 2 if no moving pace) */}
-          <div className={`hidden lg:block px-4 py-3 ${!hasMovingPace ? 'lg:col-span-2' : ''}`}>
-            <div className="flex items-center gap-1.5 mb-2">
-              <div className="p-1 rounded-md bg-orange-50">
-                <Zap className="size-3 text-orange-600" aria-hidden="true" />
-              </div>
-              <span className="text-xs font-medium text-slate-500">Elapsed Pace</span>
-            </div>
-            <p className="text-xl font-semibold text-slate-800 tabular-nums">
-              {current.avg_pace_sec_per_km != null
+          <PaceTile
+            id="weeklyStatsElapsedPace_dashboardPage"
+            label="Elapsed Pace"
+            value={
+              current.avg_pace_sec_per_km != null
                 ? `${fmtPace(current.avg_pace_sec_per_km)} /km`
-                : '—'}
-            </p>
-            <div className="mt-1.5">
-              <span className={`text-xs font-medium ${elapsedPaceD.color}`}>
-                {elapsedPaceD.label}
-              </span>
-              {elapsedPaceD.desc && (
-                <p className="text-xs text-slate-400 mt-0.5 leading-tight">{elapsedPaceD.desc}</p>
-              )}
-            </div>
-          </div>
+                : '—'
+            }
+            delta={elapsedPaceD}
+            className={`${tileBorder(tileCount - 1, tileCount)} ${hasMovingPace ? '' : 'lg:col-span-2'}`}
+          />
         </div>
       </CardContent>
     </Card>

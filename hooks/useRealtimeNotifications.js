@@ -35,7 +35,7 @@ export function useRealtimeNotifications({ onInsert, onUpdate } = {}) {
           {
             event: 'INSERT',
             schema: 'public',
-            table: 'notifications',
+            table: 'app_notifications',
             filter: `user_id=eq.${user.id}`,
           },
           (payload) => onInsertRef.current?.(payload.new)
@@ -45,7 +45,7 @@ export function useRealtimeNotifications({ onInsert, onUpdate } = {}) {
           {
             event: 'UPDATE',
             schema: 'public',
-            table: 'notifications',
+            table: 'app_notifications',
             filter: `user_id=eq.${user.id}`,
           },
           (payload) => onUpdateRef.current?.(payload.new)

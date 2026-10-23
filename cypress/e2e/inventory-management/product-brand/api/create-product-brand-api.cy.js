@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { uniqueName } from '../../../../support/common/unique-name'
 
 describe('Product Brand Add API and Database Comparison', () => {
   beforeEach(() => {
@@ -13,7 +14,7 @@ describe('Product Brand Add API and Database Comparison', () => {
         cy.clearApiAuth()
 
         const request = {
-          brand_status: faker.food.fruit(),
+          brand_status: 'active',
           note: faker.word.words(25),
           brand: faker.string.alphanumeric(10),
         }
@@ -34,7 +35,7 @@ describe('Product Brand Add API and Database Comparison', () => {
 
       it('should return 201 when user is authenticated', () => {
         const request = {
-          brand_status: faker.food.fruit(),
+          brand_status: 'active',
           note: faker.word.words(25),
           brand: faker.string.alphanumeric(10),
         }
@@ -79,7 +80,7 @@ describe('Product Brand Add API and Database Comparison', () => {
     describe('Required Fields Validation', () => {
       it('should return 400 when brand is missing', () => {
         const request = {
-          brand_status: faker.food.fruit(),
+          brand_status: 'active',
           note: faker.word.words(25),
         }
 
@@ -93,7 +94,7 @@ describe('Product Brand Add API and Database Comparison', () => {
 
       it('should return 400 when brand is empty string', () => {
         const request = {
-          brand_status: faker.food.fruit(),
+          brand_status: 'active',
           note: faker.word.words(25),
           brand: '',
         }
@@ -108,7 +109,7 @@ describe('Product Brand Add API and Database Comparison', () => {
 
       it('should return 400 when brand is null', () => {
         const request = {
-          brand_status: faker.food.fruit(),
+          brand_status: 'active',
           note: faker.word.words(25),
           brand: null,
         }
@@ -137,7 +138,7 @@ describe('Product Brand Add API and Database Comparison', () => {
     describe('Product Brand Object Structure Scenarios', () => {
       it('should create product brand with all required fields', () => {
         const request = {
-          brand_status: faker.food.fruit(),
+          brand_status: 'active',
           note: faker.word.words(25),
           brand: faker.string.alphanumeric(10),
         }
@@ -152,7 +153,7 @@ describe('Product Brand Add API and Database Comparison', () => {
 
       it('should return correct success response structure', () => {
         const request = {
-          brand_status: faker.food.fruit(),
+          brand_status: 'active',
           note: faker.word.words(25),
           brand: faker.string.alphanumeric(10),
         }
@@ -177,7 +178,7 @@ describe('Product Brand Add API and Database Comparison', () => {
 
     describe('Uniqueness Validation', () => {
       it('should return 409 when brand name already exists (exact match)', () => {
-        const brandName = faker.food.fruit() + '-' + Date.now()
+        const brandName = uniqueName(faker.food.fruit()) + '-' + Date.now()
 
         cy.AddProductBrand({
           brand: brandName,
@@ -199,7 +200,7 @@ describe('Product Brand Add API and Database Comparison', () => {
       })
 
       it('should return 409 when brand name already exists (case-insensitive)', () => {
-        const baseName = faker.food.fruit() + '-ci-' + Date.now()
+        const baseName = uniqueName(faker.food.fruit()) + '-ci-' + Date.now()
 
         cy.AddProductBrand({
           brand: baseName.toLowerCase(),
@@ -221,7 +222,7 @@ describe('Product Brand Add API and Database Comparison', () => {
       })
 
       it('should return 201 when brand name is same as a deleted brand', () => {
-        const brandName = faker.food.fruit() + '-del-' + Date.now()
+        const brandName = uniqueName(faker.food.fruit()) + '-del-' + Date.now()
 
         cy.AddProductBrand({
           brand: brandName,
@@ -247,7 +248,7 @@ describe('Product Brand Add API and Database Comparison', () => {
       })
 
       it('should return correct 409 response structure', () => {
-        const brandName = faker.food.fruit() + '-struct-' + Date.now()
+        const brandName = uniqueName(faker.food.fruit()) + '-struct-' + Date.now()
 
         cy.AddProductBrand({
           brand: brandName,
@@ -273,7 +274,7 @@ describe('Product Brand Add API and Database Comparison', () => {
     describe('Success Scenarios', () => {
       it('should create product brand with all required fields', () => {
         const request = {
-          brand_status: faker.food.fruit(),
+          brand_status: 'active',
           note: faker.word.words(25),
           brand: faker.string.alphanumeric(10),
         }
@@ -287,7 +288,7 @@ describe('Product Brand Add API and Database Comparison', () => {
 
       it('should assign user_id from authenticated user', () => {
         const request = {
-          brand_status: faker.food.fruit(),
+          brand_status: 'active',
           note: faker.word.words(25),
           brand: faker.string.alphanumeric(10),
         }
@@ -304,7 +305,7 @@ describe('Product Brand Add API and Database Comparison', () => {
 
       it('should generate timestamps (created_at, updated_at)', () => {
         const request = {
-          brand_status: faker.food.fruit(),
+          brand_status: 'active',
           note: faker.word.words(25),
           brand: faker.string.alphanumeric(10),
         }
@@ -327,7 +328,7 @@ describe('Product Brand Add API and Database Comparison', () => {
 
     beforeEach(() => {
       const request = {
-        brand_status: faker.food.fruit(),
+        brand_status: 'active',
         note: faker.word.words(25),
         brand: faker.string.alphanumeric(10),
       }
@@ -414,7 +415,7 @@ describe('Product Brand Add API and Database Comparison', () => {
         })
 
         const request = {
-          brand_status: faker.food.fruit(),
+          brand_status: 'active',
           note: faker.word.words(25),
           brand: faker.string.alphanumeric(10),
         }
@@ -431,7 +432,7 @@ describe('Product Brand Add API and Database Comparison', () => {
 
       it('should match totalProductBrands with database count', function () {
         const request = {
-          brand_status: faker.food.fruit(),
+          brand_status: 'active',
           note: faker.word.words(25),
           brand: faker.string.alphanumeric(10),
         }
@@ -450,6 +451,44 @@ describe('Product Brand Add API and Database Comparison', () => {
               expect(apiCount).to.eq(dbCount)
             })
           })
+      })
+    })
+  })
+})
+
+describe('Product Brand Status Validation on create (#901)', () => {
+  const newName = () => 'st' + faker.string.alphanumeric(12)
+
+  beforeEach(() => {
+    cy.setupApiAuthCookies()
+  })
+
+  ;['apple', 'ACTIVE', 'pending'].forEach((status) => {
+    it(`returns 400 for brand_status "${status}" and stores nothing`, () => {
+      const name = newName()
+      cy.AddProductBrand({ brand: name, brand_status: status }).then((response) => {
+        expect(response.status).to.eq(400)
+        expect(response.body.success).to.be.false
+        expect(response.body.error).to.include('brand status must be active, inactive or deleted')
+      })
+      cy.GetListProductBrand({ search: name }).then((response) => {
+        expect(response.body.data).to.have.length(0)
+      })
+    })
+  })
+
+  it('returns 400 when brand_status is not a string', () => {
+    cy.AddProductBrand({ brand: newName(), brand_status: 123 }).then((response) => {
+      expect(response.status).to.eq(400)
+      expect(response.body.error).to.include('brand status must be active, inactive or deleted')
+    })
+  })
+
+  ;['active', 'inactive', 'deleted'].forEach((status) => {
+    it(`accepts brand_status "${status}"`, () => {
+      cy.AddProductBrand({ brand: newName(), brand_status: status }).then((response) => {
+        expect(response.status).to.eq(201)
+        expect(response.body.productBrand.brand_status).to.eq(status)
       })
     })
   })
