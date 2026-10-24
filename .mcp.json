@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "postman": {
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$env:POSTMAN_API_KEY = [Environment]::GetEnvironmentVariable('POSTMAN_API_KEY', 'User'); npx -y @postman/postman-mcp-server@2.14.0 --full"
+      ]
+    }
+  }
+}

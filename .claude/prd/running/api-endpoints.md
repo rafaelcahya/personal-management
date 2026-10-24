@@ -269,3 +269,9 @@ GET   /api/running/v1/ai/injury-coach/history      ← last 20 injury coach resp
 ```
 
 ---
+
+### 8.9 Garmin merge (#922)
+
+New Garmin endpoints and changes to activity detail, activity list, and sync status are described in `garmin-integration.md`, section 26.11. The contract is in Postman: folder **Running > Garmin merge (#922, planned)**.
+
+---

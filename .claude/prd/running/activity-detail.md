@@ -12,6 +12,7 @@
    - **Stats grid** — responsive 2–3 column grid. Only tiles with data are rendered (null-guarded). Tiles:
      - Distance (km), Avg Pace (min/km) with best pace sub-label, Moving Time with elapsed diff sub-label, Avg HR (bpm) with max HR sub-label, Cadence (spm), Elevation (↑m + ↓m loss), Calories (kcal), Relative Effort, RPE (/10), Energy (kJ), Elevation Range (high/low m), Efficiency Factor (m/s/bpm, 4 decimals), Est. VO₂max (mL/kg/min, 1 decimal)
      - Derived metrics guide text — shown when activity is a run type but `efficiency_factor`, `estimated_vo2max`, AND `aerobic_decoupling` are all null. Text: "Aerobic Decoupling, Efficiency Factor, and VO₂max estimates require heart rate data. Connect a HR monitor to your Strava activities to unlock these metrics." `data-testid="derivedMetricsGuide"`
+   - **Running Form and Training Effect** — Garmin sections, shown only when the activity has linked Garmin data (hidden otherwise). Also grade-adjusted pace, body battery cost, and sweat loss when filled. See `garmin-integration.md`, section 26.7.
    - **Pills row** — shows only when at least one value exists:
      - Power pill (violet, Zap icon) — shows weighted_avg_watts (or avg_watts if no weighted), with normalized watts note when different. Only shown when `device_watts = true`.
      - Temperature pill (color-coded by range: Cold <10°C blue, Cool 10–18°C green, Warm 18–25°C amber, Hot 25–32°C orange, Very Hot ≥32°C red) — shows °C value + text label. Thermometer icon. Info text below about temperature source. `title` attribute with explanation.

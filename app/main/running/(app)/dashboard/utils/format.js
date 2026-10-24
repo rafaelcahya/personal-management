@@ -18,3 +18,14 @@ export function fmtDate(iso) {
   const d = new Date(iso)
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
+
+export function formatRelativeTime(isoString) {
+  if (!isoString) return null
+  const diffSec = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000)
+  if (diffSec < 60) return 'just now'
+  const diffMin = Math.floor(diffSec / 60)
+  if (diffMin < 60) return `${diffMin}m ago`
+  const diffHour = Math.floor(diffMin / 60)
+  if (diffHour < 24) return `${diffHour}h ago`
+  return `${Math.floor(diffHour / 24)}d ago`
+}

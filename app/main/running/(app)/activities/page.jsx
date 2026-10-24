@@ -54,6 +54,7 @@ import Card, {
   CardTitle,
 } from '@/components/base/Card/Card'
 import { Badge } from '@/components/base/Badge/Badge'
+import GarminListChips from './components/GarminListChips'
 
 // ─── zone classification ──────────────────────────────────────────────────────
 
@@ -615,6 +616,11 @@ function ActivitiesInner() {
                                   </span>
                                 )
                               )}
+                              <GarminListChips
+                                activityId={a.id}
+                                trainingEffectLabel={a.training_effect_label}
+                                hasGarmin={a.has_garmin}
+                              />
                             </div>
                             <span className="text-xs text-slate-400">
                               {cfg.label ?? a.activity_type}

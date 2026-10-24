@@ -4,6 +4,7 @@ Decisions, priority shifts, and scope traps only — PRD version history lives i
 
 ## PRD Change Log (highlights)
 
+- 2026-10-24: Running section 26 Garmin Integration (#922), PRD v3.8. See [project_garmin_merge.md](project_garmin_merge.md).
 - 2026-06-02: Running section 5.8 + 5.2 + 8.2 — Strava connection health: `needs_reconnect` flag, Inngest exit behavior, amber banner (`stravaDisconnectBanner` / `stravaReconnectBtn`), Settings reconnect path, 401 vs 5xx classification. PRD v2.8, issue #93.
 - 2026-05-30: Running section 10.4 — EF trend arrow, VO2max trend, and Analytics page marked DONE. v1.1 post-delivery validation: 12/12 PASS. PRD v2.7.
 - 2026-05-27: Running section 13 (Race Log) synced with the real implementation: `position_place` / `position_male`, table layout, detail page, GET by id, "add from activity" flow. PRD v2.5.

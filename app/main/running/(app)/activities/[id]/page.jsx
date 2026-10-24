@@ -47,6 +47,9 @@ import BurnBarChart from '../components/BurnBarChart'
 import LapsTable from '../components/LapsTable'
 import BestEffortsTable from '../components/BestEffortsTable'
 import PerceivedEffortSection from '../components/PerceivedEffortSection'
+import RunningFormSection from '../components/RunningFormSection'
+import TrainingEffectSection from '../components/TrainingEffectSection'
+import RefreshGarminButton from '../components/RefreshGarminButton'
 import { getActivityCfg, tempStyle } from '../components/activityConfig'
 import { computeHillScore, getHillTier } from '@/lib/services/running/utils/hillScore'
 import { StatTile, SectionLabel } from '../components/activityShared'
@@ -179,6 +182,9 @@ export default function ActivityDetailPage() {
   const [laps, setLaps] = useState([])
   const [bestEfforts, setBestEfforts] = useState([])
   const [photos, setPhotos] = useState([])
+  const [garmin, setGarmin] = useState(null)
+  // Remounts the RPE picker after a Garmin refresh, which can fill the value
+  const [rpeKey, setRpeKey] = useState(0)
   const [streams, setStreams] = useState([])
   const [streamsResponse, setStreamsResponse] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -243,6 +249,7 @@ export default function ActivityDetailPage() {
             setLaps(actRes.value.laps ?? [])
             setBestEfforts(actRes.value.best_efforts ?? [])
             setPhotos(actRes.value.photos ?? [])
+            setGarmin(actRes.value.garmin ?? null)
           } else {
             throw actRes.reason
           }
@@ -269,6 +276,18 @@ export default function ActivityDetailPage() {
     }
   }, [id])
 
+  // Quiet reload: keeps the page on screen, only swaps in the fields a Garmin refresh can change
+  async function reloadAfterGarminRefresh() {
+    try {
+      const res = await fetchActivity(id)
+      setActivity(res.activity)
+      setGarmin(res.garmin ?? null)
+      setRpeKey((k) => k + 1)
+    } catch {
+      toast.error('Garmin data updated, but the page could not reload. Refresh to see it.')
+    }
+  }
+
   // Linked-race badge and racing-weight finish time: not needed for the first screen, so this
   // starts once the activity is there instead of competing with it.
   const activityId = activity?.id
@@ -294,23 +313,28 @@ export default function ActivityDetailPage() {
 
   return (
     <div id="activityDetailPage" className="flex flex-col gap-3 sm:gap-5">
-      <div className="flex items-center gap-3">
-        <Button
-          onClick={() => router.back()}
-          variant="ghost"
-          className="flex items-center justify-center size-8 rounded-lg shrink-0"
-          aria-label="Go back"
-        >
-          <ChevronLeft className="size-4" />
-        </Button>
-        <PageHeader
-          title={activityName ?? 'Activity'}
-          breadcrumbs={[
-            { label: 'Running', href: '/main/running/dashboard' },
-            { label: 'Activities', href: '/main/running/activities' },
-            { label: activityName ?? 'Detail' },
-          ]}
-        />
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0 sm:flex-1">
+          <Button
+            onClick={() => router.back()}
+            variant="ghost"
+            className="flex items-center justify-center size-8 rounded-lg shrink-0"
+            aria-label="Go back"
+          >
+            <ChevronLeft className="size-4" />
+          </Button>
+          <PageHeader
+            title={activityName ?? 'Activity'}
+            breadcrumbs={[
+              { label: 'Running', href: '/main/running/dashboard' },
+              { label: 'Activities', href: '/main/running/activities' },
+              { label: activityName ?? 'Detail' },
+            ]}
+          />
+        </div>
+        {!loading && !error && activity && (
+          <RefreshGarminButton activityId={id} onRefreshed={reloadAfterGarminRefresh} />
+        )}
       </div>
 
       {loading && <Skeleton />}
@@ -834,6 +858,9 @@ export default function ActivityDetailPage() {
                     )}
                   </div>
 
+                  <RunningFormSection garmin={garmin} />
+                  <TrainingEffectSection garmin={garmin} />
+
                   {/* Environment + aerobic decoupling pills */}
                   {(activity.avg_temp_c != null || activity.aerobic_decoupling != null) && (
                     <div className="flex flex-col gap-2">
@@ -1184,10 +1211,12 @@ export default function ActivityDetailPage() {
 
                   <div className="border-t border-slate-100" />
                   <PerceivedEffortSection
+                    key={rpeKey}
                     activityId={id}
                     initialRpe={activity.perceived_exertion ?? null}
                     movingTimeSec={activity.moving_time_sec ?? activity.duration_sec ?? null}
                     startedAt={activity.started_at ?? null}
+                    fromGarmin={activity.data_sources?.perceived_exertion_from === 'garmin'}
                   />
 
                   <div className="border-t border-slate-100" />

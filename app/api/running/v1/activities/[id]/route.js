@@ -7,6 +7,7 @@ import { computeGapSecPerKm } from '@/lib/services/running/activities/getGapPace
 import { computeBurnBar } from '@/lib/services/running/activities/getBurnBar'
 import { estimateFuelBurn } from '@/lib/services/running/utils/estimateFuelBurn'
 import { invalidateRunningAnalytics } from '@/lib/services/running/analyticsCache'
+import { getGarminForActivity } from '@/lib/services/running/garmin/getGarminForActivity'
 
 export async function GET(_request, { params }) {
   try {
@@ -77,6 +78,7 @@ export async function GET(_request, { params }) {
       maxCadenceResult,
       hrResult,
       cadenceResult,
+      garmin,
     ] = await Promise.all([
       activity.gear_id
         ? createAdminClient()
@@ -148,6 +150,7 @@ export async function GET(_request, { params }) {
         .not('avg_cadence', 'is', null)
         .neq('id', id)
         .in('activity_type', ['Run', 'TrailRun', 'VirtualRun']),
+      getGarminForActivity(supabase, user.id, id),
     ])
 
     const gearRow = gearResult.data
@@ -288,12 +291,19 @@ export async function GET(_request, { params }) {
           glucose_burned_g: fuelBurn?.glucose_burned_g ?? null,
           fat_burned_g: fuelBurn?.fat_burned_g ?? null,
           fuel_mode: fuelBurn?.fuel_mode ?? null,
+          data_sources: {
+            primary: activity.source,
+            garmin_linked: garmin != null,
+            perceived_exertion_from:
+              garmin?.rpe != null && activity.perceived_exertion === garmin.rpe ? 'garmin' : null,
+          },
         },
         splits: splitsWithGap,
         burn_bar,
         laps: laps ?? [],
         best_efforts: bestEfforts ?? [],
         photos: photos ?? [],
+        garmin,
       },
       { status: 200 }
     )
