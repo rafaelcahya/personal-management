@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:all": "node scripts/dev-all.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

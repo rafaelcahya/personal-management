@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { inngest } from '@/lib/inngest/client'
+import { sendEvent, jobsUnavailableResponse } from '@/lib/inngest/sendEvent'
 
 export async function POST(req) {
   try {
@@ -43,11 +43,13 @@ export async function POST(req) {
     }
 
     try {
-      await inngest.send({
+      await sendEvent({
         name: 'ai/generate-daily-insight',
         data: { userId: user.id, force },
       })
     } catch (err) {
+      const unavailable = jobsUnavailableResponse(err)
+      if (unavailable) return unavailable
       console.error('[ai/insights/daily] Failed to queue daily insight:', err.message)
       return NextResponse.json({ error: 'Failed to queue insight' }, { status: 500 })
     }

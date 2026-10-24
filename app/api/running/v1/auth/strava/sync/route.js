@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { refreshStravaToken } from '@/lib/services/running/strava/refreshStravaToken'
 import { inngest } from '@/lib/inngest/client'
 import { isStravaStubbed } from '@/lib/services/running/strava/stravaStub'
+import { insertStravaActivities } from '@/lib/services/running/strava/insertStravaActivities'
 import { invalidateRunningAnalytics } from '@/lib/services/running/analyticsCache'
 
 const STRAVA_ACTIVITIES_URL = 'https://www.strava.com/api/v3/athlete/activities'
@@ -171,7 +172,7 @@ export async function POST(_request) {
       const toUpdate = activities.filter((a) => existingIds.has(String(a.id)))
 
       if (toInsert.length > 0) {
-        const rows = toInsert.map((a) => ({
+        const toRow = (a) => ({
           user_id: user.id,
           source: 'strava',
           external_id: String(a.id),
@@ -210,14 +211,12 @@ export async function POST(_request) {
           has_heartrate: a.has_heartrate ?? null,
           manual: a.manual ?? null,
           perceived_exertion: a.perceived_exertion ?? null,
-        }))
+        })
 
-        const { data: insertedRows, error: insertError } = await admin
-          .from('rt_activities')
-          .insert(rows)
-          .select('id, external_id')
-
-        if (insertError) {
+        let insertedRows
+        try {
+          insertedRows = await insertStravaActivities(admin, user.id, toInsert, toRow)
+        } catch (insertError) {
           console.error('[strava/sync] insert failed:', insertError.message)
           return NextResponse.json({ error: 'Sync failed' }, { status: 500 })
         }

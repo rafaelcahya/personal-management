@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getGarminConnection } from '@/lib/services/running/garmin/getGarminConnection'
 
 export async function GET() {
   try {
@@ -17,11 +18,18 @@ export async function GET() {
       )
     }
 
-    const { data, error } = await supabase
-      .from('rt_strava_credentials')
-      .select('last_sync_at')
-      .eq('user_id', user.id)
-      .maybeSingle()
+    const [{ data, error }, garmin] = await Promise.all([
+      supabase
+        .from('rt_strava_credentials')
+        .select('last_sync_at')
+        .eq('user_id', user.id)
+        .maybeSingle(),
+      // A Garmin problem must not hide the Strava status
+      getGarminConnection(supabase, user.id).catch((err) => {
+        console.error('[running/sync/status] garmin lookup failed', err?.message)
+        return null
+      }),
+    ])
 
     if (error) {
       console.error('[running/sync/status]', error)
@@ -35,6 +43,7 @@ export async function GET() {
       {
         connected: data !== null,
         last_sync_at: data?.last_sync_at ?? null,
+        garmin,
       },
       { status: 200 }
     )

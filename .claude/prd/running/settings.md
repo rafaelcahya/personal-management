@@ -100,6 +100,10 @@ Data source: `GET /api/running/v1/user/strava-status` → `{ connected, athlete_
 
 ---
 
+#### 11.7.5a Garmin Connection
+
+The Garmin card sits next to the Strava section. States, rules, and the expiry warning are in `garmin-integration.md`, section 26.3.
+
 #### 11.7.6 Danger Zone (`DangerZoneSection.jsx`)
 
 API: `DELETE /api/running/v1/user/activities`

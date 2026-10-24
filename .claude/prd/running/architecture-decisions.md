@@ -1,14 +1,14 @@
 ## 21. Architectural Decisions (final)
 
-| #   | Question             | Decision                                | Implications                                                                                                              |
-| --- | -------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Deployment           | **Vercel**                              | Serverless — API routes run as Vercel Functions. Long-running jobs via Inngest. Scheduled jobs via Inngest cron           |
-| 2   | Database time-series | **Regular PostgreSQL** (no TimescaleDB) | Uses proper indexes on `timestamp` + `activity_id` columns. Sufficient for personal app data volumes                      |
-| 3   | AI model             | **Claude Sonnet 4.6 for all queries**   | No routing logic needed. Estimated cost ~$6.3/month                                                                       |
-| 4   | HR zones methodology | **All three methods**                   | User can pick the methodology in Settings. Default: % of Max HR (simplest). Karvonen and Lactate Threshold also available |
-| 5   | Garmin Phase 2       | **Wait** until Phase 1 is stable        | No need to apply for Garmin API now. Focus on Strava first                                                                |
-| 6   | Notification         | **Push notification (PWA)**             | Requires service worker + Web Push API. Used for: weekly review ready, training anomalies, race reminders, Friday prep    |
-| 7   | Strava disconnect    | **Default: retain historical data**     | When the user disconnects Strava, workout data stays in the DB. User can manually delete all data from the Danger Zone    |
+| #   | Question             | Decision                                                | Implications                                                                                                              |
+| --- | -------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Deployment           | **Vercel**                                              | Serverless — API routes run as Vercel Functions. Long-running jobs via Inngest. Scheduled jobs via Inngest cron           |
+| 2   | Database time-series | **Regular PostgreSQL** (no TimescaleDB)                 | Uses proper indexes on `timestamp` + `activity_id` columns. Sufficient for personal app data volumes                      |
+| 3   | AI model             | **Claude Sonnet 4.6 for all queries**                   | No routing logic needed. Estimated cost ~$6.3/month                                                                       |
+| 4   | HR zones methodology | **All three methods**                                   | User can pick the methodology in Settings. Default: % of Max HR (simplest). Karvonen and Lactate Threshold also available |
+| 5   | Garmin Phase 2       | **Official Personal API, enrich Strava** (updated #922) | Strava stays the main source. Garmin adds extra metrics, merged in our DB. See section 26                                 |
+| 6   | Notification         | **Push notification (PWA)**                             | Requires service worker + Web Push API. Used for: weekly review ready, training anomalies, race reminders, Friday prep    |
+| 7   | Strava disconnect    | **Default: retain historical data**                     | When the user disconnects Strava, workout data stays in the DB. User can manually delete all data from the Danger Zone    |
 
 ### Note: Inngest + Vercel Cron
 

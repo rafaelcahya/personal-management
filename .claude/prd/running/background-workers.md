@@ -92,6 +92,10 @@ strava-sync-poll               (every 1 hour)
   └─ If new activities found → trigger strava/fetch-streams via Inngest
 ```
 
+### Garmin jobs (#922)
+
+Three jobs: link a Garmin activity after a Strava save, a daily Garmin import, and a manual Garmin sync. Details in `garmin-integration.md`, section 26.12.
+
 ### Inngest setup
 
 Inngest requires one endpoint in the app to receive function invocations:

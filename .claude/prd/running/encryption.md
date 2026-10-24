@@ -2,11 +2,11 @@
 
 ### 16.1 What is encrypted
 
-| Data                                  | Location     | Reason                                                        |
-| ------------------------------------- | ------------ | ------------------------------------------------------------- |
-| `strava_credentials.access_token`     | DB           | Active token — if leaked, an attacker can read all activities |
-| `strava_credentials.refresh_token`    | DB           | More critical — long-lived, can generate new access tokens    |
-| `garmin_credentials.credentials_data` | DB (Phase 2) | Garmin credentials, depends on integration method             |
+| Data                                             | Location | Reason                                                                                      |
+| ------------------------------------------------ | -------- | ------------------------------------------------------------------------------------------- |
+| `strava_credentials.access_token`                | DB       | Active token — if leaked, an attacker can read all activities                               |
+| `strava_credentials.refresh_token`               | DB       | More critical — long-lived, can generate new access tokens                                  |
+| `rt_garmin_credentials` (API key + cached token) | DB       | Garmin Personal API key and access token (#922). See `garmin-integration.md`, section 26.10 |
 
 ### 16.2 Algorithm
 

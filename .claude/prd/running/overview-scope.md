@@ -57,14 +57,14 @@ The user ID in Supabase is a UUID. All tables in the Running Tracker DB use `use
 
 ### 6.2 Phase 2 — Health integration (4–6 weeks after MVP)
 
-| Module             | Description                                                         |
-| ------------------ | ------------------------------------------------------------------- |
-| Garmin integration | Official API (if approved) or unofficial library                    |
-| Health metrics     | Sleep stages, HRV, RHR, steps, body battery, stress, SpO2           |
-| Health dashboard   | Daily health card + mini trends                                     |
-| Correlation view   | 2-metric interactive overlay (3-month rolling)                      |
-| Readiness score    | Daily composite score (sleep + HRV + training load)                 |
-| AI Coach advanced  | Cross-metric reasoning, anomaly detection, readiness-based planning |
+| Module             | Description                                                                 |
+| ------------------ | --------------------------------------------------------------------------- |
+| Garmin integration | Decided: official Personal API key, enriches Strava data (section 26, #922) |
+| Health metrics     | Sleep stages, HRV, RHR, steps, body battery, stress, SpO2                   |
+| Health dashboard   | Daily health card + mini trends                                             |
+| Correlation view   | 2-metric interactive overlay (3-month rolling)                              |
+| Readiness score    | Daily composite score (sleep + HRV + training load)                         |
+| AI Coach advanced  | Cross-metric reasoning, anomaly detection, readiness-based planning         |
 
 ### 6.3 Phase 3 — Future (TBD)
 
@@ -97,7 +97,7 @@ The user ID in Supabase is a UUID. All tables in the Running Tracker DB use `use
 
 | #   | Phase                  | Scope                                                                   | Estimate              |
 | --- | ---------------------- | ----------------------------------------------------------------------- | --------------------- |
-| 9   | **Garmin integration** | Strategy TBD (official API / unofficial), credentials, sync job         | 2 weeks               |
+| 9   | **Garmin integration** | Decided: Personal API key, merge into DB (section 26, #922)             | 2 weeks               |
 | 10  | **Health UI**          | Health tabs, daily health card, mini trends per metric                  | 1.5 weeks             |
 | 11  | **Advanced analytics** | Correlation view (2-metric overlay), readiness score composite          | 1.5 weeks             |
 | 12  | **AI Coach advanced**  | Cross-metric reasoning, HRV/RHR-based anomaly detection, readiness mode | 1.5 weeks             |
@@ -120,7 +120,7 @@ The user ID in Supabase is a UUID. All tables in the Running Tracker DB use `use
 | Strava rate limit hit during backfill      | Medium     | Low    | Throttle to 80 req/15 min, queue via Inngest                                    |
 | Webhook missed events                      | Medium     | Low    | Polling fallback every 1 hour                                                   |
 | Inngest free tier limit exceeded           | Low        | Low    | 50k events/month is sufficient for a personal app. Monitor in Inngest dashboard |
-| Garmin Phase 2 more complex than estimated | Medium     | Medium | Schema already prepared, can fall back to unofficial library                    |
+| Garmin Phase 2 more complex than estimated | Medium     | Medium | Decided in section 26: official Personal API key, no unofficial library         |
 | AI cost overrun                            | Medium     | Medium | Monitor token usage, cache context                                              |
 | Data loss                                  | Low        | High   | Daily encrypted backup                                                          |
 | Strava policy change                       | Low        | Medium | Raw data stored in `activities.raw_data`, can be re-processed                   |

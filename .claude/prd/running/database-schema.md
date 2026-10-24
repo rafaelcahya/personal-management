@@ -209,12 +209,7 @@ CREATE TABLE goals (
 ### 7.2 Phase 2 tables (prepared, created when Phase 2 begins)
 
 ```sql
--- Garmin credentials (method TBD)
-CREATE TABLE garmin_credentials (
-  user_id UUID REFERENCES users(id) PRIMARY KEY,
-  credentials_data JSONB,            -- encrypted
-  last_sync_at TIMESTAMPTZ
-);
+-- Garmin credentials: replaced by rt_garmin_credentials, see garmin-integration.md section 26.10 (#922)
 
 -- Daily health aggregate from Garmin
 CREATE TABLE daily_health (

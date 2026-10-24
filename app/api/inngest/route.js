@@ -15,6 +15,8 @@ import { stravaGapHeal } from '@/lib/inngest/functions/stravaGapHeal'
 import { pruneDeliveryLog } from '@/lib/inngest/functions/pruneDeliveryLog'
 import { restockReminder } from '@/lib/inngest/functions/restockReminder'
 import { weeklySummary } from '@/lib/inngest/functions/weeklySummary'
+import { garminSync } from '@/lib/inngest/functions/garminSync'
+import { garminDailySync } from '@/lib/inngest/functions/garminDailySync'
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -34,5 +36,7 @@ export const { GET, POST, PUT } = serve({
     pruneDeliveryLog,
     restockReminder,
     weeklySummary,
+    garminSync,
+    garminDailySync,
   ],
 })

@@ -85,6 +85,8 @@ Strava sends a GET to the callback URL first for verification (see section 8.6 f
 }
 ```
 
+When Garmin is connected, each saved activity also triggers a Garmin match in the background (see `garmin-integration.md`, section 26.4). A Garmin failure never blocks the Strava save. If the same run was already imported from Garmin first, the webhook upgrades that row to Strava instead of adding a duplicate (section 26.5).
+
 ### 5.4 Initial backfill strategy
 
 ```
@@ -174,6 +176,8 @@ Dashboard (user opens app)
 5. Sync stops — no new activities will be ingested
 6. Dashboard continues to work with existing data
 ```
+
+Garmin links on those activities stay as they are. Garmin has its own connection (see `garmin-integration.md`, section 26.3).
 
 Users who want to delete their historical data can do so manually via Settings → Danger Zone → "Delete all activity data".
 

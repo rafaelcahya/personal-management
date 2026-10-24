@@ -5,6 +5,7 @@ import { Info, ChevronDown, ChevronUp } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import Button from '@/components/base/Button/Button'
 import { toast } from 'sonner'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/base/Tooltip/Tooltip'
 import { updateActivity } from '@/lib/api/running'
 import { RPE_LEVELS } from '@/lib/constants/running/rpe'
 import {
@@ -24,12 +25,15 @@ export default function PerceivedEffortSection({
   initialRpe,
   movingTimeSec,
   startedAt,
+  fromGarmin = false,
 }) {
   const [rpe, setRpe] = useState(initialRpe ?? null)
   const [hovered, setHovered] = useState(null)
   const [guideExpanded, setGuideExpanded] = useState(false)
   const [savedMsg, setSavedMsg] = useState(false)
   const [saving, setSaving] = useState(false)
+  // Server value rules on reload; any pick here makes the value the user's own
+  const [showGarminHint, setShowGarminHint] = useState(fromGarmin)
 
   const pillsRef = useRef([])
   const savedTimerRef = useRef(null)
@@ -45,8 +49,10 @@ export default function PerceivedEffortSection({
 
   async function handlePick(value) {
     const prev = rpe
+    const prevHint = showGarminHint
     const next = rpe === value ? null : value
     setRpe(next)
+    setShowGarminHint(false)
     setSaving(true)
     try {
       await updateActivity(activityId, { perceived_exertion: next })
@@ -55,6 +61,7 @@ export default function PerceivedEffortSection({
       savedTimerRef.current = setTimeout(() => setSavedMsg(false), 2000)
     } catch {
       setRpe(prev)
+      setShowGarminHint(prevHint)
       toast.error('Could not save effort rating. Please try again.')
     } finally {
       setSaving(false)
@@ -92,6 +99,20 @@ export default function PerceivedEffortSection({
         <span className="text-2xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">
           Borg CR10
         </span>
+        {showGarminHint && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                id="rpeGarminHint_activityDetailPage"
+                tabIndex={0}
+                className="text-2xs bg-violet-50 text-violet-700 px-2 py-0.5 rounded-full font-medium cursor-help focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200"
+              >
+                From Garmin
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>Filled from your watch. Pick a number to change it.</TooltipContent>
+          </Tooltip>
+        )}
         <Popover>
           <PopoverTrigger asChild>
             <Button

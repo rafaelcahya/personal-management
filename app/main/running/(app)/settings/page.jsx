@@ -4,6 +4,7 @@ import ProfileSection from './components/ProfileSection'
 import HrZonesSection from './components/HrZonesSection'
 import PaceZonesSection from './components/PaceZonesSection'
 import StravaSection from './components/StravaSection'
+import GarminSection from './components/GarminSection'
 import DangerZoneSection from './components/DangerZoneSection'
 import { useState } from 'react'
 import useSettingsProfile from './hooks/useSettingsProfile'
@@ -26,6 +27,7 @@ export default function RunningSettingsPage() {
       <HrZonesSection />
       <PaceZonesSection {...profileState} />
       <StravaSection refreshKey={stravaRefreshKey} />
+      <GarminSection />
       <DangerZoneSection onDeleted={() => setStravaRefreshKey((k) => k + 1)} />
     </div>
   )

@@ -17,6 +17,7 @@
 | [database-schema.md](./database-schema.md)                 | 8. Database Schema                                     | 9 KB  |
 | [derived-metrics.md](./derived-metrics.md)                 | 11.4 Derived Metrics                                   | 4 KB  |
 | [encryption.md](./encryption.md)                           | 17. Encryption Strategy                                | 3 KB  |
+| [garmin-integration.md](./garmin-integration.md)           | 26. Garmin Integration (Activity Merge, #922)          | 12 KB |
 | [gear.md](./gear.md)                                       | 12. Gear Management (Shoe Rotation)                    | 10 KB |
 | [injury-coach.md](./injury-coach.md)                       | 10.11 Injury & Sports Medicine AI Coach                | 14 KB |
 | [live-pace-guidance.md](./live-pace-guidance.md)           | 25. Live Pace Guidance (Run Mode, mobile app, #875)    | 12 KB |
@@ -40,8 +41,8 @@
 
 ## Personal Running & Health Performance Platform
 
-**Version:** 3.7
-**Last Updated:** 2026-10-23
+**Version:** 3.8
+**Last Updated:** 2026-10-24
 **Owner:** Rafael Cahya
 **Stack:** Next.js 15 App Router · JavaScript/JSX · Supabase (shared auth) · PostgreSQL · Tailwind CSS · Base Components · Claude AI (Sonnet 4.6) · Strava API
 
@@ -52,12 +53,13 @@
 > PRD version = document revision (tracks requirement changes).
 > Product release version = what ships to production (GitHub milestone).
 
-| Release  | Status  | GitHub Milestone                                                       | PRD Coverage                                                                                                  | Issues      |
-| -------- | ------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------- |
-| **v1.0** | Shipped | —                                                                      | RT PRD v1.0–v2.6 (all features to date: Dashboard, Activities, Race Log, Training Load, Sidebar)              | —           |
-| **v1.1** | Planned | [v1.1](https://github.com/rafaelcahya/personal-management/milestone/2) | §10 Analytics (10.2 page, 10.4 VO2max), §10.4 Efficiency Factor, §11 AI Coach                                 | #4 #5 #6 #7 |
-| **v1.2** | Planned | [v1.2](https://github.com/rafaelcahya/personal-management/milestone/3) | TBD                                                                                                           | —           |
-| **v1.7** | Planned | [v1.7](https://github.com/rafaelcahya/personal-management/milestone/8) | §10.11 Injury & Sports Medicine AI Coach: Physio + Sports Medicine personas, InjuryCoachCard, rt_symptom_logs | #160        |
+| Release   | Status  | GitHub Milestone                                                         | PRD Coverage                                                                                                  | Issues      |
+| --------- | ------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ----------- |
+| **v1.0**  | Shipped | —                                                                        | RT PRD v1.0–v2.6 (all features to date: Dashboard, Activities, Race Log, Training Load, Sidebar)              | —           |
+| **v1.1**  | Planned | [v1.1](https://github.com/rafaelcahya/personal-management/milestone/2)   | §10 Analytics (10.2 page, 10.4 VO2max), §10.4 Efficiency Factor, §11 AI Coach                                 | #4 #5 #6 #7 |
+| **v1.2**  | Planned | [v1.2](https://github.com/rafaelcahya/personal-management/milestone/3)   | TBD                                                                                                           | —           |
+| **v1.35** | Planned | [v1.35](https://github.com/rafaelcahya/personal-management/milestone/37) | §26 Garmin Integration: merge Garmin metrics into activities, daily import, Garmin connection in Settings     | #922        |
+| **v1.7**  | Planned | [v1.7](https://github.com/rafaelcahya/personal-management/milestone/8)   | §10.11 Injury & Sports Medicine AI Coach: Physio + Sports Medicine personas, InjuryCoachCard, rt_symptom_logs | #160        |
 
 ---
 

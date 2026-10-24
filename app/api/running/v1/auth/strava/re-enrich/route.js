@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { inngest } from '@/lib/inngest/client'
+import { sendEvent, jobsUnavailableResponse } from '@/lib/inngest/sendEvent'
 import { isStravaStubbed } from '@/lib/services/running/strava/stravaStub'
 
 // Each queued activity costs Strava API calls; the user can call this again for the next batch.
@@ -55,7 +55,7 @@ export async function POST(_request) {
       return NextResponse.json({ queued: activities.length, stubbed: true })
     }
 
-    await inngest.send(
+    await sendEvent(
       activities.map((a) => ({
         id: `fetch-streams-${a.id}`,
         name: 'strava/fetch-streams',
@@ -65,6 +65,8 @@ export async function POST(_request) {
 
     return NextResponse.json({ queued: activities.length })
   } catch (err) {
+    const unavailable = jobsUnavailableResponse(err)
+    if (unavailable) return unavailable
     console.error('[strava/re-enrich]', err)
     return NextResponse.json({ error: 'Re-enrich failed' }, { status: 500 })
   }

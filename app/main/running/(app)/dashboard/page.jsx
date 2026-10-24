@@ -17,6 +17,8 @@ import FitnessAgeTile from './components/FitnessAgeTile'
 import EnduranceScoreTile from './components/EnduranceScoreTile'
 import StreakCard from './components/StreakCard'
 import { getCfg } from './utils/activityDisplay'
+import { formatRelativeTime } from './utils/format'
+import GarminSyncSegment from './components/GarminSyncSegment'
 import LazyMount from '@/app/main/running/components/LazyMount'
 
 const SYNC_COOLDOWN_MIN = 30
@@ -42,17 +44,6 @@ function afterFirstPaint(cb) {
   }
   const handle = setTimeout(cb, 200)
   return () => clearTimeout(handle)
-}
-
-function formatRelativeTime(isoString) {
-  if (!isoString) return null
-  const diffSec = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000)
-  if (diffSec < 60) return 'just now'
-  const diffMin = Math.floor(diffSec / 60)
-  if (diffMin < 60) return `${diffMin}m ago`
-  const diffHour = Math.floor(diffMin / 60)
-  if (diffHour < 24) return `${diffHour}h ago`
-  return `${Math.floor(diffHour / 24)}d ago`
 }
 
 export default function RunningDashboardPage() {
@@ -219,11 +210,14 @@ export default function RunningDashboardPage() {
               className="rounded-lg bg-slate-50 border border-slate-200/70 px-4 py-2.5"
             >
               <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-                <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                  <span>Last synced:</span>
-                  <span className="font-medium text-slate-500">
-                    {lastSyncAt ? formatRelativeTime(lastSyncAt) : 'Never'}
-                  </span>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                    <span>Last synced:</span>
+                    <span className="font-medium text-slate-500">
+                      {lastSyncAt ? formatRelativeTime(lastSyncAt) : 'Never'}
+                    </span>
+                  </div>
+                  <GarminSyncSegment />
                 </div>
 
                 {syncResult !== null && (
